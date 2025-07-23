@@ -111,10 +111,11 @@ export const Route = createRootRoute({
         rel: 'apple-touch-icon',
         href: '/apple-touch-icon-180x180.png',
       },
-      {
-        rel: 'manifest',
-        href: '/manifest.webmanifest',
-      },
+      // TODO: uncomment this if enable PWA
+      // {
+      //   rel: 'manifest',
+      //   href: '/manifest.webmanifest',
+      // },
     ],
   }),
   component: () => (
