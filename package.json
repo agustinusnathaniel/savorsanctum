@@ -8,13 +8,13 @@
   "packageManager": "pnpm@10.7.1",
   "pnpm": {
     "onlyBuiltDependencies": [
+      "@swc/core",
       "@tailwindcss/oxide",
       "sharp"
     ]
   },
   "scripts": {
-    "dev": "vite --port 3000",
-    "start": "vite --port 3000",
+    "dev": "vite dev",
     "build": "vite build",
     "serve": "vite preview",
     "generate-pwa-assets": "pwa-assets-generator",
@@ -33,11 +33,12 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@notionhq/client": "^4.0.1",
     "@tailwindcss/vite": "^4.1.11",
     "@tanstack/react-router": "^1.127.3",
     "@tanstack/react-router-devtools": "^1.127.3",
+    "@tanstack/react-start": "^1.129.8",
     "@tanstack/router-plugin": "^1.127.5",
-    "@theme-toggles/react": "^4.1.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "tailwindcss": "^4.1.11",
@@ -61,7 +62,7 @@
     "jsdom": "^26.0.0",
     "lint-staged": "^16.1.2",
     "typescript": "^5.7.2",
-    "vite": "npm:rolldown-vite@7.0.4",
+    "vite": "npm:rolldown-vite@7.0.10",
     "vite-plugin-checker": "^0.10.0",
     "vite-plugin-pwa": "^1.0.1",
     "vite-tsconfig-paths": "^5.1.4",

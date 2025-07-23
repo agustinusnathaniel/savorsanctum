@@ -1,6 +1,6 @@
 import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import tailwindcss from '@tailwindcss/vite';
-import { tanstackRouter } from '@tanstack/router-plugin/vite';
+import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react-oxc';
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       ValidateEnv(),
-      tanstackRouter({ autoCodeSplitting: true }),
+      tanstackStart({ customViteReactPlugin: true }),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),

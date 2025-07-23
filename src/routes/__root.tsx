@@ -1,7 +1,13 @@
-import { createRootRoute, HeadContent, Outlet } from '@tanstack/react-router';
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 
 import { Layout } from '@/lib/layout';
+import globalCss from '@/lib/styles/globals.css?url';
 
 const title = 'Vite React Tailwind Starter';
 const description = 'app starter template';
@@ -94,6 +100,10 @@ export const Route = createRootRoute({
     ],
     links: [
       {
+        rel: 'stylesheet',
+        href: globalCss,
+      },
+      {
         rel: 'icon',
         href: '/favicon.ico',
       },
@@ -108,12 +118,17 @@ export const Route = createRootRoute({
     ],
   }),
   component: () => (
-    <>
-      <HeadContent />
-      <Layout>
-        <Outlet />
-      </Layout>
-      <TanStackRouterDevtools position="bottom-right" />
-    </>
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <Layout>
+          <Outlet />
+        </Layout>
+        <Scripts />
+        <TanStackRouterDevtools position="bottom-right" />
+      </body>
+    </html>
   ),
 });
