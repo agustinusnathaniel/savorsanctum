@@ -9,9 +9,9 @@ type LayoutProps = {
 
 export const Layout = ({ children }: LayoutProps) => {
   return (
-    <div className="flex min-h-screen flex-col dark:bg-black dark:text-white">
+    <div className="min-h-screen dark:bg-black dark:text-white">
       <Header />
-      <main className="wrapper">{children}</main>
+      <main className="max-w-7xl mx-auto p-4 sm:p-6 lg:p-8">{children}</main>
       <Footer />
     </div>
   );
