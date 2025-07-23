@@ -35,7 +35,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       ValidateEnv(),
-      tanstackStart({ customViteReactPlugin: true }),
+      tanstackStart({ customViteReactPlugin: true, target: 'vercel' }),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),
