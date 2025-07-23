@@ -10,7 +10,8 @@
         "*.tsbuildinfo"
       ],
       "env": [
-        "VITE_API_BASE_URL"
+        "VITE_PUBLIC_NOTION_TOKEN",
+        "VITE_PUBLIC_NOTION_DATABASE_ID"
       ]
     },
     "biome:check": {
@@ -36,7 +37,8 @@
         "public/**"
       ],
       "env": [
-        "VITE_API_BASE_URL"
+        "VITE_PUBLIC_NOTION_TOKEN",
+        "VITE_PUBLIC_NOTION_DATABASE_ID"
       ]
     },
     "test": {
