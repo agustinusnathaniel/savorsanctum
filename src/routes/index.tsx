@@ -15,19 +15,20 @@ const defaultSearchParams = {
 
 export const Route = createFileRoute('/')({
   component: Home,
-  loaderDeps: ({ search: { keyword } }) => ({ keyword }),
-  loader: async ({ deps }) => {
+  loader: async () => {
     const foodPlaces = await getPlaces();
-    const filtered = foodPlaces.filter((item) =>
-      (item.name as string).toLowerCase().includes(deps.keyword),
-    );
 
     return {
-      foodPlaces: filtered,
+      foodPlaces,
     };
   },
   validateSearch: zodValidator(placeSearchSchema),
   search: {
     middlewares: [stripSearchParams(defaultSearchParams)],
   },
+  /**
+   * prevent running loader again
+   * https://tanstack.com/router/v1/docs/framework/react/guide/data-loading#using-shouldreload-and-gctime-to-opt-out-of-caching
+   */
+  shouldReload: false,
 });
