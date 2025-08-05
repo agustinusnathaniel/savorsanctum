@@ -29,9 +29,6 @@
       ]
     },
     "build": {
-      "dependsOn": [
-        "type:check"
-      ],
       "outputs": [
         "dist/**",
         "public/**"
