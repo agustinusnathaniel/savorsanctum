@@ -1,4 +1,5 @@
-import { useLoaderData } from '@tanstack/react-router';
+import { debounce } from '@tanstack/react-pacer';
+import { useLoaderData, useNavigate, useSearch } from '@tanstack/react-router';
 import { MapPin } from 'lucide-react';
 
 import { Badge } from '@/lib/components/ui/badge';
@@ -13,6 +14,21 @@ import { Label } from '@/lib/components/ui/label';
 
 const Home = () => {
   const { foodPlaces } = useLoaderData({ from: '/' });
+  const { keyword } = useSearch({ from: '/' });
+  const navigate = useNavigate({ from: '/' });
+
+  const handleChangeKeyword = debounce(
+    (keyword: string) => {
+      navigate({
+        to: '/',
+        search: (prev) => ({ ...prev, keyword }),
+        reloadDocument: true,
+      });
+    },
+    {
+      wait: 500,
+    },
+  );
 
   return (
     <div className="flex flex-col md:flex-row gap-4">
@@ -27,7 +43,8 @@ const Home = () => {
               <Input
                 id="search"
                 placeholder="Insert keyword"
-                // defaultValue={searchQuery || ''}
+                defaultValue={keyword}
+                onChange={(e) => handleChangeKeyword(e.target.value)}
               />
             </div>
           </CardContent>

@@ -18,6 +18,7 @@ export function createRouter() {
         <p>Loading...</p>
       </div>
     ),
+    defaultErrorComponent: ({ error }) => <div>{error.message}</div>,
     defaultNotFoundComponent: () => <Page404 />,
   });
 
