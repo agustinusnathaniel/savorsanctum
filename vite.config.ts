@@ -35,7 +35,11 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       ValidateEnv(),
-      tanstackStart({ customViteReactPlugin: true, target: 'vercel' }),
+      tanstackStart({
+        customViteReactPlugin: true,
+        target: 'vercel',
+        prerender: { enabled: true, filter: ({ path }) => path === '/' },
+      }),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),
@@ -43,7 +47,6 @@ export default defineConfig(({ mode }) => {
         ? [
             checker({
               typescript: true,
-              biome: true,
             }),
           ]
         : []),

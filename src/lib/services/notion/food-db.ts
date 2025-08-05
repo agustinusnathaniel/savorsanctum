@@ -1,12 +1,12 @@
 import { Client, isFullPageOrDatabase } from '@notionhq/client';
 
 const notion = new Client({
-  auth: import.meta.env.VITE_PUBLIC_NOTION_TOKEN,
+  auth: import.meta.env.VITE_NOTION_TOKEN,
 });
 
 export const getPlaces = async () => {
   const res = await notion.databases.query({
-    database_id: import.meta.env.VITE_PUBLIC_NOTION_DATABASE_ID,
+    database_id: import.meta.env.VITE_NOTION_DATABASE_ID,
     sorts: [
       {
         property: 'Created time',
