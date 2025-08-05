@@ -35,6 +35,7 @@
     "prepare": "husky"
   },
   "dependencies": {
+    "@fontsource-variable/fredoka": "^5.2.8",
     "@hookform/resolvers": "^5.2.1",
     "@notionhq/client": "^4.0.1",
     "@radix-ui/react-checkbox": "^1.3.2",
