@@ -9,11 +9,10 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Layout } from '@/lib/layout';
 import globalCss from '@/lib/styles/globals.css?url';
 
-const title = 'Vite React Tailwind Starter';
-const description = 'app starter template';
-const url = 'https://vite-react-tailwind-starter.sznm.dev';
-const ogImgUrl =
-  'https://og.sznm.dev/api/generate?heading=vite-react-tailwind-starter&text=React+vite+template+with+TailwindCSS+and+TypeScript+setup.&template=color';
+const title = 'Food Directory';
+const description = 'Discover amazing restaurants and culinary experiences';
+const url = 'https://foodies.sznm.dev';
+const ogImgUrl = `https://og.sznm.dev/api/generate?heading=${encodeURIComponent(title)}&text=${encodeURIComponent(description)}&template=color`;
 
 export const Route = createRootRoute({
   head: () => ({
