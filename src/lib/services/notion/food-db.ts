@@ -24,7 +24,7 @@ export const getPlaces = async () => {
         },
       ],
     },
-    page_size: 20,
+    page_size: 200,
   });
 
   const entries = [];
