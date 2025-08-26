@@ -1,19 +1,36 @@
+import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
+import Fuse from 'fuse.js';
+import { MapPin } from 'lucide-react';
+import { useMemo } from 'react';
 import z from 'zod';
 
-import Home from '@/lib/pages/home';
+import { Badge } from '@/lib/components/ui/badge';
+import { Button } from '@/lib/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/lib/components/ui/card';
+import { Input } from '@/lib/components/ui/input';
+import { Label } from '@/lib/components/ui/label';
 import { getPlaces } from '@/lib/services/notion/food-db';
 
 const placeSearchSchema = z.object({
   keyword: z.string().default('').catch(''),
+  page: z.number().min(1).default(1).catch(1),
+  pageSize: z.number().default(20).catch(20),
 });
 
-const defaultSearchParams = {
+const defaultSearchParams: z.infer<typeof placeSearchSchema> = {
   keyword: '',
+  page: 1,
+  pageSize: 20,
 };
 
 export const Route = createFileRoute('/')({
-  component: Home,
+  component: RouteComponent,
   loader: async () => {
     const foodPlaces = await getPlaces();
 
@@ -32,3 +49,146 @@ export const Route = createFileRoute('/')({
    */
   shouldReload: false,
 });
+
+function RouteComponent() {
+  const { foodPlaces } = Route.useLoaderData();
+  const { keyword, page, pageSize } = Route.useSearch();
+  const navigate = Route.useNavigate();
+
+  const fused = useMemo(
+    () =>
+      new Fuse(foodPlaces, {
+        includeMatches: true,
+        ignoreDiacritics: true,
+        threshold: 0.3,
+        keys: ['name', ['tags', 'name'], ['location', 'name']],
+      }),
+    [foodPlaces],
+  );
+  const filtered = useMemo(
+    () =>
+      keyword
+        ? fused
+            .search(keyword)
+            .map(({ item, matches }) => ({ ...item, matches }))
+        : foodPlaces,
+    [fused, keyword, foodPlaces],
+  );
+
+  const pageCount = useMemo(
+    () => Math.ceil(filtered.length / pageSize),
+    [filtered, pageSize],
+  );
+
+  const currentPageData = useMemo(
+    () => filtered.slice((page - 1) * pageSize, page * pageSize),
+    [filtered, page, pageSize],
+  );
+
+  const handleChangeKeyword = debounce(
+    (keyword: string) => {
+      navigate({
+        to: '/',
+        search: (prev) => ({ ...prev, keyword, page: 1 }),
+      });
+    },
+    {
+      wait: 500,
+    },
+  );
+
+  const handleChangePage = (type: 'next' | 'prev') => {
+    const pageIncrement = page !== pageCount ? page + 1 : page;
+    const pageDecrement = page !== 1 ? page - 1 : page;
+    const updatedPage = type === 'next' ? pageIncrement : pageDecrement;
+    navigate({
+      to: '/',
+      search: (prev) => ({ ...prev, page: updatedPage }),
+      resetScroll: false,
+    });
+  };
+
+  return (
+    <div className="grid lg:grid-cols-[1fr_3fr] gap-4">
+      <div className="flex-1/4">
+        <Card>
+          <CardHeader>
+            <CardTitle>Filter</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-2">
+              <Label>Search</Label>
+              <Input
+                id="search"
+                placeholder="Insert keyword"
+                defaultValue={keyword}
+                onChange={(e) => handleChangeKeyword(e.target.value)}
+              />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="flex flex-col gap-6">
+        <div className="grid md:grid-cols-2 gap-4">
+          {!currentPageData.length ? (
+            <p className="text-center">Data Tidak Ditemukan</p>
+          ) : null}
+          {currentPageData.map((entry) => (
+            <Card key={entry.id}>
+              <CardHeader>
+                <CardTitle className="text-lg">{entry.name}</CardTitle>
+                <div className="flex gap-2 flex-wrap">
+                  {
+                    // @ts-ignore
+                    entry.tags.map((tag) => (
+                      <Badge
+                        key={tag.name}
+                        className="bg-orange-700 font-normal"
+                      >
+                        {tag.name}
+                      </Badge>
+                    ))
+                  }
+                </div>
+              </CardHeader>
+              <CardContent className="flex flex-col gap-2">
+                <div className="flex gap-1 items-center flex-wrap">
+                  <MapPin size={16} />
+                  {/* @ts-ignore */}
+                  {entry.location.map((loc) => (
+                    <Badge key={loc.name} variant="outline">
+                      {loc.name}
+                    </Badge>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+
+        {currentPageData.length && pageCount ? (
+          <div className="ml-auto flex gap-2 items-center">
+            <p>
+              Page: {page} of {pageCount}
+            </p>
+            <Button
+              onClick={() => handleChangePage('prev')}
+              disabled={page === 1}
+              hidden={page === 1}
+            >
+              Prev
+            </Button>
+            <Button
+              disabled={page === pageCount}
+              hidden={page === pageCount}
+              onClick={() => handleChangePage('next')}
+            >
+              Next
+            </Button>
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}

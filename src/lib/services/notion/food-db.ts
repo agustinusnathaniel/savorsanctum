@@ -5,31 +5,39 @@ const notion = new Client({
 });
 
 export const getPlaces = async () => {
-  const res = await notion.databases.query({
-    database_id: import.meta.env.VITE_NOTION_DATABASE_ID,
-    sorts: [
-      {
-        property: 'Created time',
-        direction: 'descending',
-      },
-    ],
-    filter: {
-      and: [
+  let next_cursor: string | null | undefined;
+  const results = [];
+
+  do {
+    const res = await notion.databases.query({
+      database_id: import.meta.env.VITE_NOTION_DATABASE_ID,
+      sorts: [
         {
-          property: 'Review',
-          type: 'multi_select',
-          multi_select: {
-            contains: 'recommended',
-          },
+          property: 'Created time',
+          direction: 'descending',
         },
       ],
-    },
-    page_size: 200,
-  });
+      filter: {
+        and: [
+          {
+            property: 'Review',
+            type: 'multi_select',
+            multi_select: {
+              contains: 'recommended',
+            },
+          },
+        ],
+      },
+      page_size: 100, // max allowed
+      start_cursor: next_cursor || undefined,
+    });
+    results.push(...res.results);
+    next_cursor = res.has_more ? res.next_cursor : undefined;
+  } while (next_cursor);
 
   const entries = [];
 
-  for (const page of res.results) {
+  for (const page of results) {
     if (!isFullPageOrDatabase(page)) {
       continue;
     }
