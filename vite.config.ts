@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
       ValidateEnv(),
       tanstackStart({
         customViteReactPlugin: true,
-        target: 'vercel',
+        target: process.env.BUILD_TARGET ?? 'vercel',
         prerender: { enabled: true, filter: ({ path }) => path === '/' },
       }),
       viteReact(),
