@@ -2,6 +2,8 @@ import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 import Fuse from 'fuse.js';
 import { MapPin } from 'lucide-react';
+import { domAnimation, LazyMotion } from 'motion/react';
+import * as m from 'motion/react-m';
 import { useMemo } from 'react';
 import z from 'zod';
 
@@ -130,42 +132,74 @@ function RouteComponent() {
       </div>
 
       <div className="flex flex-col gap-6">
-        <div className="grid md:grid-cols-2 gap-4">
-          {!currentPageData.length ? (
-            <p className="text-center">Data Tidak Ditemukan</p>
-          ) : null}
-          {currentPageData.map((entry) => (
-            <Card key={entry.id}>
-              <CardHeader>
-                <CardTitle className="text-lg">{entry.name}</CardTitle>
-                <div className="flex gap-2 flex-wrap">
-                  {
-                    // @ts-ignore
-                    entry.tags.map((tag) => (
-                      <Badge
-                        key={tag.name}
-                        className="bg-orange-700 font-normal"
-                      >
-                        {tag.name}
-                      </Badge>
-                    ))
-                  }
-                </div>
-              </CardHeader>
-              <CardContent className="flex flex-col gap-2">
-                <div className="flex gap-1 items-center flex-wrap">
-                  <MapPin size={16} />
-                  {/* @ts-ignore */}
-                  {entry.location.map((loc) => (
-                    <Badge key={loc.name} variant="outline">
-                      {loc.name}
-                    </Badge>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+        {!currentPageData.length ? (
+          <p className="text-center">Data Tidak Ditemukan</p>
+        ) : null}
+        {currentPageData.length ? (
+          <LazyMotion features={domAnimation}>
+            <m.div
+              className="grid md:grid-cols-2 gap-4"
+              variants={{
+                show: {
+                  transition: {
+                    staggerChildren: 0.05,
+                  },
+                },
+              }}
+              initial="hidden"
+              animate="show"
+            >
+              {currentPageData.map((entry) => (
+                <m.div
+                  variants={{
+                    hidden: {
+                      y: 50,
+                      opacity: 0,
+                      filter: 'blur(15px)',
+                    },
+                    show: {
+                      y: 0,
+                      opacity: 1,
+                      filter: 'blur(0)',
+                      transition: { type: 'spring' },
+                    },
+                  }}
+                  key={entry.id}
+                >
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-lg">{entry.name}</CardTitle>
+                      <div className="flex gap-2 flex-wrap">
+                        {
+                          // @ts-ignore
+                          entry.tags.map((tag) => (
+                            <Badge
+                              key={tag.name}
+                              className="bg-orange-700 font-normal"
+                            >
+                              {tag.name}
+                            </Badge>
+                          ))
+                        }
+                      </div>
+                    </CardHeader>
+                    <CardContent className="flex flex-col gap-2">
+                      <div className="flex gap-1 items-center flex-wrap">
+                        <MapPin size={16} />
+                        {/* @ts-ignore */}
+                        {entry.location.map((loc) => (
+                          <Badge key={loc.name} variant="outline">
+                            {loc.name}
+                          </Badge>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </m.div>
+              ))}
+            </m.div>
+          </LazyMotion>
+        ) : null}
 
         {currentPageData.length && pageCount ? (
           <div className="ml-auto flex gap-2 items-center">
