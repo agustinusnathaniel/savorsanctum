@@ -1,12 +1,12 @@
-import { createRouter as createTanStackRouter } from '@tanstack/react-router';
+import { createRouter } from '@tanstack/react-router';
 
 import Page404 from '@/lib/pages/404';
 
 // Import the generated route tree
 import { routeTree } from './routeTree.gen';
 
-export function createRouter() {
-  const router = createTanStackRouter({
+export function getRouter() {
+  const router = createRouter({
     routeTree,
     context: {},
     defaultPreload: 'intent',
@@ -23,13 +23,6 @@ export function createRouter() {
   });
 
   return router;
-}
-
-// Register the router instance for type safety
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: ReturnType<typeof createRouter>;
-  }
 }
 
 // If you want to start measuring performance in your app, pass a function

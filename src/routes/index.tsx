@@ -120,6 +120,7 @@ function RouteComponent() {
           <CardContent>
             <div className="grid gap-2">
               <Label>Search</Label>
+              {/** biome-ignore lint/correctness/useUniqueElementIds: unique */}
               <Input
                 id="search"
                 placeholder="Insert keyword"
@@ -171,7 +172,7 @@ function RouteComponent() {
                       <CardTitle className="text-lg">{entry.name}</CardTitle>
                       <div className="flex gap-2 flex-wrap">
                         {
-                          // @ts-ignore
+                          // @ts-expect-error
                           entry.tags.map((tag) => (
                             <Badge
                               key={tag.name}

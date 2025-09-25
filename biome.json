@@ -1,5 +1,5 @@
 {
-  "$schema": "https://biomejs.dev/schemas/2.1.3/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.2.4/schema.json",
   "vcs": {
     "enabled": false,
     "clientKind": "git",
@@ -9,11 +9,11 @@
     "ignoreUnknown": false,
     "includes": [
       "src/**/*",
+      "*.config.ts",
       "!src/*.gen.ts",
       "!turbo",
       "!src/lib/components/ui/**/*",
-      "*.config.ts",
-      "!*.css"
+      "!**/*.css"
     ]
   },
   "formatter": {

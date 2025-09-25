@@ -1,4 +1,4 @@
-import { Client, isFullPageOrDatabase } from '@notionhq/client';
+import { Client, isFullPageOrDataSource } from '@notionhq/client';
 
 const notion = new Client({
   auth: import.meta.env.VITE_NOTION_TOKEN,
@@ -9,8 +9,8 @@ export const getPlaces = async () => {
   const results = [];
 
   do {
-    const res = await notion.databases.query({
-      database_id: import.meta.env.VITE_NOTION_DATABASE_ID,
+    const res = await notion.dataSources.query({
+      data_source_id: import.meta.env.VITE_NOTION_DATASOURCE_ID,
       sorts: [
         {
           property: 'Created time',
@@ -38,7 +38,7 @@ export const getPlaces = async () => {
   const entries = [];
 
   for (const page of results) {
-    if (!isFullPageOrDatabase(page)) {
+    if (!isFullPageOrDataSource(page)) {
       continue;
     }
 
