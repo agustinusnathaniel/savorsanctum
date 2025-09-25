@@ -167,7 +167,7 @@ function RouteComponent() {
                   }}
                   key={entry.id}
                 >
-                  <Card>
+                  <Card className="size-full">
                     <CardHeader>
                       <CardTitle className="text-lg">{entry.name}</CardTitle>
                       <div className="flex gap-2 flex-wrap">
