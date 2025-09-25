@@ -1,5 +1,6 @@
 import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import tailwindcss from '@tailwindcss/vite';
+import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react-oxc';
 import { defineConfig } from 'vite';
@@ -36,10 +37,9 @@ export default defineConfig(({ mode }) => {
     plugins: [
       ValidateEnv(),
       tanstackStart({
-        customViteReactPlugin: true,
-        target: process.env.BUILD_TARGET ?? 'vercel',
         prerender: { enabled: true, filter: ({ path }) => path === '/' },
       }),
+      nitroV2Plugin(),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),

@@ -71,6 +71,7 @@
     "@commitlint/types": "^19.8.1",
     "@julr/vite-plugin-validate-env": "^2.2.0",
     "@tailwindcss/typography": "^0.5.19",
+    "@tanstack/nitro-v2-vite-plugin": "^1.132.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/react": "^16.2.0",
     "@types/react": "^19.1.13",
