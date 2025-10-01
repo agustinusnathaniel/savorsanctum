@@ -63,7 +63,12 @@ function RouteComponent() {
         includeMatches: true,
         ignoreDiacritics: true,
         threshold: 0.3,
-        keys: ['name', ['tags', 'name'], ['location', 'name']],
+        keys: [
+          'name',
+          ['tags', 'name'],
+          ['reviews', 'name'],
+          ['location', 'name'],
+        ],
       }),
     [foodPlaces],
   );
@@ -171,6 +176,18 @@ function RouteComponent() {
                     <CardHeader>
                       <CardTitle className="text-lg">{entry.name}</CardTitle>
                       <div className="flex gap-2 flex-wrap">
+                        {entry.reviews
+                          // @ts-expect-error
+                          .filter((item) => item !== 'recommended')
+                          // @ts-expect-error
+                          .map((reviewTag) => (
+                            <Badge
+                              key={reviewTag.name}
+                              className="bg-orange-700 font-normal"
+                            >
+                              {reviewTag.name}
+                            </Badge>
+                          ))}
                         {
                           // @ts-expect-error
                           entry.tags.map((tag) => (
