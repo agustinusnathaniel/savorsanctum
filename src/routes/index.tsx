@@ -174,7 +174,15 @@ function RouteComponent() {
                       <div className="flex gap-2 flex-wrap">
                         {entry.reviews
                           // @ts-expect-error
-                          .filter((item) => item !== 'recommended')
+                          .filter(
+                            // @ts-expect-error
+                            (item) =>
+                              ![
+                                'nathan belum coba',
+                                'dita belum coba',
+                                'recommended',
+                              ].includes(item.name),
+                          )
                           // @ts-expect-error
                           .map((reviewTag) => (
                             <Badge
