@@ -125,7 +125,7 @@ function RouteComponent() {
           <CardContent>
             <div className="grid gap-2">
               <Label>Search</Label>
-              {/** biome-ignore lint/correctness/useUniqueElementIds: unique */}
+              {/** biome-ignore lint/correctness/useUniqueElementIds: single input */}
               <Input
                 id="search"
                 placeholder="Insert keyword"
@@ -202,15 +202,17 @@ function RouteComponent() {
                       </div>
                     </CardHeader>
                     <CardContent className="flex flex-col gap-2">
-                      <div className="flex gap-1 items-center flex-wrap">
-                        <MapPin size={16} />
-                        {/* @ts-ignore */}
-                        {entry.location.map((loc) => (
-                          <Badge key={loc.name} variant="outline">
-                            {loc.name}
-                          </Badge>
-                        ))}
-                      </div>
+                      {(entry.location as Array<object>).length ? (
+                        <div className="flex gap-1 items-center flex-wrap">
+                          <MapPin size={16} />
+                          {/* @ts-ignore */}
+                          {entry.location.map((loc) => (
+                            <Badge key={loc.name} variant="outline">
+                              {loc.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      ) : null}
                     </CardContent>
                   </Card>
                 </m.div>
