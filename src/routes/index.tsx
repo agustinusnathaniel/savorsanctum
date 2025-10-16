@@ -1,12 +1,13 @@
 import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 import Fuse from 'fuse.js';
-import { MapPin } from 'lucide-react';
+import { MapPinIcon, SearchIcon } from 'lucide-react';
 import { domAnimation, LazyMotion } from 'motion/react';
 import * as m from 'motion/react-m';
 import { useMemo } from 'react';
 import z from 'zod';
 
+import { TextField } from '@/lib/components/text-field';
 import { Badge } from '@/lib/components/ui/badge';
 import { Button } from '@/lib/components/ui/button';
 import {
@@ -15,8 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/lib/components/ui/card';
-import { Input } from '@/lib/components/ui/input';
-import { Label } from '@/lib/components/ui/label';
 import { getPlaces } from '@/lib/services/notion/food-db';
 
 const placeSearchSchema = z.object({
@@ -119,20 +118,17 @@ function RouteComponent() {
     <div className="grid lg:grid-cols-[1fr_3fr] gap-4">
       <div className="flex-1/4">
         <Card>
-          <CardHeader>
+          {/* <CardHeader>
             <CardTitle>Filter</CardTitle>
-          </CardHeader>
+          </CardHeader> */}
           <CardContent>
-            <div className="grid gap-2">
-              <Label>Search</Label>
-              {/** biome-ignore lint/correctness/useUniqueElementIds: single input */}
-              <Input
-                id="search"
-                placeholder="Insert keyword"
-                defaultValue={keyword}
-                onChange={(e) => handleChangeKeyword(e.target.value)}
-              />
-            </div>
+            {/** biome-ignore lint/correctness/useUniqueElementIds: single input */}
+            <TextField
+              id="search"
+              prefixIcon={<SearchIcon />}
+              placeholder="Insert keyword"
+              onValueChange={(value) => handleChangeKeyword(value)}
+            />
           </CardContent>
         </Card>
       </div>
@@ -204,7 +200,7 @@ function RouteComponent() {
                     <CardContent className="flex flex-col gap-2">
                       {(entry.location as Array<object>).length ? (
                         <div className="flex gap-1 items-center flex-wrap">
-                          <MapPin size={16} />
+                          <MapPinIcon size={16} />
                           {/* @ts-ignore */}
                           {entry.location.map((loc) => (
                             <Badge key={loc.name} variant="outline">
