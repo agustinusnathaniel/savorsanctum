@@ -37,7 +37,10 @@ export default defineConfig(({ mode }) => {
     plugins: [
       ValidateEnv(),
       tanstackStart({
-        prerender: { enabled: true, filter: ({ path }) => path === '/' },
+        prerender: { 
+          enabled: true, 
+          // filter: ({ path }) => path === '/', 
+        },
       }),
       nitroV2Plugin(),
       viteReact(),
