@@ -122,7 +122,6 @@ function RouteComponent() {
             <CardTitle>Filter</CardTitle>
           </CardHeader> */}
           <CardContent>
-            {/** biome-ignore lint/correctness/useUniqueElementIds: single input */}
             <TextField
               id="search"
               prefixIcon={<SearchIcon />}
