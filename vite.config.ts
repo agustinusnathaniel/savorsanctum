@@ -1,8 +1,9 @@
 import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import tailwindcss from '@tailwindcss/vite';
-import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
+// import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin';
+import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
@@ -46,7 +47,8 @@ export default defineConfig(({ mode }) => {
           enabled: true,
         },
       }),
-      nitroV2Plugin(),
+      // nitroV2Plugin(),
+      nitro(),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),
@@ -62,5 +64,6 @@ export default defineConfig(({ mode }) => {
     server: {
       open: true,
     },
+    nitro: {},
   };
 });
