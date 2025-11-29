@@ -41,6 +41,10 @@ export default defineConfig(({ mode }) => {
           enabled: true,
           // filter: ({ path }) => path === '/',
         },
+        sitemap: {
+          host: 'https://foodies.sznm.dev',
+          enabled: true,
+        },
       }),
       nitroV2Plugin(),
       viteReact(),
