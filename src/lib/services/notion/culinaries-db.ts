@@ -1,16 +1,14 @@
-import { Client, isFullPageOrDataSource } from '@notionhq/client';
+import { isFullPageOrDataSource } from '@notionhq/client';
 
-const notion = new Client({
-  auth: import.meta.env.VITE_NOTION_TOKEN,
-});
+import { notion } from './core';
 
-export const getPlaces = async () => {
+export const getCulinaries = async () => {
   let next_cursor: string | null | undefined;
   const results = [];
 
   do {
     const res = await notion.dataSources.query({
-      data_source_id: import.meta.env.VITE_NOTION_DATASOURCE_ID,
+      data_source_id: import.meta.env.VITE_NOTION_CULINARIES_DATASOURCE_ID,
       sorts: [
         {
           property: 'Created time',

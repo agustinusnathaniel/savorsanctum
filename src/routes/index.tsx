@@ -16,7 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/lib/components/ui/card';
-import { getPlaces } from '@/lib/services/notion/food-db';
+import { getItems } from '@/lib/services/notion/get-items';
 
 const placeSearchSchema = z.object({
   keyword: z.string().default('').catch(''),
@@ -33,10 +33,10 @@ const defaultSearchParams: z.infer<typeof placeSearchSchema> = {
 export const Route = createFileRoute('/')({
   component: RouteComponent,
   loader: async () => {
-    const foodPlaces = await getPlaces();
+    const { items } = await getItems();
 
     return {
-      foodPlaces,
+      items,
     };
   },
   validateSearch: placeSearchSchema,
@@ -52,13 +52,13 @@ export const Route = createFileRoute('/')({
 });
 
 function RouteComponent() {
-  const { foodPlaces } = Route.useLoaderData();
+  const { items } = Route.useLoaderData();
   const { keyword, page, pageSize } = Route.useSearch();
   const navigate = Route.useNavigate();
 
   const fused = useMemo(
     () =>
-      new Fuse(foodPlaces, {
+      new Fuse(items, {
         includeMatches: true,
         ignoreDiacritics: true,
         threshold: 0.3,
@@ -69,7 +69,7 @@ function RouteComponent() {
           ['location', 'name'],
         ],
       }),
-    [foodPlaces],
+    [items],
   );
   const filtered = useMemo(
     () =>
@@ -77,8 +77,8 @@ function RouteComponent() {
         ? fused
             .search(keyword)
             .map(({ item, matches }) => ({ ...item, matches }))
-        : foodPlaces,
-    [fused, keyword, foodPlaces],
+        : items,
+    [fused, keyword, items],
   );
 
   const pageCount = useMemo(
