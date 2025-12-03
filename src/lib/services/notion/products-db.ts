@@ -1,16 +1,14 @@
-import { Client, isFullPageOrDataSource } from '@notionhq/client';
+import { isFullPageOrDataSource } from '@notionhq/client';
 
-const notion = new Client({
-  auth: import.meta.env.VITE_NOTION_TOKEN,
-});
+import { notion } from './core';
 
-export const getPlaces = async () => {
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: -
+export const getProducts = async () => {
   let next_cursor: string | null | undefined;
   const results = [];
-
   do {
     const res = await notion.dataSources.query({
-      data_source_id: import.meta.env.VITE_NOTION_DATASOURCE_ID,
+      data_source_id: import.meta.env.VITE_NOTION_PRODUCTS_DATASOURCE_ID,
       sorts: [
         {
           property: 'Created time',
@@ -23,7 +21,7 @@ export const getPlaces = async () => {
             property: 'Review',
             type: 'multi_select',
             multi_select: {
-              contains: 'recommended',
+              does_not_contain: 'warning',
             },
           },
         ],
@@ -46,23 +44,34 @@ export const getPlaces = async () => {
 
     entries.push({
       id: page.id,
+      category: 'products' as const,
       name:
         properties.Name.type === 'title'
           ? // @ts-ignore
-            properties.Name.title?.[0]?.plain_text
+            (properties.Name.title?.[0]?.plain_text as string)
           : '',
-      reviews:
-        properties.Review.type === 'multi_select'
-          ? properties.Review.multi_select
-          : [],
+      link:
+        properties.Link.type === 'url'
+          ? // @ts-ignore
+            properties.Link.url
+          : '',
+      image:
+        properties.Image.type === 'files'
+          ? // biome-ignore lint/suspicious/noExplicitAny: -
+            (properties.Image.files as Array<any>)?.[0]?.file.url
+          : '',
       tags:
         properties.Tags.type === 'multi_select'
           ? properties.Tags.multi_select
           : [],
       location:
-        properties['Area / Location'].type === 'multi_select'
-          ? properties['Area / Location'].multi_select
+        properties.Location.type === 'multi_select'
+          ? properties.Location.multi_select
           : [],
+      created_time:
+        properties['Created time'].type === 'created_time'
+          ? properties['Created time'].created_time
+          : '',
     });
   }
 
