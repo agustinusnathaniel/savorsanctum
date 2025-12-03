@@ -1,45 +1,52 @@
 import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 import Fuse from 'fuse.js';
-import { MapPinIcon, SearchIcon } from 'lucide-react';
-import { domAnimation, LazyMotion } from 'motion/react';
-import * as m from 'motion/react-m';
-import { useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
-import { TextField } from '@/lib/components/text-field';
-import { Badge } from '@/lib/components/ui/badge';
-import { Button } from '@/lib/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/lib/components/ui/card';
-import { getPlaces } from '@/lib/services/notion/food-db';
+import { DIR_CATEGORIES } from '@/lib/models/collection-data';
+import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
+import { EmptyState } from '@/lib/pages/home/components/empty-state';
+import { EndOfList } from '@/lib/pages/home/components/end-of-list';
+import { Header } from '@/lib/pages/home/components/header';
+import { ItemGrid } from '@/lib/pages/home/components/item-grid';
+import { ResultCounter } from '@/lib/pages/home/components/result-counter';
+import { ScrollToTop } from '@/lib/pages/home/components/scroll-to-top';
+import { SearchBar } from '@/lib/pages/home/components/search-bar';
+import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
+import { getItems } from '@/lib/services/notion/get-items';
 
-const placeSearchSchema = z.object({
+const searchSchema = z.object({
   keyword: z.string().default('').catch(''),
-  page: z.number().min(1).default(1).catch(1),
-  pageSize: z.number().default(20).catch(20),
+  // page: z.number().min(1).default(1).catch(1),
+  category: z
+    .enum([...DIR_CATEGORIES, 'all'])
+    .default('all')
+    .catch('all'),
+  sortBy: z.enum(['recent', 'alphabetical']).default('recent').catch('recent'),
+  // pageSize: z.number().default(20).catch(20),
 });
 
-const defaultSearchParams: z.infer<typeof placeSearchSchema> = {
+type SearchSchema = z.infer<typeof searchSchema>;
+
+const defaultSearchParams: SearchSchema = {
   keyword: '',
-  page: 1,
-  pageSize: 20,
+  // page: 1,
+  category: 'all',
+  sortBy: 'recent',
+  // pageSize: 20,
 };
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
   loader: async () => {
-    const foodPlaces = await getPlaces();
+    const { items } = await getItems();
 
     return {
-      foodPlaces,
+      items,
     };
   },
-  validateSearch: placeSearchSchema,
+  validateSearch: searchSchema,
   search: {
     middlewares: [stripSearchParams(defaultSearchParams)],
   },
@@ -51,14 +58,19 @@ export const Route = createFileRoute('/')({
   shouldReload: false,
 });
 
+const ITEMS_PER_PAGE = 12;
+
 function RouteComponent() {
-  const { foodPlaces } = Route.useLoaderData();
-  const { keyword, page, pageSize } = Route.useSearch();
+  const { items } = Route.useLoaderData();
+  const { keyword, category, sortBy } = Route.useSearch();
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const [isLoading, setIsLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
   const navigate = Route.useNavigate();
 
   const fused = useMemo(
     () =>
-      new Fuse(foodPlaces, {
+      new Fuse(items, {
         includeMatches: true,
         ignoreDiacritics: true,
         threshold: 0.3,
@@ -69,33 +81,78 @@ function RouteComponent() {
           ['location', 'name'],
         ],
       }),
-    [foodPlaces],
-  );
-  const filtered = useMemo(
-    () =>
-      keyword
-        ? fused
-            .search(keyword)
-            .map(({ item, matches }) => ({ ...item, matches }))
-        : foodPlaces,
-    [fused, keyword, foodPlaces],
+    [items],
   );
 
-  const pageCount = useMemo(
-    () => Math.ceil(filtered.length / pageSize),
-    [filtered, pageSize],
-  );
+  const highlightTerms = useMemo(() => {
+    // biome-ignore lint/performance/useTopLevelRegex: -
+    return keyword.trim().split(/\s+/).filter(Boolean);
+  }, [keyword]);
 
-  const currentPageData = useMemo(
-    () => filtered.slice((page - 1) * pageSize, page * pageSize),
-    [filtered, page, pageSize],
-  );
+  const filteredItems = useMemo(() => {
+    let results = items;
+
+    if (keyword.trim()) {
+      results = fused.search(keyword).map((result) => result.item);
+    }
+
+    if (category !== 'all') {
+      results = results.filter((item) => item.category === category);
+    }
+
+    if (sortBy === 'alphabetical') {
+      results = [...results].sort((a, b) => a.name.localeCompare(b.name));
+    }
+
+    return results;
+  }, [keyword, category, fused, items, sortBy]);
+
+  const visibleItems = filteredItems.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredItems.length;
+
+  const loadMore = useCallback(() => {
+    if (isLoading || !hasMore) {
+      return;
+    }
+    setIsLoading(true);
+    setTimeout(() => {
+      setVisibleCount(
+        (prev) =>
+          prev +
+          (filteredItems.length - prev < ITEMS_PER_PAGE &&
+          (filteredItems.length - prev) % ITEMS_PER_PAGE !== 0
+            ? filteredItems.length - prev
+            : ITEMS_PER_PAGE),
+      );
+      setIsLoading(false);
+    }, 300);
+  }, [isLoading, hasMore, filteredItems]);
+
+  useEffect(() => {
+    const loader = loaderRef.current;
+    if (!loader) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !isLoading) {
+          loadMore();
+        }
+      },
+      { threshold: 0.1, rootMargin: '20px' },
+    );
+
+    observer.observe(loader);
+    return () => observer.disconnect();
+  }, [hasMore, isLoading, loadMore]);
 
   const handleChangeKeyword = debounce(
     (keyword: string) => {
+      setVisibleCount(ITEMS_PER_PAGE);
       navigate({
         to: '/',
-        search: (prev) => ({ ...prev, keyword, page: 1 }),
+        search: (prev) => ({ ...prev, keyword }),
       });
     },
     {
@@ -103,149 +160,68 @@ function RouteComponent() {
     },
   );
 
-  const handleChangePage = (type: 'next' | 'prev') => {
-    const pageIncrement = page !== pageCount ? page + 1 : page;
-    const pageDecrement = page !== 1 ? page - 1 : page;
-    const updatedPage = type === 'next' ? pageIncrement : pageDecrement;
+  const handleChangeCategory = (category: SearchSchema['category']) => {
+    setVisibleCount(ITEMS_PER_PAGE);
     navigate({
       to: '/',
-      search: (prev) => ({ ...prev, page: updatedPage }),
-      resetScroll: false,
+      search: (prev) => ({ ...prev, category }),
+    });
+  };
+
+  const handleChangeSortBy = (sortBy: SearchSchema['sortBy']) => {
+    setVisibleCount(ITEMS_PER_PAGE);
+    navigate({
+      to: '/',
+      search: (prev) => ({ ...prev, sortBy }),
     });
   };
 
   return (
-    <div className="grid lg:grid-cols-[1fr_3fr] gap-4">
-      <div className="flex-1/4">
-        <Card>
-          {/* <CardHeader>
-            <CardTitle>Filter</CardTitle>
-          </CardHeader> */}
-          <CardContent>
-            <TextField
-              id="search"
-              prefixIcon={<SearchIcon />}
-              placeholder="Insert keyword"
-              onValueChange={(value) => handleChangeKeyword(value)}
-            />
-          </CardContent>
-        </Card>
+    <>
+      <div className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6">
+        <Header />
+        <div className="pb-4 pt-2 border-b">
+          <SearchBar initialValue={keyword} onChange={handleChangeKeyword} />
+          <CategoryFilters
+            selected={category}
+            onSelect={handleChangeCategory}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col gap-6">
-        {!currentPageData.length ? (
-          <p className="text-center">Data Tidak Ditemukan</p>
-        ) : null}
-        {currentPageData.length ? (
-          <LazyMotion features={domAnimation}>
-            <m.div
-              className="grid md:grid-cols-2 gap-4"
-              variants={{
-                show: {
-                  transition: {
-                    staggerChildren: 0.05,
-                  },
-                },
-              }}
-              initial="hidden"
-              animate="show"
-            >
-              {currentPageData.map((entry) => (
-                <m.div
-                  variants={{
-                    hidden: {
-                      y: 50,
-                      opacity: 0,
-                      filter: 'blur(15px)',
-                    },
-                    show: {
-                      y: 0,
-                      opacity: 1,
-                      filter: 'blur(0)',
-                      transition: { type: 'spring' },
-                    },
-                  }}
-                  key={entry.id}
-                >
-                  <Card className="size-full">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{entry.name}</CardTitle>
-                      <div className="flex gap-2 flex-wrap">
-                        {entry.reviews
-                          // @ts-expect-error
-                          .filter(
-                            // @ts-expect-error
-                            (item) =>
-                              ![
-                                'nathan belum coba',
-                                'dita belum coba',
-                                'recommended',
-                              ].includes(item.name),
-                          )
-                          // @ts-expect-error
-                          .map((reviewTag) => (
-                            <Badge
-                              key={reviewTag.name}
-                              className="bg-orange-700 font-normal"
-                            >
-                              {reviewTag.name}
-                            </Badge>
-                          ))}
-                        {
-                          // @ts-expect-error
-                          entry.tags.map((tag) => (
-                            <Badge
-                              key={tag.name}
-                              className="bg-orange-700 font-normal"
-                            >
-                              {tag.name}
-                            </Badge>
-                          ))
-                        }
-                      </div>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-2">
-                      {(entry.location as Array<object>).length ? (
-                        <div className="flex gap-1 items-center flex-wrap">
-                          <MapPinIcon size={16} />
-                          {/* @ts-ignore */}
-                          {entry.location.map((loc) => (
-                            <Badge key={loc.name} variant="outline">
-                              {loc.name}
-                            </Badge>
-                          ))}
-                        </div>
-                      ) : null}
-                    </CardContent>
-                  </Card>
-                </m.div>
+      {filteredItems.length > 0 && (
+        <ResultCounter
+          current={visibleCount}
+          total={filteredItems.length}
+          sortBy={sortBy}
+          onSortChange={handleChangeSortBy}
+        />
+      )}
+
+      {filteredItems.length === 0 ? (
+        <EmptyState />
+      ) : (
+        <>
+          <ItemGrid items={visibleItems} highlightTerms={highlightTerms} />
+
+          {isLoading && (
+            <div className="mt-8 columns-1 gap-4 md:columns-2 lg:columns-3">
+              {Array.from({ length: 3 }).map((_, idx) => (
+                // biome-ignore lint/suspicious/noArrayIndexKey: -
+                <div key={idx} className="mb-4 break-inside-avoid">
+                  <SkeletonCard />
+                </div>
               ))}
-            </m.div>
-          </LazyMotion>
-        ) : null}
+            </div>
+          )}
 
-        {currentPageData.length && pageCount ? (
-          <div className="ml-auto flex gap-2 items-center">
-            <p>
-              Page: {page} of {pageCount}
-            </p>
-            <Button
-              onClick={() => handleChangePage('prev')}
-              disabled={page === 1}
-              hidden={page === 1}
-            >
-              Prev
-            </Button>
-            <Button
-              disabled={page === pageCount}
-              hidden={page === pageCount}
-              onClick={() => handleChangePage('next')}
-            >
-              Next
-            </Button>
-          </div>
-        ) : null}
-      </div>
-    </div>
+          {!hasMore && filteredItems.length > 0 && <EndOfList />}
+
+          {hasMore && <div ref={loaderRef} className="mt-8 h-12" />}
+        </>
+      )}
+
+      <ScrollToTop />
+    </>
   );
 }

@@ -1,7 +1,7 @@
 export const Footer = () => {
   return (
     <footer className="wrapper">
-      <div className="flex">
+      <div className="flex justify-center">
         <p className="text-xs">
           {new Date().getFullYear()} -{' '}
           <a
