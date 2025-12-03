@@ -78,7 +78,8 @@
     "@types/react-dom": "^19.2.3",
     "@vite-pwa/assets-generator": "^1.0.2",
     "@vitejs/plugin-react": "^5.1.1",
-    "commit-and-tag-version": "^12.6.0",
+    "commit-and-tag-version": "^12.6.1",
+    "cross-env": "^10.1.0",
     "husky": "^9.1.7",
     "jsdom": "^27.2.0",
     "lint-staged": "^16.2.7",
@@ -89,7 +90,7 @@
     "vite-plugin-checker": "^0.11.0",
     "vite-plugin-pwa": "^1.2.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^4.0.14",
+    "vitest": "^4.0.15",
     "web-vitals": "^5.1.0"
   }
 }
