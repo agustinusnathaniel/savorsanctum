@@ -56,6 +56,11 @@ export const getCulinaries = async () => {
           ? // @ts-ignore
             properties.Link.url
           : '',
+      image:
+        properties.Image.type === 'files'
+          ? // biome-ignore lint/suspicious/noExplicitAny: -
+            (properties.Image.files as Array<any>)?.[0]?.file.url
+          : '',
       reviews:
         properties.Review.type === 'multi_select'
           ? properties.Review.multi_select
