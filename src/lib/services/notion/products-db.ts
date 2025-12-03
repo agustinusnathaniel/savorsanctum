@@ -15,6 +15,17 @@ export const getProducts = async () => {
           direction: 'descending',
         },
       ],
+      filter: {
+        and: [
+          {
+            property: 'Review',
+            type: 'multi_select',
+            multi_select: {
+              does_not_contain: 'warning',
+            },
+          },
+        ],
+      },
       page_size: 100, // max allowed
       start_cursor: next_cursor || undefined,
     });

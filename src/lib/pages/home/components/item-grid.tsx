@@ -9,7 +9,7 @@ interface ItemGridProps {
 
 export function ItemGrid({ items, highlightTerms }: ItemGridProps) {
   return (
-    <div className="mt-6 columns-1 gap-4 md:columns-2 lg:columns-3">
+    <div className="mt-6 grid md:grid-cols-2 xl:grid-cols-3 gap-4">
       {items.map((item) => (
         <div key={item.id} className="mb-4 break-inside-avoid">
           <ItemCard item={item} highlightTerms={highlightTerms} />
