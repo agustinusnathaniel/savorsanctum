@@ -55,6 +55,11 @@ export const getProducts = async () => {
           ? // @ts-ignore
             properties.Link.url
           : '',
+      image:
+        properties.Image.type === 'files'
+          ? // biome-ignore lint/suspicious/noExplicitAny: -
+            (properties.Image.files as Array<any>)?.[0]?.file.url
+          : '',
       tags:
         properties.Tags.type === 'multi_select'
           ? properties.Tags.multi_select

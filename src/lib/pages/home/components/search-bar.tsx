@@ -29,7 +29,7 @@ export function SearchBar({ initialValue, onChange }: SearchBarProps) {
   };
 
   return (
-    <InputGroup>
+    <InputGroup className="bg-white">
       <InputGroupInput
         value={input}
         placeholder="Search places or products..."
