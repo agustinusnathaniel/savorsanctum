@@ -8,12 +8,7 @@ export const getItems = async () => {
   const items = [
     ...culinaries,
     ...products.map((item) => ({ ...item, reviews: [] })),
-  ].sort((a, b) =>
-    new Date(a.created_time as string).getTime() >
-    new Date(b.created_time as string).getTime()
-      ? 1
-      : 0,
-  );
+  ].sort((a, b) => (b.created_time > a.created_time ? 1 : -1));
 
   return { items };
 };

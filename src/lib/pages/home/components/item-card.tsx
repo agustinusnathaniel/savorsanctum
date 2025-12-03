@@ -2,6 +2,7 @@
 
 import { ExternalLink, MapPin } from 'lucide-react';
 
+import { Badge } from '@/lib/components/ui/badge';
 import type { DirectoryItem } from '@/lib/models/collection-data';
 import { cn } from '@/lib/styles/utils';
 
@@ -47,7 +48,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
       href={(item.link as string) ?? '#'}
       target={item.link ? '_blank' : undefined}
       rel="noopener noreferrer"
-      className="group block rounded-[20px] bg-card p-3 shadow-sm border border-transparent transition-all duration-200 hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+      className="group block rounded-[20px] bg-card p-3 shadow-sm border-2 border-transparent transition-all duration-200 hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
       tabIndex={0}
     >
       {item.image && (
@@ -68,15 +69,20 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
           <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
 
-        {item.location && (
+        {/* @ts-expect-error */}
+        {item.location.length > 0 ? (
           <div className="mt-1.5 flex items-center gap-1 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 shrink-0" />
-            <span>
+            <span className="flex gap-2 flex-wrap">
               {/* @ts-expect-error */}
-              {item.location.map((location) => location.name).join(',')}
+              {item.location.map((location) => (
+                <Badge variant="outline" key={location.name}>
+                  {location.name}
+                </Badge>
+              ))}
             </span>
           </div>
-        )}
+        ) : null}
 
         {/* <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
           {highlightText(item.description, highlightTerms)}

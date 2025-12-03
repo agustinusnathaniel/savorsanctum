@@ -11,11 +11,12 @@ import {
 } from '@/lib/components/ui/input-group';
 
 interface SearchBarProps {
+  initialValue: string | undefined;
   onChange: (value: string) => void;
 }
 
-export function SearchBar({ onChange }: SearchBarProps) {
-  const [input, setInput] = useState('');
+export function SearchBar({ initialValue, onChange }: SearchBarProps) {
+  const [input, setInput] = useState(initialValue ?? '');
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     onChange(e.target.value);
