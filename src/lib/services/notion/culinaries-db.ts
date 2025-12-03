@@ -2,6 +2,7 @@ import { isFullPageOrDataSource } from '@notionhq/client';
 
 import { notion } from './core';
 
+// biome-ignore lint/complexity/noExcessiveCognitiveComplexity: -
 export const getCulinaries = async () => {
   let next_cursor: string | null | undefined;
   const results = [];
@@ -44,10 +45,16 @@ export const getCulinaries = async () => {
 
     entries.push({
       id: page.id,
+      category: 'food' as const,
       name:
         properties.Name.type === 'title'
           ? // @ts-ignore
-            properties.Name.title?.[0]?.plain_text
+            (properties.Name.title?.[0]?.plain_text as string)
+          : '',
+      link:
+        properties.Link.type === 'url'
+          ? // @ts-ignore
+            properties.Link.url
           : '',
       reviews:
         properties.Review.type === 'multi_select'
@@ -61,6 +68,10 @@ export const getCulinaries = async () => {
         properties['Area / Location'].type === 'multi_select'
           ? properties['Area / Location'].multi_select
           : [],
+      created_time:
+        properties['Created time'].type === 'created_time'
+          ? properties['Created time'].created_time
+          : '',
     });
   }
 
