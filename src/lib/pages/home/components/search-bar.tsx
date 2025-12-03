@@ -1,7 +1,7 @@
 'use client';
 
 import { Search, X } from 'lucide-react';
-import { useState } from 'react';
+import { type ChangeEventHandler, useState } from 'react';
 
 import {
   InputGroup,
@@ -17,6 +17,11 @@ interface SearchBarProps {
 export function SearchBar({ onChange }: SearchBarProps) {
   const [input, setInput] = useState('');
 
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    onChange(e.target.value);
+    setInput(e.target.value);
+  };
+
   const handleClear = () => {
     onChange('');
     setInput('');
@@ -27,7 +32,7 @@ export function SearchBar({ onChange }: SearchBarProps) {
       <InputGroupInput
         value={input}
         placeholder="Search places or products..."
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
       />
       <InputGroupAddon>
         <Search />
