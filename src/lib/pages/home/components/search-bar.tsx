@@ -37,11 +37,13 @@ export function SearchBar({ onChange }: SearchBarProps) {
       <InputGroupAddon>
         <Search />
       </InputGroupAddon>
-      <InputGroupAddon align="inline-end">
-        <InputGroupButton onClick={handleClear}>
-          <X />
-        </InputGroupButton>
-      </InputGroupAddon>
+      {input.length ? (
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton onClick={handleClear}>
+            <X />
+          </InputGroupButton>
+        </InputGroupAddon>
+      ) : null}
     </InputGroup>
   );
 }
