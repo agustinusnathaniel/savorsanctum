@@ -9,9 +9,9 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { Layout } from '@/lib/layout';
 import globalCss from '@/lib/styles/globals.css?url';
 
-const title = 'Curated by Nathan & Elisa';
+const title = 'SavorSanctum';
 const description = 'Discover amazing culinary experiences and products';
-const url = 'https://curatedbyne.sznm.dev';
+const url = 'https://savorsanctum.sznm.dev';
 const ogImgUrl = `https://og.sznm.dev/api/generate?heading=${encodeURIComponent(title)}&text=${encodeURIComponent(description)}&template=color`;
 
 export const Route = createRootRoute({
