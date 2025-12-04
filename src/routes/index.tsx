@@ -140,7 +140,7 @@ function RouteComponent() {
           loadMore();
         }
       },
-      { threshold: 0.1, rootMargin: '20px' },
+      { threshold: 0.1, rootMargin: '100px' },
     );
 
     observer.observe(loader);
