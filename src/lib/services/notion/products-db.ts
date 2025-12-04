@@ -55,11 +55,12 @@ export const getProducts = async () => {
           ? // @ts-ignore
             properties.Link.url
           : '',
-      image:
-        properties.Image.type === 'files'
-          ? // biome-ignore lint/suspicious/noExplicitAny: -
-            (properties.Image.files as Array<any>)?.[0]?.file.url
-          : '',
+      // note: turns out the image returned here is url with 3600 second expiry, need to leverage ISR or SSR
+      // image:
+      //   properties.Image.type === 'files'
+      //     ? // biome-ignore lint/suspicious/noExplicitAny: -
+      //       (properties.Image.files as Array<any>)?.[0]?.file.url
+      //     : '',
       tags:
         properties.Tags.type === 'multi_select'
           ? properties.Tags.multi_select
