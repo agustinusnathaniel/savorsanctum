@@ -19,7 +19,7 @@ const categoryColors: Record<string, string> = {
 
 export function ItemCard({ item, highlightTerms }: ItemCardProps) {
   // Helper function to highlight search terms in text
-  const highlightText = (text: string, terms?: Array<string>) => {
+  const highlightText = (text: string, terms: Array<string> | undefined) => {
     if (!terms || terms.length === 0) {
       return text;
     }
@@ -71,13 +71,13 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
 
         {/* @ts-expect-error */}
         {item.location.length > 0 ? (
-          <div className="mt-1.5 flex items-center gap-1 text-sm text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5 shrink-0" />
+          <div className="mt-1.5 flex items-start gap-1 text-sm text-muted-foreground">
+            <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.75" />
             <span className="flex gap-2 flex-wrap">
               {/* @ts-expect-error */}
               {item.location.map((location) => (
                 <Badge variant="outline" key={location.name}>
-                  {location.name}
+                  {highlightText(location.name, highlightTerms)}
                 </Badge>
               ))}
             </span>
@@ -95,7 +95,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
               categoryColors[item.category],
             )}
           >
-            {item.category}
+            {highlightText(item.category, highlightTerms)}
           </span>
           {/* @ts-expect-error */}
           {item.tags.map((tag) => (
@@ -103,7 +103,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
               key={tag.name}
               className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
             >
-              {tag.name}
+              {highlightText(tag.name, highlightTerms)}
             </span>
           ))}
         </div>
