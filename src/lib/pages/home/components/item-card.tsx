@@ -46,6 +46,9 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
   return (
     <a
       href={(item.link as string) ?? '#'}
+      data-umami-event="item-click"
+      data-umami-event-category={item.category}
+      data-umami-event-itemname={item.name}
       target={item.link ? '_blank' : undefined}
       rel="noopener noreferrer"
       className="group block rounded-[20px] bg-card p-3 shadow-sm border-2 border-transparent transition-all duration-200 hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
