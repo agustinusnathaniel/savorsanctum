@@ -116,6 +116,18 @@ export const Route = createRootRoute({
       //   href: '/manifest.webmanifest',
       // },
     ],
+    scripts: [
+      ...(import.meta.env.VITE_UMAMI_SCRIPT_URL &&
+      import.meta.env.VITE_UMAMI_WEBSITE_ID
+        ? [
+            {
+              src: import.meta.env.VITE_UMAMI_SCRIPT_URL,
+              async: true,
+              'data-website-id': import.meta.env.VITE_UMAMI_WEBSITE_ID,
+            },
+          ]
+        : []),
+    ],
   }),
   component: () => (
     <html lang="en">
