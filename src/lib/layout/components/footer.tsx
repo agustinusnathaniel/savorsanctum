@@ -6,6 +6,7 @@ export const Footer = () => {
           {new Date().getFullYear()} -{' '}
           <a
             href="https://agustinusnathaniel.com"
+            data-umami-event="footer-site-click"
             target="_blank"
             rel="noopener noreferrer"
           >
