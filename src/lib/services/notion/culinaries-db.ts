@@ -64,7 +64,14 @@ export const getCulinaries = async () => {
       //     : '',
       reviews:
         properties.Review.type === 'multi_select'
-          ? properties.Review.multi_select
+          ? // @ts-expect-error
+            properties.Review.multi_select.filter(
+              // @ts-expect-error
+              (review) =>
+                !['recommended', 'Duo Parents Approvable'].includes(
+                  review.name,
+                ),
+            )
           : [],
       tags:
         properties.Tags.type === 'multi_select'

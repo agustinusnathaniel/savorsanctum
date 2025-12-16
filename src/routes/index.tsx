@@ -46,6 +46,10 @@ export const Route = createFileRoute('/')({
       items,
     };
   },
+  headers: () => ({
+    // Cache at CDN for 5 minutes, allow stale content for up to 10 minutes
+    'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
+  }),
   validateSearch: searchSchema,
   search: {
     middlewares: [stripSearchParams(defaultSearchParams)],

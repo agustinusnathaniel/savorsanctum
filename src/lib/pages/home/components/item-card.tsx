@@ -101,6 +101,15 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
             {highlightText(item.category, highlightTerms)}
           </span>
           {/* @ts-expect-error */}
+          {item.reviews.map((review) => (
+            <span
+              key={review.name}
+              className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
+            >
+              {highlightText(review.name, highlightTerms)}
+            </span>
+          ))}
+          {/* @ts-expect-error */}
           {item.tags.map((tag) => (
             <span
               key={tag.name}

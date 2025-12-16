@@ -40,7 +40,6 @@ export default defineConfig(({ mode }) => {
       tanstackStart({
         prerender: {
           enabled: true,
-          // filter: ({ path }) => path === '/',
         },
         sitemap: {
           host: 'https://foodies.sznm.dev',
