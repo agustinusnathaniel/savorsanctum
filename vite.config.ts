@@ -36,9 +36,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       ValidateEnv(),
-      nitro({
-        preset: 'node-server',
-      }),
+      nitro(),
       tanstackStart({
         prerender: {
           enabled: true,
