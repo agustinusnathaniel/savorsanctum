@@ -36,6 +36,9 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       ValidateEnv(),
+      nitro({
+        preset: 'vercel',
+      }),
       tanstackStart({
         prerender: {
           enabled: true,
@@ -45,7 +48,6 @@ export default defineConfig(({ mode }) => {
           enabled: true,
         },
       }),
-      nitro(),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),
