@@ -41,7 +41,7 @@ export default defineConfig(({ mode }) => {
           enabled: true,
         },
         sitemap: {
-          host: 'https://foodies.sznm.dev',
+          host: 'https://savorsanctum.sznm.dev',
           enabled: true,
         },
       }),
