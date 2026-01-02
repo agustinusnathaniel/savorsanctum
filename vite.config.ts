@@ -37,7 +37,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       ValidateEnv(),
       nitro({
-        preset: 'vercel',
+        preset: 'node-server',
       }),
       tanstackStart({
         prerender: {
