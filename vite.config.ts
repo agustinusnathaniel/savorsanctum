@@ -2,7 +2,7 @@ import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
-// import { nitro } from 'nitro/vite';
+import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
@@ -34,12 +34,9 @@ const pwaOptions: Partial<VitePWAOptions> = {
 export default defineConfig(({ mode }) => {
   const isCheckDisabled = mode === 'production' || !!process.env.VITEST;
   return {
-    preview: {
-      host: true,
-    },
     plugins: [
       ValidateEnv(),
-      // nitro(),
+      nitro(),
       tanstackStart({
         prerender: {
           enabled: true,
