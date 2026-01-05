@@ -11,7 +11,6 @@ import { EndOfList } from '@/lib/pages/home/components/end-of-list';
 import { Header } from '@/lib/pages/home/components/header';
 import { ItemGrid } from '@/lib/pages/home/components/item-grid';
 import { ResultCounter } from '@/lib/pages/home/components/result-counter';
-import { ScrollToTop } from '@/lib/pages/home/components/scroll-to-top';
 import { SearchBar } from '@/lib/pages/home/components/search-bar';
 import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { getItems } from '@/lib/services/notion/get-items';
@@ -224,8 +223,6 @@ function RouteComponent() {
           {hasMore && <div ref={loaderRef} className="mt-8 h-12" />}
         </>
       )}
-
-      <ScrollToTop />
     </>
   );
 }
