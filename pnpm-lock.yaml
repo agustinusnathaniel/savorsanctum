@@ -147,6 +147,9 @@ importers:
       nitro:
         specifier: npm:nitro-nightly@3.0.1-20260105-154640-72b037f6
         version: nitro-nightly@3.0.1-20260105-154640-72b037f6(chokidar@4.0.3)(lru-cache@11.2.4)(rolldown-vite@7.2.11(@types/node@25.0.3)(jiti@2.6.1)(terser@5.44.1)(tsx@4.21.0)(yaml@2.8.2))(rollup@2.79.2)
+      srvx:
+        specifier: ^0.10.0
+        version: 0.10.0
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
