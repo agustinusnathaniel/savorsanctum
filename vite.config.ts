@@ -34,6 +34,9 @@ const pwaOptions: Partial<VitePWAOptions> = {
 export default defineConfig(({ mode }) => {
   const isCheckDisabled = mode === 'production' || !!process.env.VITEST;
   return {
+    preview: {
+      host: true,
+    },
     plugins: [
       ValidateEnv(),
       nitro(),
