@@ -42,6 +42,11 @@ export default defineConfig(({ mode }) => {
       tanstackStart({
         prerender: {
           enabled: true,
+          crawlLinks: true,
+          filter: ({ path }) => path === '/',
+          onSuccess: ({ page }) => {
+            console.info(`Rendered ${page.path}!`);
+          },
         },
         sitemap: {
           host: 'https://savorsanctum.sznm.dev',
