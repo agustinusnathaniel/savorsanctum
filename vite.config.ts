@@ -1,5 +1,6 @@
 import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import tailwindcss from '@tailwindcss/vite';
+import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
@@ -36,6 +37,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       ValidateEnv(),
+      devtools(),
       nitro(),
       tanstackStart({
         prerender: {

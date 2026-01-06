@@ -1,10 +1,11 @@
+import { TanStackDevtools } from '@tanstack/react-devtools';
 import {
   createRootRoute,
   HeadContent,
   Outlet,
   Scripts,
 } from '@tanstack/react-router';
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import { Layout } from '@/lib/layout';
 import globalCss from '@/lib/styles/globals.css?url';
@@ -139,7 +140,14 @@ export const Route = createRootRoute({
           <Outlet />
         </Layout>
         <Scripts />
-        <TanStackRouterDevtools position="bottom-right" />
+        <TanStackDevtools
+          plugins={[
+            {
+              name: 'TanStack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
       </body>
     </html>
   ),
