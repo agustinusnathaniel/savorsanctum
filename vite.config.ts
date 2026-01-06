@@ -1,8 +1,8 @@
 import { ValidateEnv } from '@julr/vite-plugin-validate-env';
 import tailwindcss from '@tailwindcss/vite';
+import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
-// import { nitroV2Plugin } from '@tanstack/nitro-v2-vite-plugin';
 import { nitro } from 'nitro/vite';
 import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
@@ -37,17 +37,17 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       ValidateEnv(),
+      devtools(),
+      nitro(),
       tanstackStart({
         prerender: {
           enabled: true,
         },
         sitemap: {
-          host: 'https://foodies.sznm.dev',
+          host: 'https://savorsanctum.sznm.dev',
           enabled: true,
         },
       }),
-      // nitroV2Plugin(),
-      nitro(),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),
@@ -63,6 +63,5 @@ export default defineConfig(({ mode }) => {
     server: {
       open: true,
     },
-    nitro: {},
   };
 });
