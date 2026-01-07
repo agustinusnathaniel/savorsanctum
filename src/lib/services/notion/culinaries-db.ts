@@ -56,12 +56,11 @@ export const getCulinaries = async () => {
           ? // @ts-ignore
             properties.Link.url
           : '',
-      // note: turns out the image returned here is url with 3600 second expiry, need to leverage ISR or SSR
-      // image:
-      //   properties.Image.type === 'files'
-      //     ? // biome-ignore lint/suspicious/noExplicitAny: -
-      //       (properties.Image.files as Array<any>)?.[0]?.file.url
-      //     : '',
+      image:
+        properties.Image.type === 'files'
+          ? // biome-ignore lint/suspicious/noExplicitAny: -
+            (properties.Image.files as Array<any>)?.[0]?.file.url
+          : '',
       reviews:
         properties.Review.type === 'multi_select'
           ? // @ts-expect-error
