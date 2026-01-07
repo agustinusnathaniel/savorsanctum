@@ -43,6 +43,12 @@ export const getCulinaries = async () => {
 
     const properties = page.properties;
 
+    const imageFile =
+      properties.Image.type === 'files'
+        ? // biome-ignore lint/suspicious/noExplicitAny:-
+          (properties.Image.files as Array<any>)?.[0]
+        : undefined;
+
     entries.push({
       id: page.id,
       category: 'food' as const,
@@ -56,11 +62,7 @@ export const getCulinaries = async () => {
           ? // @ts-ignore
             properties.Link.url
           : '',
-      image:
-        properties.Image.type === 'files'
-          ? // biome-ignore lint/suspicious/noExplicitAny: -
-            (properties.Image.files as Array<any>)?.[0]?.file.url
-          : '',
+      image: imageFile?.external?.url ?? imageFile?.file?.url ?? '',
       reviews:
         properties.Review.type === 'multi_select'
           ? // @ts-expect-error
