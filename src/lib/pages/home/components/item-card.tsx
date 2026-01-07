@@ -2,6 +2,7 @@
 
 import { ExternalLink, MapPin } from 'lucide-react';
 
+import { ImageWithLoader } from '@/lib/components/image-with-loader';
 import { Badge } from '@/lib/components/ui/badge';
 import type { DirectoryItem } from '@/lib/models/collection-data';
 import { cn } from '@/lib/styles/utils';
@@ -55,13 +56,13 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
       tabIndex={0}
     >
       {item.image && (
-        <div className="relative mb-3 aspect-4/3 overflow-hidden rounded-xl bg-muted">
-          <img
-            src={item.image || '/placeholder.svg'}
-            alt={item.name}
-            className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
-          />
-        </div>
+        <ImageWithLoader
+          ratio={4 / 3}
+          containerClassName="mb-4 overflow-hidden rounded-xl bg-muted"
+          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          src={item.image}
+          alt={item.name}
+        />
       )}
 
       <div>
