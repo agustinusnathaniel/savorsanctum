@@ -1,6 +1,5 @@
 import { useState } from 'react';
 
-import { AspectRatio } from '@/lib/components/ui/aspect-ratio';
 import { Skeleton } from '@/lib/components/ui/skeleton';
 import { cn } from '@/lib/styles/utils';
 
@@ -9,7 +8,7 @@ type ImageWithLoaderProps = {
   alt?: string;
   containerClassName?: string;
   className?: string;
-  ratio?: number;
+  ratio?: string;
 };
 
 export const ImageWithLoader = ({
@@ -22,9 +21,12 @@ export const ImageWithLoader = ({
   const [loaded, setLoaded] = useState(false);
 
   return (
-    <AspectRatio
-      ratio={ratio}
-      className={cn('relative w-full h-full', containerClassName)}
+    <div
+      className={cn(
+        'relative w-full h-full',
+        `aspect-${ratio}`,
+        containerClassName,
+      )}
     >
       {!loaded && <Skeleton className="absolute inset-0 rounded-md" />}
 
@@ -38,6 +40,6 @@ export const ImageWithLoader = ({
           className,
         )}
       />
-    </AspectRatio>
+    </div>
   );
 };
