@@ -1,5 +1,3 @@
-'use client';
-
 import { ExternalLink, MapPin } from 'lucide-react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
@@ -57,7 +55,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
     >
       {item.image && (
         <ImageWithLoader
-          ratio={4 / 3}
+          ratio="4/3"
           containerClassName="mb-4 overflow-hidden rounded-xl bg-muted"
           className="object-cover transition-transform duration-300 group-hover:scale-105"
           src={item.image}
