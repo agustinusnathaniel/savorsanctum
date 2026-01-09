@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import { securityHeaders } from '@/lib/constants/security-headers';
 import { Layout } from '@/lib/layout';
 import globalCss from '@/lib/styles/globals.css?url';
 
@@ -130,6 +131,7 @@ export const Route = createRootRoute({
         : []),
     ],
   }),
+  headers: () => securityHeaders,
   component: () => (
     <html lang="en">
       <head>
