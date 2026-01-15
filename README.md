@@ -1,50 +1,84 @@
-<img src="https://og.sznm.dev/api/generate?heading=vite-react-tailwind-starter&text=React+vite+template+with+TailwindCSS+and+TypeScript+setup.&template=color&center=true&height=330" />
+# Foodies DB (Savorsanctum)
 
-This is a project bootstrapped with [`@vitejs/app`](https://vitejs.dev/guide/#scaffolding-your-first-vite-project) (`react-ts`), added with [TailwindCSS](https://tailwindcss.com) and [TypeScript](https://www.typescriptlang.org) setup.
+A curated directory website powered by Notion as a CMS, built with modern web technologies.
 
-- ⚡ blazing fast dev server and build
-- 🔗 route management added (`TanStack Router` - File Based routing)
+## Overview
 
-[**Live Demo**](https://vite-react-tailwind-starter.sznm.dev/)
+Foodies DB is a web app that serves as a catalog for culinary items, products, and reading materials. It leverages Notion's API to fetch content, allowing for easy content management without code changes.
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/import/git?s=https://github.com/agustinusnathaniel/vite-react-tailwind-starter) [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/agustinusnathaniel/vite-react-tailwind-starter)
+### System Architecture
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/agustinusnathaniel/vite-react-tailwind-starter)
+```mermaid
+flowchart TD
+    User[User] -->|Visits| WebApp[Web App]
+    WebApp -->|Fetches Data| NotionAPI[Notion API]
+    NotionAPI -->|Returns JSON| WebApp
+    WebApp -->|Renders| UI[User Interface]
+    
+    subgraph FrontendStack [Frontend Stack]
+        direction TB
+        Vite
+        React
+        TailwindCSS
+        TanStackRouter
+    end
+    
+    %% Connect stack elements to WebApp for visual context
+    Vite -.-> WebApp
+    React -.-> WebApp
+    
+    subgraph DataSource [Data Source]
+        NotionDatabase[Notion Database]
+    end
+    
+    NotionAPI --- NotionDatabase
+```
+
+## Tech Stack
+
+- **Framework**: React 19 + Vite
+- **Styling**: TailwindCSS 4
+- **Routing**: TanStack Router
+- **Data Fetching**: Notion Client
+- **Quality Control**: Biome (Linting/Formatting), TypeScript
+- **PWA**: Vite PWA
 
 ## Getting Started
 
-You can either click [`Use this template`](https://github.com/agustinusnathaniel/vite-react-tailwind-starter/generate) button on this repository and clone the repo or use npx degit like so:
+### Prerequisites
 
-```bash
-npx degit agustinusnathaniel/vite-react-tailwind-starter <app_name>
-```
+- Node.js v24+
+- pnpm v10+
+- A Notion Integration Token and Database ID
 
-```
-pnpm i
-```
+### Installation
 
-Then, run the development server:
+1. Clone the repository.
+2. Install dependencies:
+   ```bash
+   pnpm install
+   ```
+3. Set up environment variables:
+   Create a `.env` file based on `.env.example` (if available) or ensure `VITE_NOTION_TOKEN` is set.
+
+### Development
 
 ```bash
 pnpm dev
 ```
 
-## Deployment
+### Build
 
-- build command: `pnpm build`
-- output directory: `dist`
+```bash
+pnpm build
+```
 
-### Vercel
+## Documentation
 
-- https://vercel.com/docs/frameworks/vite
+- [AGENTS.md](./AGENTS.md) - Instructions for AI Agents.
+- [SPEC.md](./SPEC.md) - Technical specifications and data models.
+- [CONTRIBUTING.md](./CONTRIBUTING.md) - Guidelines for contributors.
 
-### Netlify
+## License
 
-- https://docs.netlify.com/frameworks/vite/
-
-## References
-
-- [vite](https://vitejs.dev)
-  - [avoid manual import](https://vitejs.dev/guide/features.html#jsx)
-- [TailwindCSS](https://tailwindcss.com/)
-- [TypeScript](https://www.typescriptlang.org)
+Private Repository.
