@@ -158,7 +158,7 @@ importers:
         version: 16.2.7
       nitro:
         specifier: npm:nitro-nightly@3.0.1-alpha.2
-        version: nitro-nightly@3.0.1-alpha.2(chokidar@4.0.3)(lru-cache@11.2.4)(rolldown-vite@7.3.1(@types/node@25.0.3)(esbuild@0.27.2)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(rolldown@1.0.0-beta.53)(rollup@2.79.2)
+        version: nitro-nightly@3.0.1-alpha.2(chokidar@4.0.3)(lru-cache@11.2.5)(rolldown-vite@7.3.1(@types/node@25.0.3)(esbuild@0.27.2)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(rolldown@1.0.0-beta.53)(rollup@2.79.2)
       tw-animate-css:
         specifier: ^1.4.0
         version: 1.4.0
@@ -244,8 +244,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0
 
-  '@babel/helper-define-polyfill-provider@0.6.5':
-    resolution: {integrity: sha512-uJnGFcPsWQK8fvjgGP5LZUZZsYGIoPeRjSF5PGwrelYgq7Q15/Ft9NGFp1zglwgIv//W0uG4BevRuSJRyylZPg==}
+  '@babel/helper-define-polyfill-provider@0.6.6':
+    resolution: {integrity: sha512-mOAsxeeKkUKayvZR3HeTYD/fICpCPLJrU5ZjelT/PA6WHtNDBOE436YiaEUvHN454bRM3CebhDsIpieCc4texA==}
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
@@ -2656,8 +2656,8 @@ packages:
   babel-dead-code-elimination@1.0.12:
     resolution: {integrity: sha512-GERT7L2TiYcYDtYk1IpD+ASAYXjKbLTDPhBtYj7X1NuRMDTMtAx9kyBenub1Ev41lo91OHCKdmP+egTDmfQ7Ig==}
 
-  babel-plugin-polyfill-corejs2@0.4.14:
-    resolution: {integrity: sha512-Co2Y9wX854ts6U8gAAPXfn0GmAyctHuK8n0Yhfjd6t30g7yvKjspvvOo9yG+z52PZRgFErt7Ka2pYnXCjLKEpg==}
+  babel-plugin-polyfill-corejs2@0.4.15:
+    resolution: {integrity: sha512-hR3GwrRwHUfYwGfrisXPIDP3JcYfBrW7wKE7+Au6wDYl7fm/ka1NEII6kORzxNU556JjfidZeBsO10kYvtV1aw==}
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
@@ -2666,8 +2666,8 @@ packages:
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
-  babel-plugin-polyfill-regenerator@0.6.5:
-    resolution: {integrity: sha512-ISqQ2frbiNU9vIJkzg7dlPpznPZ4jOiUQ1uSmB0fEHeowtN3COYRsXr/xexn64NpU13P06jc/L5TgiJXOgrbEg==}
+  babel-plugin-polyfill-regenerator@0.6.6:
+    resolution: {integrity: sha512-hYm+XLYRMvupxiQzrvXUj7YyvFFVfv5gI0R71AJzudg1g2AI2vyCPPIFEBjk162/wFzti3inBHo7isWFuEVS/A==}
     peerDependencies:
       '@babel/core': ^7.4.0 || ^8.0.0-0 <8.0.0
 
@@ -3274,8 +3274,8 @@ packages:
   fast-uri@3.1.0:
     resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
 
-  fast-xml-parser@5.3.3:
-    resolution: {integrity: sha512-2O3dkPAAC6JavuMm8+4+pgTk+5hoAs+CjZ+sWcQLkX9+/tHRuTkQh/Oaifr8qDmZ8iEHb771Ea6G8CdwkrgvYA==}
+  fast-xml-parser@5.3.4:
+    resolution: {integrity: sha512-EFd6afGmXlCx8H8WTZHhAoDaWaGyuIBoZJ2mknrNxug+aZKjkp0a0dlars9Izl+jF+7Gu1/5f/2h68cQpe0IiA==}
     hasBin: true
 
   fdir@6.5.0:
@@ -3967,6 +3967,10 @@ packages:
 
   lru-cache@11.2.4:
     resolution: {integrity: sha512-B5Y16Jr9LB9dHVkh6ZevG+vAbOsNOYCX+sXvFWFu7B3Iz5mijW3zdbMyhsh8ANd2mSWBYdJgnqi+mL7/LrOPYg==}
+    engines: {node: 20 || >=22}
+
+  lru-cache@11.2.5:
+    resolution: {integrity: sha512-vFrFJkWtJvJnD5hg+hJvVE8Lh/TcMzKnTgCWmtBipwI5yLX/iX+5UB2tfuyODF5E7k9xEzMdYgGqaSb1c0c5Yw==}
     engines: {node: 20 || >=22}
 
   lru-cache@5.1.1:
@@ -5623,7 +5627,7 @@ snapshots:
       regexpu-core: 6.4.0
       semver: 6.3.1
 
-  '@babel/helper-define-polyfill-provider@0.6.5(@babel/core@7.28.6)':
+  '@babel/helper-define-polyfill-provider@0.6.6(@babel/core@7.28.6)':
     dependencies:
       '@babel/core': 7.28.6
       '@babel/helper-compilation-targets': 7.28.6
@@ -6189,9 +6193,9 @@ snapshots:
       '@babel/plugin-transform-unicode-regex': 7.27.1(@babel/core@7.28.6)
       '@babel/plugin-transform-unicode-sets-regex': 7.28.6(@babel/core@7.28.6)
       '@babel/preset-modules': 0.1.6-no-external-plugins(@babel/core@7.28.6)
-      babel-plugin-polyfill-corejs2: 0.4.14(@babel/core@7.28.6)
+      babel-plugin-polyfill-corejs2: 0.4.15(@babel/core@7.28.6)
       babel-plugin-polyfill-corejs3: 0.13.0(@babel/core@7.28.6)
-      babel-plugin-polyfill-regenerator: 0.6.5(@babel/core@7.28.6)
+      babel-plugin-polyfill-regenerator: 0.6.6(@babel/core@7.28.6)
       core-js-compat: 3.48.0
       semver: 6.3.1
     transitivePeerDependencies:
@@ -7948,11 +7952,11 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-polyfill-corejs2@0.4.14(@babel/core@7.28.6):
+  babel-plugin-polyfill-corejs2@0.4.15(@babel/core@7.28.6):
     dependencies:
       '@babel/compat-data': 7.28.6
       '@babel/core': 7.28.6
-      '@babel/helper-define-polyfill-provider': 0.6.5(@babel/core@7.28.6)
+      '@babel/helper-define-polyfill-provider': 0.6.6(@babel/core@7.28.6)
       semver: 6.3.1
     transitivePeerDependencies:
       - supports-color
@@ -7960,15 +7964,15 @@ snapshots:
   babel-plugin-polyfill-corejs3@0.13.0(@babel/core@7.28.6):
     dependencies:
       '@babel/core': 7.28.6
-      '@babel/helper-define-polyfill-provider': 0.6.5(@babel/core@7.28.6)
+      '@babel/helper-define-polyfill-provider': 0.6.6(@babel/core@7.28.6)
       core-js-compat: 3.48.0
     transitivePeerDependencies:
       - supports-color
 
-  babel-plugin-polyfill-regenerator@0.6.5(@babel/core@7.28.6):
+  babel-plugin-polyfill-regenerator@0.6.6(@babel/core@7.28.6):
     dependencies:
       '@babel/core': 7.28.6
-      '@babel/helper-define-polyfill-provider': 0.6.5(@babel/core@7.28.6)
+      '@babel/helper-define-polyfill-provider': 0.6.6(@babel/core@7.28.6)
     transitivePeerDependencies:
       - supports-color
 
@@ -8160,7 +8164,7 @@ snapshots:
       detect-indent: 6.1.0
       detect-newline: 3.1.0
       dotgitignore: 2.1.0
-      fast-xml-parser: 5.3.3
+      fast-xml-parser: 5.3.4
       figures: 3.2.0
       find-up: 5.0.0
       git-semver-tags: 5.0.1
@@ -8651,7 +8655,7 @@ snapshots:
 
   fast-uri@3.1.0: {}
 
-  fast-xml-parser@5.3.3:
+  fast-xml-parser@5.3.4:
     dependencies:
       strnum: 2.1.2
 
@@ -9323,6 +9327,8 @@ snapshots:
 
   lru-cache@11.2.4: {}
 
+  lru-cache@11.2.5: {}
+
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
@@ -9426,7 +9432,7 @@ snapshots:
 
   nf3@0.3.5: {}
 
-  nitro-nightly@3.0.1-alpha.2(chokidar@4.0.3)(lru-cache@11.2.4)(rolldown-vite@7.3.1(@types/node@25.0.3)(esbuild@0.27.2)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(rolldown@1.0.0-beta.53)(rollup@2.79.2):
+  nitro-nightly@3.0.1-alpha.2(chokidar@4.0.3)(lru-cache@11.2.5)(rolldown-vite@7.3.1(@types/node@25.0.3)(esbuild@0.27.2)(jiti@2.6.1)(terser@5.46.0)(tsx@4.21.0)(yaml@2.8.2))(rolldown@1.0.0-beta.53)(rollup@2.79.2):
     dependencies:
       consola: 3.4.2
       crossws: 0.4.3(srvx@0.10.1)
@@ -9441,7 +9447,7 @@ snapshots:
       srvx: 0.10.1
       undici: 7.19.0
       unenv: 2.0.0-rc.24
-      unstorage: 2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3)
+      unstorage: 2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4)(lru-cache@11.2.5)(ofetch@2.0.0-alpha.3)
     optionalDependencies:
       rolldown: 1.0.0-beta.53
       rollup: 2.79.2
@@ -9666,7 +9672,7 @@ snapshots:
 
   path-scurry@2.0.1:
     dependencies:
-      lru-cache: 11.2.4
+      lru-cache: 11.2.5
       minipass: 7.1.2
 
   path-type@3.0.0:
@@ -10484,11 +10490,11 @@ snapshots:
       picomatch: 4.0.3
       webpack-virtual-modules: 0.6.2
 
-  unstorage@2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4)(lru-cache@11.2.4)(ofetch@2.0.0-alpha.3):
+  unstorage@2.0.0-alpha.5(chokidar@4.0.3)(db0@0.3.4)(lru-cache@11.2.5)(ofetch@2.0.0-alpha.3):
     optionalDependencies:
       chokidar: 4.0.3
       db0: 0.3.4
-      lru-cache: 11.2.4
+      lru-cache: 11.2.5
       ofetch: 2.0.0-alpha.3
 
   upath@1.2.0: {}
