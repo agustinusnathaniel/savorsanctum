@@ -38,17 +38,17 @@ export default defineConfig(({ mode }) => {
     plugins: [
       ValidateEnv(),
       devtools(),
-      nitro(),
       tanstackStart({
-        // prerender: {
-        //   enabled: true,
-        //   crawlLinks: true,
-        // },
+        prerender: {
+          enabled: true,
+          crawlLinks: true,
+        },
         sitemap: {
           host: 'https://savorsanctum.sznm.dev',
           enabled: true,
         },
       }),
+      nitro(),
       viteReact(),
       tailwindcss(),
       tsConfigPaths(),
