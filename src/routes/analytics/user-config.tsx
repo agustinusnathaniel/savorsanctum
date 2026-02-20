@@ -6,6 +6,7 @@ import { cn } from '@/lib/styles/utils';
 
 export const Route = createFileRoute('/analytics/user-config')({
   component: RouteComponent,
+  ssr: false,
 });
 
 function RouteComponent() {
