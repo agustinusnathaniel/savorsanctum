@@ -7,16 +7,16 @@ const UMAMI_DISABLED_STORAGE_KEY = 'umami.disabled';
 
 export const useUmamiDoNotTrack = () => {
   const [trackStatus, setTrackStatus] = useState<TrackStatus>(
-    localStorage.getItem(UMAMI_DISABLED_STORAGE_KEY) === 'true'
+    window.localStorage.getItem(UMAMI_DISABLED_STORAGE_KEY) === 'true'
       ? 'DISABLED'
       : 'ENABLED',
   );
 
   const toggleTrackStatus = () => {
     if (trackStatus === 'ENABLED') {
-      localStorage.setItem(UMAMI_DISABLED_STORAGE_KEY, 'true');
+      window.localStorage.setItem(UMAMI_DISABLED_STORAGE_KEY, 'true');
     } else {
-      localStorage.removeItem(UMAMI_DISABLED_STORAGE_KEY);
+      window.localStorage.removeItem(UMAMI_DISABLED_STORAGE_KEY);
     }
     setTrackStatus((prev) => (prev === 'ENABLED' ? 'DISABLED' : 'ENABLED'));
   };
