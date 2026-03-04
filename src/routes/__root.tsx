@@ -8,6 +8,7 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import { securityHeaders } from '@/lib/constants/security-headers';
+import { ThemeProvider } from '@/lib/hooks/theme';
 import { Layout } from '@/lib/layout';
 import globalCss from '@/lib/styles/globals.css?url';
 
@@ -133,14 +134,16 @@ export const Route = createRootRoute({
   }),
   headers: () => securityHeaders,
   component: () => (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
       </head>
       <body>
-        <Layout>
-          <Outlet />
-        </Layout>
+        <ThemeProvider>
+          <Layout>
+            <Outlet />
+          </Layout>
+        </ThemeProvider>
         <Scripts />
         <TanStackDevtools
           plugins={[

@@ -50,14 +50,14 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
       data-umami-event-itemname={item.name}
       target={item.link ? '_blank' : undefined}
       rel="noopener noreferrer"
-      className="group block rounded-[20px] bg-card p-3 shadow-sm border-2 border-transparent transition-all duration-200 hover:border-primary/30 hover:-translate-y-1 hover:shadow-lg active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+      className="group block rounded-lg bg-card p-3 border border-border transition-all duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
       tabIndex={0}
     >
       {item.image && (
         <ImageWithLoader
           ratio="4/3"
-          containerClassName="mb-4 overflow-hidden rounded-xl bg-muted"
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
+          containerClassName="mb-4 overflow-hidden rounded-md bg-muted"
+          className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           src={item.image}
           alt={item.name}
         />
