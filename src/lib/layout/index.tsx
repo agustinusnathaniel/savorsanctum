@@ -1,7 +1,5 @@
 import type { ReactNode } from 'react';
 
-import { ThemeToggle } from '@/lib/components/theme-toggle';
-
 import { Footer } from './components/footer';
 
 type LayoutProps = {
@@ -12,9 +10,9 @@ export const Layout = ({ children }: LayoutProps) => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header with theme toggle */}
-      <header className="fixed top-0 right-0 z-50 p-4">
+      {/* <header className="fixed top-0 right-0 z-50 p-4">
         <ThemeToggle />
-      </header>
+      </header> */}
       <main className="max-w-7xl mx-auto px-4 py-8 md:px-6 md:py-12">
         {children}
       </main>

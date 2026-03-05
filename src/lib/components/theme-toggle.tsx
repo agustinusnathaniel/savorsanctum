@@ -17,12 +17,9 @@ const themeOptions = [
 ] as const;
 
 export function ThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
 
-  const currentIcon =
-    themeOptions.find((t) => t.value === theme)?.icon ||
-    themeOptions.find((t) => t.value === resolvedTheme)?.icon ||
-    Sun;
+  const currentIcon = themeOptions.find((t) => t.value === theme)?.icon || Sun;
 
   const Icon = currentIcon;
 
