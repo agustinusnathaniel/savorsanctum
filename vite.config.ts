@@ -4,9 +4,9 @@ import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import { nitro } from 'nitro/vite';
-import { defineConfig } from 'vite';
 import checker from 'vite-plugin-checker';
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
+import { defineConfig } from 'vite-plus';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   // TODO: enable if you want to enable PWA service worker
@@ -34,6 +34,15 @@ const pwaOptions: Partial<VitePWAOptions> = {
 export default defineConfig(({ mode }) => {
   const isCheckDisabled = mode === 'production' || !!process.env.VITEST;
   return {
+    lint: { options: { typeAware: true, typeCheck: true } },
+    staged: {
+      'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}': [
+        'biome check --write --no-errors-on-unmatched --error-on-warnings',
+      ],
+      '*.{ts,js,json,md}': [
+        'biome check --write --no-errors-on-unmatched --error-on-warnings',
+      ],
+    },
     plugins: [
       ValidateEnv(),
       devtools(),
