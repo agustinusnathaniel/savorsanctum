@@ -38,7 +38,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
       return (
         <>
           {parts.map((part, i) =>
-            highlightRegex.test(part) ? (
+            i % 2 === 1 ? (
               // biome-ignore lint/suspicious/noArrayIndexKey: i
               <mark key={i} className="bg-yellow-200 dark:bg-yellow-800">
                 {part}
@@ -55,7 +55,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
 
   return (
     <a
-      href={(item.link as string) ?? '#'}
+      href={item.link ?? '#'}
       data-umami-event="item-click"
       data-umami-event-category={item.category}
       data-umami-event-itemname={item.name}
@@ -82,12 +82,10 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
           <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
 
-        {/* @ts-expect-error */}
         {item.location.length > 0 ? (
           <div className="mt-1.5 flex items-start gap-1 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.75" />
             <span className="flex gap-2 flex-wrap">
-              {/* @ts-expect-error */}
               {item.location.map((location) => (
                 <Badge variant="outline" key={location.name}>
                   {highlightText(location.name)}
@@ -110,7 +108,6 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
           >
             {highlightText(item.category)}
           </span>
-          {/* @ts-expect-error */}
           {item.reviews.map((review) => (
             <span
               key={review.name}
@@ -119,7 +116,6 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
               {highlightText(review.name)}
             </span>
           ))}
-          {/* @ts-expect-error */}
           {item.tags.map((tag) => (
             <span
               key={tag.name}

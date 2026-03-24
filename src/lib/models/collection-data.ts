@@ -1,12 +1,19 @@
-import type { getItems } from '@/lib/services/notion/get-items';
-
 export const DIR_CATEGORIES = ['food', 'products', 'reading'] as const;
 
 export type Category = (typeof DIR_CATEGORIES)[number];
 
-export type DirectoryItem = Awaited<
-  ReturnType<typeof getItems>
->['items'][number] & {
-  image?: string;
+export interface NamedEntry {
+  name: string;
+}
+
+export interface DirectoryItem {
+  id: string;
+  name: string;
   category: Category;
-};
+  link: string;
+  image: string;
+  reviews: Array<NamedEntry>;
+  tags: Array<NamedEntry>;
+  location: Array<NamedEntry>;
+  created_time: string;
+}

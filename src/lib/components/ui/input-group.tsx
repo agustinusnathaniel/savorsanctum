@@ -1,12 +1,9 @@
-"use client"
-
-import * as React from "react"
+import * as React from 'react'
 import { cva, type VariantProps } from "class-variance-authority"
 
 import { cn } from "@/lib/styles/utils"
 import { Button } from "@/lib/components/ui/button"
 import { Input } from "@/lib/components/ui/input"
-import { Textarea } from "@/lib/components/ui/textarea"
 
 function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
@@ -126,24 +123,10 @@ function InputGroupInput({
   )
 }
 
-function InputGroupTextarea({
-  className,
-  ...props
-}: React.ComponentProps<"textarea">) {
-  return (
-    <Textarea
-      data-slot="input-group-control"
-      className={cn("rounded-none border-0 bg-transparent py-2 shadow-none ring-0 focus-visible:ring-0 disabled:bg-transparent aria-invalid:ring-0 dark:bg-transparent dark:disabled:bg-transparent flex-1 resize-none", className)}
-      {...props}
-    />
-  )
-}
-
 export {
   InputGroup,
   InputGroupAddon,
   InputGroupButton,
   InputGroupText,
   InputGroupInput,
-  InputGroupTextarea,
 }

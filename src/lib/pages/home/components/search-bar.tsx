@@ -1,7 +1,5 @@
-'use client';
-
 import { Search, X } from 'lucide-react';
-import { type ChangeEventHandler, useState } from 'react';
+import { type ChangeEventHandler, useEffect, useState } from 'react';
 
 import {
   InputGroup,
@@ -17,6 +15,10 @@ interface SearchBarProps {
 
 export function SearchBar({ initialValue, onChange }: SearchBarProps) {
   const [input, setInput] = useState(initialValue ?? '');
+
+  useEffect(() => {
+    setInput(initialValue ?? '');
+  }, [initialValue]);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     onChange(e.target.value);

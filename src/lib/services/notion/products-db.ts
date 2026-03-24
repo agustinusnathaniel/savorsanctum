@@ -44,8 +44,12 @@ export const getProducts = async () => {
 
     const imageFile =
       properties.Image.type === 'files'
-        ? // biome-ignore lint/suspicious/noExplicitAny: -
-          (properties.Image.files as Array<any>)?.[0]
+        ? (
+            properties.Image.files as Array<{
+              external?: { url: string };
+              file?: { url: string };
+            }>
+          )?.[0]
         : undefined;
 
     entries.push({
@@ -53,14 +57,10 @@ export const getProducts = async () => {
       category: 'products' as const,
       name:
         properties.Name.type === 'title'
-          ? // @ts-ignore
+          ? // @ts-expect-error Notion rich text type narrowing
             (properties.Name.title?.[0]?.plain_text as string)
           : '',
-      link:
-        properties.Link.type === 'url'
-          ? // @ts-ignore
-            properties.Link.url
-          : '',
+      link: properties.Link.type === 'url' ? properties.Link.url : '',
       image: imageFile?.external?.url ?? imageFile?.file?.url ?? '',
       tags:
         properties.Tags.type === 'multi_select'

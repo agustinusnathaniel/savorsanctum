@@ -1,5 +1,3 @@
-'use client';
-
 interface ResultCounterProps {
   current: number;
   total: number;
