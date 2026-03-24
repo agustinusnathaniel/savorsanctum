@@ -63,6 +63,7 @@ export const Route = createFileRoute('/')({
 });
 
 const ITEMS_PER_PAGE = 12;
+const WHITESPACE_REGEX = /\s+/;
 
 function RouteComponent() {
   const { items } = Route.useLoaderData();
@@ -89,8 +90,7 @@ function RouteComponent() {
   );
 
   const highlightTerms = useMemo(() => {
-    // biome-ignore lint/performance/useTopLevelRegex: -
-    return keyword.trim().split(/\s+/).filter(Boolean);
+    return keyword.trim().split(WHITESPACE_REGEX).filter(Boolean);
   }, [keyword]);
 
   const filteredItems = useMemo(() => {
@@ -151,34 +151,44 @@ function RouteComponent() {
     return () => observer.disconnect();
   }, [hasMore, isLoading, loadMore]);
 
-  const handleChangeKeyword = debounce(
-    (keyword: string) => {
+  const handleChangeKeyword = useMemo(
+    () =>
+      debounce(
+        (keyword: string) => {
+          setVisibleCount(ITEMS_PER_PAGE);
+          navigate({
+            to: '/',
+            search: (prev) => ({ ...prev, keyword }),
+          });
+        },
+        {
+          wait: 500,
+        },
+      ),
+    [navigate],
+  );
+
+  const handleChangeCategory = useCallback(
+    (category: SearchSchema['category']) => {
       setVisibleCount(ITEMS_PER_PAGE);
       navigate({
         to: '/',
-        search: (prev) => ({ ...prev, keyword }),
+        search: (prev) => ({ ...prev, category }),
       });
     },
-    {
-      wait: 500,
-    },
+    [navigate],
   );
 
-  const handleChangeCategory = (category: SearchSchema['category']) => {
-    setVisibleCount(ITEMS_PER_PAGE);
-    navigate({
-      to: '/',
-      search: (prev) => ({ ...prev, category }),
-    });
-  };
-
-  const handleChangeSortBy = (sortBy: SearchSchema['sortBy']) => {
-    setVisibleCount(ITEMS_PER_PAGE);
-    navigate({
-      to: '/',
-      search: (prev) => ({ ...prev, sortBy }),
-    });
-  };
+  const handleChangeSortBy = useCallback(
+    (sortBy: SearchSchema['sortBy']) => {
+      setVisibleCount(ITEMS_PER_PAGE);
+      navigate({
+        to: '/',
+        search: (prev) => ({ ...prev, sortBy }),
+      });
+    },
+    [navigate],
+  );
 
   return (
     <>

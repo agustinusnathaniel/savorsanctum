@@ -2,8 +2,10 @@ import { getCulinaries } from '@/lib/services/notion/culinaries-db';
 import { getProducts } from '@/lib/services/notion/products-db';
 
 export const getItems = async () => {
-  const culinaries = await getCulinaries();
-  const products = await getProducts();
+  const [culinaries, products] = await Promise.all([
+    getCulinaries(),
+    getProducts(),
+  ]);
 
   const items = [
     ...culinaries,
