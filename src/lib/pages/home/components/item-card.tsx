@@ -1,4 +1,5 @@
 import { ExternalLink, MapPin } from 'lucide-react';
+import { useCallback, useMemo } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
 import { Badge } from '@/lib/components/ui/badge';
@@ -17,30 +18,40 @@ const categoryColors: Record<string, string> = {
 };
 
 export function ItemCard({ item, highlightTerms }: ItemCardProps) {
-  // Helper function to highlight search terms in text
-  const highlightText = (text: string, terms: Array<string> | undefined) => {
-    if (!terms || terms.length === 0) {
-      return text;
+  // Memoize regex to avoid recreating it multiple times per card render
+  const highlightRegex = useMemo(() => {
+    if (!highlightTerms || highlightTerms.length === 0) {
+      return null;
     }
+    return new RegExp(`(${highlightTerms.join('|')})`, 'gi');
+  }, [highlightTerms]);
 
-    const regex = new RegExp(`(${terms.join('|')})`, 'gi');
-    const parts = text.split(regex);
+  // Helper function to highlight search terms in text
+  const highlightText = useCallback(
+    (text: string) => {
+      if (!highlightRegex) {
+        return text;
+      }
 
-    return (
-      <>
-        {parts.map((part, i) =>
-          regex.test(part) ? (
-            // biome-ignore lint/suspicious/noArrayIndexKey: i
-            <mark key={i} className="bg-yellow-200 dark:bg-yellow-800">
-              {part}
-            </mark>
-          ) : (
-            part
-          ),
-        )}
-      </>
-    );
-  };
+      const parts = text.split(highlightRegex);
+
+      return (
+        <>
+          {parts.map((part, i) =>
+            highlightRegex.test(part) ? (
+              // biome-ignore lint/suspicious/noArrayIndexKey: i
+              <mark key={i} className="bg-yellow-200 dark:bg-yellow-800">
+                {part}
+              </mark>
+            ) : (
+              part
+            ),
+          )}
+        </>
+      );
+    },
+    [highlightRegex],
+  );
 
   return (
     <a
@@ -66,7 +77,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
       <div>
         <div className="flex items-start justify-between gap-2">
           <h3 className="text-lg font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">
-            {highlightText(item.name, highlightTerms)}
+            {highlightText(item.name)}
           </h3>
           <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
@@ -79,7 +90,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
               {/* @ts-expect-error */}
               {item.location.map((location) => (
                 <Badge variant="outline" key={location.name}>
-                  {highlightText(location.name, highlightTerms)}
+                  {highlightText(location.name)}
                 </Badge>
               ))}
             </span>
@@ -97,7 +108,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
               categoryColors[item.category],
             )}
           >
-            {highlightText(item.category, highlightTerms)}
+            {highlightText(item.category)}
           </span>
           {/* @ts-expect-error */}
           {item.reviews.map((review) => (
@@ -105,7 +116,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
               key={review.name}
               className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
             >
-              {highlightText(review.name, highlightTerms)}
+              {highlightText(review.name)}
             </span>
           ))}
           {/* @ts-expect-error */}
@@ -114,7 +125,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
               key={tag.name}
               className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
             >
-              {highlightText(tag.name, highlightTerms)}
+              {highlightText(tag.name)}
             </span>
           ))}
         </div>
