@@ -15,7 +15,7 @@ export function getRouter() {
     defaultPreloadStaleTime: 0,
     defaultPendingComponent: () => (
       <div className="mx-auto">
-        <p>Loading...</p>
+        <p>Loading…</p>
       </div>
     ),
     defaultErrorComponent: ({ error }) => <div>{error.message}</div>,

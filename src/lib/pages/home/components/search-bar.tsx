@@ -32,7 +32,7 @@ export function SearchBar({ initialValue, onChange }: SearchBarProps) {
     <InputGroup className="bg-background">
       <InputGroupInput
         value={input}
-        placeholder="Search places or products..."
+        placeholder="Search places or products…"
         onChange={handleChange}
       />
       <InputGroupAddon>

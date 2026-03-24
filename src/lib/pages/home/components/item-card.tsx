@@ -61,7 +61,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
       data-umami-event-itemname={item.name}
       target={item.link ? '_blank' : undefined}
       rel="noopener noreferrer"
-      className="group block rounded-lg bg-card p-3 border border-border transition-all duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+      className="group block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
       tabIndex={0}
     >
       {item.image && (
