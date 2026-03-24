@@ -39,7 +39,7 @@ export function ScrollToTop() {
       type="button"
       onClick={scrollToTop}
       onAnimationEnd={handleAnimationEnd}
-      className={`fixed bottom-8 right-6 rounded-full bg-primary text-primary-foreground p-3 shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-200 active:scale-95 ${
+      className={`fixed bottom-8 right-6 rounded-full bg-primary text-primary-foreground p-3 shadow-lg hover:shadow-xl hover:scale-110 transition-colors duration-200 active:scale-95 ${
         isVisible ? 'animate-bounce-in' : 'animate-bounce-out'
       }`}
       aria-label="Scroll to top"

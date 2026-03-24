@@ -31,7 +31,7 @@ export function CategoryFilters({ selected, onSelect }: CategoryFiltersProps) {
           key={category.id}
           onClick={() => onSelect(category.id)}
           className={cn(
-            'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-all active:scale-95',
+            'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors active:scale-95',
             selected === category.id
               ? 'bg-primary text-primary-foreground shadow-md'
               : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
