@@ -16,10 +16,9 @@ function RouteComponent() {
     <div className="flex items-center flex-col gap-4 justify-center min-h-[60vh]">
       <p>Track Status: {trackStatus}</p>
       <Button
-        role="button"
         onClick={toggleTrackStatus}
         className={cn('cursor-pointer')}
-        variant={trackStatus === 'ENABLED' ? 'destructive' : undefined}
+        variant={trackStatus === 'ENABLED' ? 'destructive' : 'default'}
       >
         {trackStatus === 'ENABLED' ? 'Disable' : 'Enable'}
       </Button>
