@@ -23,6 +23,7 @@ export const getCulinaries = async () => {
             type: 'multi_select',
             multi_select: {
               contains: 'recommended',
+              does_not_contain: 'closed',
             },
           },
         ],
