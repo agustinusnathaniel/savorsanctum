@@ -15,6 +15,7 @@ import { ScrollToTop } from '@/lib/pages/home/components/scroll-to-top';
 import { SearchBar } from '@/lib/pages/home/components/search-bar';
 import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
+import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
 import { getItems } from '@/lib/services/notion/get-items';
 
 const searchSchema = z.object({
@@ -25,6 +26,8 @@ const searchSchema = z.object({
     .default('all')
     .catch('all'),
   sortBy: z.enum(['recent', 'alphabetical']).default('recent').catch('recent'),
+  tags: z.string().optional().catch(undefined),
+  location: z.string().optional().catch(undefined),
   // pageSize: z.number().default(20).catch(20),
 });
 
@@ -68,7 +71,15 @@ const WHITESPACE_REGEX = /\s+/;
 
 function RouteComponent() {
   const { items } = Route.useLoaderData();
-  const { keyword, category, sortBy } = Route.useSearch();
+  const { keyword, category, sortBy, tags, location } = Route.useSearch();
+  const selectedTags = useMemo(
+    () => (tags ? tags.split(',').filter(Boolean) : []),
+    [tags],
+  );
+  const selectedLocations = useMemo(
+    () => (location ? location.split(',').filter(Boolean) : []),
+    [location],
+  );
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [isLoading, setIsLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -105,12 +116,32 @@ function RouteComponent() {
       results = results.filter((item) => item.category === category);
     }
 
+    if (selectedTags.length > 0) {
+      results = results.filter((item) =>
+        item.tags.some((tag) => selectedTags.includes(tag.name)),
+      );
+    }
+
+    if (selectedLocations.length > 0) {
+      results = results.filter((item) =>
+        item.location.some((loc) => selectedLocations.includes(loc.name)),
+      );
+    }
+
     if (sortBy === 'alphabetical') {
       results = [...results].sort((a, b) => a.name.localeCompare(b.name));
     }
 
     return results;
-  }, [keyword, category, fused, items, sortBy]);
+  }, [
+    keyword,
+    category,
+    fused,
+    items,
+    sortBy,
+    selectedTags,
+    selectedLocations,
+  ]);
 
   const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMore = visibleCount < filteredItems.length;
@@ -191,6 +222,35 @@ function RouteComponent() {
     [navigate],
   );
 
+  const handleChangeTags = useCallback(
+    (newTags: Array<string>) => {
+      setVisibleCount(ITEMS_PER_PAGE);
+      navigate({
+        to: '/',
+        search: (prev) => ({
+          ...prev,
+          tags: newTags.length > 0 ? newTags.join(',') : undefined,
+        }),
+      });
+    },
+    [navigate],
+  );
+
+  const handleChangeLocations = useCallback(
+    (newLocations: Array<string>) => {
+      setVisibleCount(ITEMS_PER_PAGE);
+      navigate({
+        to: '/',
+        search: (prev) => ({
+          ...prev,
+          location:
+            newLocations.length > 0 ? newLocations.join(',') : undefined,
+        }),
+      });
+    },
+    [navigate],
+  );
+
   return (
     <>
       <div className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6">
@@ -200,6 +260,13 @@ function RouteComponent() {
           <CategoryFilters
             selected={category}
             onSelect={handleChangeCategory}
+          />
+          <TagLocationFilters
+            items={items}
+            selectedTags={selectedTags}
+            selectedLocations={selectedLocations}
+            onTagsChange={handleChangeTags}
+            onLocationsChange={handleChangeLocations}
           />
         </div>
       </div>
