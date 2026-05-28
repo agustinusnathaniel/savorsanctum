@@ -1,7 +1,32 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
-export function Header() {
+import type { DirectoryItem } from '@/lib/models/collection-data';
+
+interface HeaderProps {
+  items: Array<DirectoryItem>;
+}
+
+export function Header({ items }: HeaderProps) {
   const headerRef = useRef<HTMLElement>(null);
+
+  const stats = useMemo(() => {
+    const foodCount = items.filter((item) => item.category === 'food').length;
+    const productCount = items.filter(
+      (item) => item.category === 'products',
+    ).length;
+
+    const parts = [];
+    if (foodCount > 0) {
+      parts.push(`${foodCount} ${foodCount === 1 ? 'place' : 'places'}`);
+    }
+    if (productCount > 0) {
+      parts.push(
+        `${productCount} ${productCount === 1 ? 'product' : 'products'}`,
+      );
+    }
+
+    return parts.join(' & ');
+  }, [items]);
 
   useEffect(() => {
     const header = headerRef.current;
@@ -35,7 +60,7 @@ export function Header() {
           SavorSanctum
         </h1>
         <p className="text-sm text-muted-foreground md:text-base mt-1 transition-colors duration-300 ease-out origin-top opacity-100 translate-y-0 group-data-[scrolled=true]:opacity-0 group-data-[scrolled=true]:-translate-y-2 group-data-[scrolled=true]:h-0">
-          A personal collection of places, products, and reads we love.
+          A curated collection of {stats}.
         </p>
       </div>
     </header>
