@@ -193,7 +193,7 @@ function RouteComponent() {
   return (
     <>
       <div className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6">
-        <Header />
+        <Header items={items} />
         <div className="pb-4 pt-2 border-b">
           <SearchBar initialValue={keyword} onChange={handleChangeKeyword} />
           <CategoryFilters
