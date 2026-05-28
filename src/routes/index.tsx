@@ -229,6 +229,7 @@ function RouteComponent() {
         to: '/',
         search: (prev) => ({
           ...prev,
+          category: 'all',
           tags: newTags.length > 0 ? newTags.join(',') : undefined,
         }),
       });
@@ -243,6 +244,7 @@ function RouteComponent() {
         to: '/',
         search: (prev) => ({
           ...prev,
+          category: 'all',
           location:
             newLocations.length > 0 ? newLocations.join(',') : undefined,
         }),
