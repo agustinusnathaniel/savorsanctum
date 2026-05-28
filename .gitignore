@@ -22,3 +22,5 @@ coverage/
 .output
 .vercel
 .nitro
+
+**/10x/**/*
