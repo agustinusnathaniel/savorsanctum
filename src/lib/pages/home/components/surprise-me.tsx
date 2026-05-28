@@ -1,5 +1,5 @@
 import { Shuffle } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 import type { DirectoryItem } from '@/lib/models/collection-data';
 
@@ -10,6 +10,11 @@ interface SurpriseMeProps {
 export function SurpriseMe({ items }: SurpriseMeProps) {
   const [isVisible, setIsVisible] = useState(true);
 
+  const linkedItems = useMemo(
+    () => items.filter((item) => Boolean(item.link)),
+    [items],
+  );
+
   const handleAnimationEnd = () => {
     if (!isVisible) {
       setIsVisible(true);
@@ -17,14 +22,15 @@ export function SurpriseMe({ items }: SurpriseMeProps) {
   };
 
   const pickRandom = useCallback(() => {
-    if (items.length === 0) {
+    if (linkedItems.length === 0) {
       return;
     }
-    const randomItem = items[Math.floor(Math.random() * items.length)];
+    const randomItem =
+      linkedItems[Math.floor(Math.random() * linkedItems.length)];
     window.open(randomItem.link, '_blank', 'noopener,noreferrer');
-  }, [items]);
+  }, [linkedItems]);
 
-  if (items.length === 0) {
+  if (linkedItems.length === 0) {
     return null;
   }
 
