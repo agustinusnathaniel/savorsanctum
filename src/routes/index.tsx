@@ -14,6 +14,7 @@ import { ResultCounter } from '@/lib/pages/home/components/result-counter';
 import { ScrollToTop } from '@/lib/pages/home/components/scroll-to-top';
 import { SearchBar } from '@/lib/pages/home/components/search-bar';
 import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
+import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { getItems } from '@/lib/services/notion/get-items';
 
 const searchSchema = z.object({
@@ -235,6 +236,7 @@ function RouteComponent() {
         </>
       )}
 
+      <SurpriseMe items={filteredItems} />
       <ScrollToTop />
     </>
   );
