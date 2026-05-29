@@ -17,10 +17,16 @@ export function ResultCounter({
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = useCallback(() => {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
+    navigator.clipboard
+      .writeText(window.location.href)
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {
+        // Clipboard API unavailable (non-HTTPS, older browser)
+        // Silently fail; the share button label won't change
+      });
   }, []);
 
   return (
@@ -33,7 +39,7 @@ export function ResultCounter({
         <button
           type="button"
           onClick={() => onSortChange('recent')}
-          className={`px-3 py-1 rounded-full text-xs transition-colors ${
+          className={`px-3 py-2 rounded-full text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none ${
             sortBy === 'recent'
               ? 'bg-primary text-primary-foreground'
               : 'bg-secondary text-secondary-foreground hover:bg-muted'
@@ -44,7 +50,7 @@ export function ResultCounter({
         <button
           type="button"
           onClick={() => onSortChange('alphabetical')}
-          className={`px-3 py-1 rounded-full text-xs transition-colors ${
+          className={`px-3 py-2 rounded-full text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none ${
             sortBy === 'alphabetical'
               ? 'bg-primary text-primary-foreground'
               : 'bg-secondary text-secondary-foreground hover:bg-muted'
@@ -55,7 +61,7 @@ export function ResultCounter({
         <button
           type="button"
           onClick={handleCopyLink}
-          className="flex items-center gap-1 px-3 py-1 rounded-full text-xs transition-colors bg-secondary text-secondary-foreground hover:bg-muted"
+          className="flex items-center gap-1 px-3 py-2 rounded-full text-xs transition-colors bg-secondary text-secondary-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none"
           aria-label="Copy link to current view"
         >
           {copied ? (

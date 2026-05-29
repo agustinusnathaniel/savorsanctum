@@ -12,9 +12,11 @@ interface ItemCardProps {
 }
 
 const categoryColors: Record<string, string> = {
-  food: 'bg-orange-100 text-orange-700 dark:bg-orange-900 dark:text-orange-100',
-  products: 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100',
-  reading: 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100',
+  food: 'bg-[var(--color-category-food)] text-[var(--color-category-food-foreground)]',
+  products:
+    'bg-[var(--color-category-products)] text-[var(--color-category-products-foreground)]',
+  reading:
+    'bg-[var(--color-category-reading)] text-[var(--color-category-reading-foreground)]',
 };
 
 export function ItemCard({ item, highlightTerms }: ItemCardProps) {
