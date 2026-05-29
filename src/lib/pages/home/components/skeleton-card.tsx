@@ -1,7 +1,7 @@
 export function SkeletonCard() {
   return (
-    <div className="rounded-[20px] bg-card p-3 shadow-sm animate-pulse">
-      <div className="relative mb-3 aspect-4/3 overflow-hidden rounded-xl bg-muted" />
+    <div className="rounded-lg bg-card p-3 border border-border animate-pulse">
+      <div className="relative mb-3 aspect-4/3 overflow-hidden rounded-md bg-muted" />
       <div className="space-y-2">
         <div className="h-4 bg-muted rounded w-3/4" />
         <div className="h-3 bg-muted rounded w-full" />

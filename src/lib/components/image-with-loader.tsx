@@ -22,11 +22,8 @@ export const ImageWithLoader = ({
 
   return (
     <div
-      className={cn(
-        'relative w-full h-full',
-        `aspect-${ratio}`,
-        containerClassName,
-      )}
+      className={cn('relative w-full h-full', containerClassName)}
+      style={ratio ? { aspectRatio: ratio } : undefined}
     >
       {!loaded && <Skeleton className="absolute inset-0 rounded-md" />}
 
