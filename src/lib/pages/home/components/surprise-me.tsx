@@ -40,7 +40,9 @@ export function SurpriseMe({ items }: SurpriseMeProps) {
       onClick={pickRandom}
       onAnimationEnd={handleAnimationEnd}
       className={`fixed bottom-8 left-6 rounded-full bg-primary text-primary-foreground p-3 shadow-lg hover:shadow-xl hover:scale-110 transition-colors duration-200 active:scale-95 ${
-        isVisible ? 'animate-bounce-in' : 'animate-bounce-out'
+        isVisible
+          ? 'motion-safe:animate-bounce-in motion-reduce:opacity-100'
+          : 'motion-safe:animate-bounce-out motion-reduce:opacity-0'
       }`}
       aria-label="Surprise me — open a random item"
     >
