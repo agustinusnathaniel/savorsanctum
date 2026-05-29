@@ -34,6 +34,14 @@ export function Header({ items }: HeaderProps) {
       return;
     }
 
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)',
+    ).matches;
+
+    if (prefersReducedMotion) {
+      return;
+    }
+
     let ticking = false;
 
     const handleScroll = () => {
@@ -48,14 +56,14 @@ export function Header({ items }: HeaderProps) {
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Initial check
+    handleScroll();
 
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   return (
     <header ref={headerRef} data-scrolled="false" className="group">
-      <div className="h-full flex flex-col justify-center origin-top-left transition-transform duration-300 ease-out will-change-transform group-data-[scrolled=true]:scale-[0.75] group-data-[scrolled=true]:pt-6">
+      <div className="h-full flex flex-col justify-center origin-top-left transition-transform duration-300 ease-out will-change-transform group-data-[scrolled=true]:scale-[0.75] group-data-[scrolled=true]:pt-6 motion-reduce:transform-none motion-reduce:transition-none">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-foreground">
           SavorSanctum
         </h1>
