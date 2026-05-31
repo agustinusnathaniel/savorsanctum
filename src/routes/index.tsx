@@ -17,6 +17,7 @@ import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
 import { getItems } from '@/lib/services/notion/get-items';
+import { trackEvent } from '@/lib/utils/umami';
 
 const searchSchema = z.object({
   keyword: z.string().default('').catch(''),
@@ -183,6 +184,12 @@ function RouteComponent() {
     return () => observer.disconnect();
   }, [hasMore, isLoading, loadMore]);
 
+  useEffect(() => {
+    if (keyword.trim() && filteredItems.length === 0) {
+      trackEvent('empty-state', { query: keyword.trim() });
+    }
+  }, [keyword, filteredItems.length]);
+
   const handleChangeKeyword = useMemo(
     () =>
       debounce(
@@ -192,6 +199,9 @@ function RouteComponent() {
             to: '/',
             search: (prev) => ({ ...prev, keyword }),
           });
+          if (keyword.trim()) {
+            trackEvent('search', { query: keyword.trim() });
+          }
         },
         {
           wait: 500,
@@ -233,6 +243,9 @@ function RouteComponent() {
           tags: newTags.length > 0 ? newTags.join(',') : undefined,
         }),
       });
+      if (newTags.length > 0) {
+        trackEvent('filter-tags', { tags: newTags.join(',') });
+      }
     },
     [navigate],
   );
@@ -249,6 +262,9 @@ function RouteComponent() {
             newLocations.length > 0 ? newLocations.join(',') : undefined,
         }),
       });
+      if (newLocations.length > 0) {
+        trackEvent('filter-locations', { locations: newLocations.join(',') });
+      }
     },
     [navigate],
   );
