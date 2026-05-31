@@ -37,6 +37,7 @@ export function ScrollToTop() {
       type="button"
       onClick={scrollToTop}
       onAnimationEnd={handleAnimationEnd}
+      data-umami-event="scroll-to-top"
       className={`fixed bottom-8 right-6 rounded-full bg-primary text-primary-foreground p-3 shadow-lg hover:shadow-xl hover:scale-110 transition-colors duration-200 active:scale-95 ${
         isVisible
           ? 'motion-safe:animate-bounce-in motion-reduce:opacity-100'
