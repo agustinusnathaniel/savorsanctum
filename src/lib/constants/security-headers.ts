@@ -4,14 +4,16 @@
  * - https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy
  */
 const contentSecurityPolicy = `
-  default-src 'self' *.sznm.dev *.agustinusnathaniel.com;
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' umami.sznm.dev cdn.vercel-insights.com vercel.live *.sznm.dev *.agustinusnathaniel.com;
-  frame-src vercel.live;
-  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/ *.sznm.dev *.agustinusnathaniel.com;
-  img-src * blob: data: *.freepik.com;
+  default-src 'self';
+  script-src 'self' 'unsafe-inline' umami.sznm.dev *.sznm.dev;
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com *.sznm.dev;
+  img-src 'self' blob: data: https: *.sznm.dev;
   media-src 'none';
-  connect-src *;
-  font-src 'self' https://fonts.gstatic.com/ *.sznm.dev *.agustinusnathaniel.com;
+  connect-src 'self' https://api.notion.com https://umami.sznm.dev *.sznm.dev;
+  font-src 'self' https://fonts.gstatic.com *.sznm.dev;
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self';
 `;
 
 /**
@@ -28,10 +30,12 @@ export const securityHeaders = {
   'X-Frame-Options': 'DENY',
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Content-Type-Options
   'X-Content-Type-Options': 'nosniff',
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-DNS-Prefetch-Control
-  'X-DNS-Prefetch-Control': 'on',
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
   'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
-  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy
-  'Permissions-Policy': 'geolocation=()',
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Permissions-Policy
+  'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Opener-Policy
+  'Cross-Origin-Opener-Policy': 'same-origin',
+  // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Cross-Origin-Resource-Policy
+  'Cross-Origin-Resource-Policy': 'same-origin',
 };
