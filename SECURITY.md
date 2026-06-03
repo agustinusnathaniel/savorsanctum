@@ -5,7 +5,7 @@
 The CSP is applied at two layers:
 
 1. **SSR layer** — `src/lib/constants/security-headers.ts` applied via TanStack Start's `headers()` in `src/routes/__root.tsx`
-2. **Platform layer** — `vercel.jsonc`, `netlify.toml`, `public/_headers` (Cloudflare Pages) as defense-in-depth
+2. **Platform layer** — Nitro `routeRules` in `vite.config.ts` (Vercel), `netlify.toml`, `public/_headers` (Cloudflare Pages) as defense-in-depth
 
 ### Policy Directives
 
