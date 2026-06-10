@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.2.1](https://github.com/agustinusnathaniel/foodies-db/compare/v1.2.0...v1.2.1) (2026-06-10)
+
+
+### Features
+
+* add umami analytics tracking for user interactions and performance ([794f152](https://github.com/agustinusnathaniel/foodies-db/commit/794f152aed9c7f30f26f611b0d7f71bb44fa0656))
+* add user-facing changelog page ([02fcf52](https://github.com/agustinusnathaniel/foodies-db/commit/02fcf529d8f7a59ef49b9a2b04f3e5290216ad97))
+
+
+### Bug Fixes
+
+* harden CSP and add platform-level security headers ([3871caf](https://github.com/agustinusnathaniel/foodies-db/commit/3871caffff93e03d37524a88583fc0e55af44dc5))
+* improve accessibility and theming consistency ([a2ffd43](https://github.com/agustinusnathaniel/foodies-db/commit/a2ffd43e6498538e23da2bf44c67c943e9348e9c))
+* polish UI details ([7b20aad](https://github.com/agustinusnathaniel/foodies-db/commit/7b20aad070220a61ebe2f381d095653de8859d5e))
+* replace bounce animations with ease-out-quart and add reduced-motion ([8aaeddf](https://github.com/agustinusnathaniel/foodies-db/commit/8aaeddf297851242ddb14ea6cd2a2286d0951fce))
+* simplify security headers to match pahamidulu.id pattern ([551a635](https://github.com/agustinusnathaniel/foodies-db/commit/551a63523953d0502e7dd89e683506c94f4ac9d9))
+* use Nitro routeRules for Vercel security headers ([b3e6f7e](https://github.com/agustinusnathaniel/foodies-db/commit/b3e6f7e868831532383d9e4b4458125272320c8b)), closes [TanStack/router#4021](https://github.com/TanStack/router/issues/4021) [vercel/vercel#6123](https://github.com/vercel/vercel/issues/6123)
+
 ## [1.2.0](https://github.com/agustinusnathaniel/foodies-db/compare/v1.1.0...v1.2.0) (2026-05-28)
 
 
