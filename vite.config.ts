@@ -1,4 +1,5 @@
 import { ValidateEnv } from '@julr/vite-plugin-validate-env';
+import mdx from '@mdx-js/rollup';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
@@ -46,6 +47,7 @@ export default defineConfig(({ mode }) => {
     plugins: [
       ValidateEnv(),
       devtools(),
+      mdx(),
       tanstackStart({
         prerender: {
           enabled: true,

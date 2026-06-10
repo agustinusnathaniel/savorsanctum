@@ -50,6 +50,38 @@ pnpm test
 - `src/lib/services/notion`: Notion API integration logic.
 - `src/lib/components/ui`: Reusable UI components.
 - `src/lib/models`: Data type definitions.
+- `content/changelog`: User-facing changelog entries (MDX).
+
+### Changelog Conventions
+
+Changelog entries are **user-facing product updates**, not developer-facing commit logs. They live in `content/changelog/` as MDX files and are picked up automatically by the glob loader in `src/lib/pages/changelog/entries.tsx`.
+
+**To add a new entry:** Create `content/changelog/vX.Y.Z.mdx` (or `unreleased.mdx` for unreleased work). No other code changes needed.
+
+**MDX file format:**
+```mdx
+export const version = "X.Y.Z";
+export const date = "YYYY-MM-DD";
+export const tag = "new" | "improved" | "fixed";
+export const title = "Short Catchy Title";
+
+One sentence summarizing the value, not the implementation.
+
+### What's Included
+
+- **Feature name** — description of what the user can do now
+```
+
+**Writing rules:**
+- **Title**: Short and punchy (2-4 words). No version numbers, no developer jargon.
+- **Subtitle**: One sentence summarizing the value to the user, not the implementation.
+- **Sections**: Use "What's Included" as the main section. Omit empty sections.
+- **List items**: `**Bold label** — plain description` format.
+- **Tone**: Active voice, direct, second-person ("you"/"your"). No marketing fluff, no "we" statements, no emojis.
+- **Tag values**: `"new"` for new features, `"improved"` for fixes/refinements, `"fixed"` for bug fixes.
+- **Perspective**: Always from the user's point of view. Describe what they can do, not how it was built.
+- **No technical jargon**: Never mention libraries, frameworks, APIs, or implementation details (e.g., "Notion", "ISR", "CSP", "fuzzy search"). Use plain language instead (e.g., "constantly updated", "faster loading", "smoother browsing").
+- **No technical jargon**: Never mention libraries, frameworks, APIs, or implementation details (e.g., "Notion", "ISR", "CSP", "fuzzy search"). Use plain language instead (e.g., "constantly updated", "faster loading", "smoother browsing").
 
 ## 4. Documentation References
 
