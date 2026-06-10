@@ -96,5 +96,5 @@
     "vitest": "npm:@voidzero-dev/vite-plus-test@latest",
     "web-vitals": "^5.3.0"
   },
-  "version": "1.2.0"
+  "version": "1.2.1"
 }
