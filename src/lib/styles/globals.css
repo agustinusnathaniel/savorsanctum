@@ -205,3 +205,23 @@ code {
 @utility animate-bounce-out {
   animation: fade-slide-out 0.2s cubic-bezier(0.55, 0.055, 0.675, 0.19) forwards;
 }
+
+.prose-changelog {
+  @apply text-sm leading-relaxed;
+}
+
+.prose-changelog ul {
+  @apply list-none space-y-2 my-3;
+}
+
+.prose-changelog li {
+  @apply pl-0;
+}
+
+.prose-changelog strong {
+  @apply text-foreground font-semibold;
+}
+
+.prose-changelog p {
+  @apply my-2;
+}
