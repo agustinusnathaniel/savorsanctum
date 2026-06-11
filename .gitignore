@@ -25,3 +25,6 @@ coverage/
 .wrangler
 
 **/10x/**/*
+
+# Internal tooling
+.impeccable/
