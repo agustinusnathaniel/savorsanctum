@@ -78,7 +78,3 @@ pnpm build
 - [AGENTS.md](./AGENTS.md) - Instructions for AI Agents.
 - [SPEC.md](./SPEC.md) - Technical specifications and data models.
 - [CONTRIBUTING.md](./CONTRIBUTING.md) - Guidelines for contributors.
-
-## License
-
-Private Repository.
