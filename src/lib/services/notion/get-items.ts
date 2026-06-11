@@ -1,8 +1,10 @@
+import { createServerFn } from '@tanstack/react-start';
+
 import type { DirectoryItem } from '@/lib/models/collection-data';
 import { getCulinaries } from '@/lib/services/notion/culinaries-db';
 import { getProducts } from '@/lib/services/notion/products-db';
 
-export const getItems = async () => {
+export const getItems = createServerFn({ method: 'GET' }).handler(async () => {
   const [culinaries, products] = await Promise.all([
     getCulinaries(),
     getProducts(),
@@ -16,4 +18,4 @@ export const getItems = async () => {
   ) as Array<DirectoryItem>;
 
   return { items };
-};
+});
