@@ -1,23 +1,7 @@
-name: Release
-
 on:
-  push:
-    tags:
-      - "v*"
+  workflow_dispatch:
 
+name: Release
 jobs:
   release:
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-node@v6
-        with:
-          node-version: 24.x
-
-      - run: npx changelogithub
-        env:
-          GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    uses: agustinusnathaniel/workflows/.github/workflows/release.yml@main
