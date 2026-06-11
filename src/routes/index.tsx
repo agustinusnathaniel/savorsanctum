@@ -60,6 +60,12 @@ export const Route = createFileRoute('/')({
   search: {
     middlewares: [stripSearchParams(defaultSearchParams)],
   },
+  // /**
+  //  * prevent running loader again
+  //  * https://tanstack.com/router/v1/docs/framework/react/guide/data-loading#using-shouldreload-and-gctime-to-opt-out-of-caching
+  //  * for this to work we also need to disable or not use loaderDeps
+  //  */
+  // shouldReload: false,
 });
 
 const ITEMS_PER_PAGE = 12;
