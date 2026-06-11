@@ -45,10 +45,14 @@ const defaultSearchParams: SearchSchema = {
 export const Route = createFileRoute('/')({
   component: RouteComponent,
   loader: async () => {
-    const { items } = await getItems();
+    const result = await getItems();
+
+    if (result.error) {
+      console.error('Failed to fetch directory items:', result.error);
+    }
 
     return {
-      items,
+      items: result.items,
     };
   },
   headers: () => ({
