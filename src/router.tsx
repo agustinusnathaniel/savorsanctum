@@ -12,7 +12,7 @@ export function getRouter() {
     defaultPreload: 'intent',
     scrollRestoration: true,
     defaultStructuralSharing: true,
-    defaultPreloadStaleTime: 0,
+    defaultPreloadStaleTime: 30_000,
     defaultPendingComponent: () => (
       <div className="mx-auto">
         <p>Loading…</p>
