@@ -1,9 +1,9 @@
 import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
-import Fuse from 'fuse.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
+import { filterDirectoryItems } from '@/lib/filters/directory';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
 import { EmptyState } from '@/lib/pages/home/components/empty-state';
@@ -73,7 +73,6 @@ export const Route = createFileRoute('/')({
 });
 
 const ITEMS_PER_PAGE = 12;
-const WHITESPACE_REGEX = /\s+/;
 
 function RouteComponent() {
   const { items } = Route.useLoaderData();
@@ -91,63 +90,18 @@ function RouteComponent() {
   const loaderRef = useRef<HTMLDivElement>(null);
   const navigate = Route.useNavigate();
 
-  const fused = useMemo(
+  const { filteredItems, highlightTerms } = useMemo(
     () =>
-      new Fuse(items, {
-        includeMatches: true,
-        ignoreDiacritics: true,
-        threshold: 0.3,
-        keys: [
-          'name',
-          ['tags', 'name'],
-          ['reviews', 'name'],
-          ['location', 'name'],
-        ],
+      filterDirectoryItems({
+        items,
+        keyword,
+        category,
+        sortBy,
+        selectedTags,
+        selectedLocations,
       }),
-    [items],
+    [keyword, category, items, sortBy, selectedTags, selectedLocations],
   );
-
-  const highlightTerms = useMemo(() => {
-    return keyword.trim().split(WHITESPACE_REGEX).filter(Boolean);
-  }, [keyword]);
-
-  const filteredItems = useMemo(() => {
-    let results = items;
-
-    if (keyword.trim()) {
-      results = fused.search(keyword).map((result) => result.item);
-    }
-
-    if (category !== 'all') {
-      results = results.filter((item) => item.category === category);
-    }
-
-    if (selectedTags.length > 0) {
-      results = results.filter((item) =>
-        item.tags.some((tag) => selectedTags.includes(tag.name)),
-      );
-    }
-
-    if (selectedLocations.length > 0) {
-      results = results.filter((item) =>
-        item.location.some((loc) => selectedLocations.includes(loc.name)),
-      );
-    }
-
-    if (sortBy === 'alphabetical') {
-      results = [...results].sort((a, b) => a.name.localeCompare(b.name));
-    }
-
-    return results;
-  }, [
-    keyword,
-    category,
-    fused,
-    items,
-    sortBy,
-    selectedTags,
-    selectedLocations,
-  ]);
 
   const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMore = visibleCount < filteredItems.length;
