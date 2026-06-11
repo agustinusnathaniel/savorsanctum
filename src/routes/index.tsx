@@ -4,7 +4,6 @@ import Fuse from 'fuse.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
-import { cacheMiddleware } from '@/lib/middleware/cache';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
 import { EmptyState } from '@/lib/pages/home/components/empty-state';
@@ -45,9 +44,6 @@ const defaultSearchParams: SearchSchema = {
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
-  server: {
-    middleware: [cacheMiddleware],
-  },
   loader: async () => {
     const { items } = await getItems();
 
