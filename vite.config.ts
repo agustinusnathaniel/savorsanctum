@@ -35,7 +35,16 @@ const pwaOptions: Partial<VitePWAOptions> = {
 export default defineConfig(({ mode }) => {
   const isCheckDisabled = mode === 'production' || !!process.env.VITEST;
   return {
-    lint: { options: { typeAware: true, typeCheck: true } },
+    lint: {
+      options: { typeAware: true, typeCheck: true },
+      // disable vp check
+      ignorePatterns: ['**/*'],
+    },
+    fmt: {
+      singleQuote: true,
+      // disable vp fmt
+      ignorePatterns: ['**/*'],
+    },
     staged: {
       'src/**/*.{js,jsx,ts,tsx,json,css,scss,md}': [
         'biome check --write --no-errors-on-unmatched --error-on-warnings',
