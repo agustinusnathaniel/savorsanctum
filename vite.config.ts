@@ -7,7 +7,7 @@ import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import viteReact from '@vitejs/plugin-react';
 import checker from 'vite-plugin-checker';
 import { VitePWA, type VitePWAOptions } from 'vite-plugin-pwa';
-import { defineConfig } from 'vite-plus';
+import { defineConfig, lazyPlugins } from 'vite-plus';
 
 const pwaOptions: Partial<VitePWAOptions> = {
   // TODO: enable if you want to enable PWA service worker
@@ -53,7 +53,7 @@ export default defineConfig(({ mode }) => {
         'biome check --write --no-errors-on-unmatched --error-on-warnings',
       ],
     },
-    plugins: [
+    plugins: lazyPlugins(() => [
       ValidateEnv(),
       devtools(),
       mdx(),
@@ -78,7 +78,7 @@ export default defineConfig(({ mode }) => {
           ]
         : []),
       VitePWA(pwaOptions),
-    ],
+    ]),
     server: {
       open: true,
     },
