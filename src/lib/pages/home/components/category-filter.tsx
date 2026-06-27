@@ -17,7 +17,6 @@ const categories: Array<{
   { id: 'all', label: 'All', icon: <LayoutGrid className="h-4 w-4" /> },
   { id: 'food', label: 'Food', icon: <Utensils className="h-4 w-4" /> },
   { id: 'products', label: 'Products', icon: <Gift className="h-4 w-4" /> },
-  // { id: 'reading', label: 'Reading', icon: <BookOpen className="h-4 w-4" /> },
 ];
 
 export function CategoryFilters({ selected, onSelect }: CategoryFiltersProps) {

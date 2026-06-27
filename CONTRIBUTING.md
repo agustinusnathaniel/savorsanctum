@@ -1,4 +1,4 @@
-# Contributing to Foodies DB
+# Contributing to SavorSanctum
 
 We welcome contributions! Please follow the guidelines below to ensure a smooth collaboration.
 

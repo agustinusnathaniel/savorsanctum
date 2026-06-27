@@ -3,7 +3,7 @@ import { useCallback, useMemo } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
 import { Badge } from '@/lib/components/ui/badge';
-import type { DirectoryItem } from '@/lib/models/collection-data';
+import type { Category, DirectoryItem } from '@/lib/models/collection-data';
 import { cn } from '@/lib/styles/utils';
 
 interface ItemCardProps {
@@ -11,12 +11,10 @@ interface ItemCardProps {
   highlightTerms?: Array<string>;
 }
 
-const categoryColors: Record<string, string> = {
+const categoryColors: Partial<Record<Category, string>> = {
   food: 'bg-[var(--color-category-food)] text-[var(--color-category-food-foreground)]',
   products:
     'bg-[var(--color-category-products)] text-[var(--color-category-products-foreground)]',
-  reading:
-    'bg-[var(--color-category-reading)] text-[var(--color-category-reading-foreground)]',
 };
 
 export function ItemCard({ item, highlightTerms }: ItemCardProps) {
@@ -25,7 +23,10 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
     if (!highlightTerms || highlightTerms.length === 0) {
       return null;
     }
-    return new RegExp(`(${highlightTerms.join('|')})`, 'gi');
+    const escapedTerms = highlightTerms.map((term) =>
+      term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'),
+    );
+    return new RegExp(`(${escapedTerms.join('|')})`, 'gi');
   }, [highlightTerms]);
 
   // Helper function to highlight search terms in text
@@ -96,10 +97,6 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
             </span>
           </div>
         ) : null}
-
-        {/* <p className="mt-2 text-sm text-muted-foreground line-clamp-2">
-          {highlightText(item.description, highlightTerms)}
-        </p> */}
 
         <div className="mt-3 mb-2 flex flex-wrap items-center gap-2">
           <span

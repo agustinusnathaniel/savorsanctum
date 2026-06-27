@@ -1,9 +1,10 @@
 import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
+import Fuse from 'fuse.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
-import { filterDirectoryItems } from '@/lib/filters/directory';
+import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
 import { EmptyState } from '@/lib/pages/home/components/empty-state';
@@ -21,7 +22,6 @@ import { trackEvent } from '@/lib/utils/umami';
 
 const searchSchema = z.object({
   keyword: z.string().default('').catch(''),
-  // page: z.number().min(1).default(1).catch(1),
   category: z
     .enum([...DIR_CATEGORIES, 'all'])
     .default('all')
@@ -29,14 +29,12 @@ const searchSchema = z.object({
   sortBy: z.enum(['recent', 'alphabetical']).default('recent').catch('recent'),
   tags: z.string().optional().catch(undefined),
   location: z.string().optional().catch(undefined),
-  // pageSize: z.number().default(20).catch(20),
 });
 
 type SearchSchema = z.infer<typeof searchSchema>;
 
 const defaultSearchParams: SearchSchema = {
   keyword: '',
-  // page: 1,
   category: 'all',
   sortBy: 'recent',
   // pageSize: 20,
@@ -64,12 +62,6 @@ export const Route = createFileRoute('/')({
   search: {
     middlewares: [stripSearchParams(defaultSearchParams)],
   },
-  // /**
-  //  * prevent running loader again
-  //  * https://tanstack.com/router/v1/docs/framework/react/guide/data-loading#using-shouldreload-and-gctime-to-opt-out-of-caching
-  //  * for this to work we also need to disable or not use loaderDeps
-  //  */
-  // shouldReload: false,
 });
 
 const ITEMS_PER_PAGE = 12;
@@ -90,6 +82,8 @@ function RouteComponent() {
   const loaderRef = useRef<HTMLDivElement>(null);
   const navigate = Route.useNavigate();
 
+  const fuseInstance = useMemo(() => new Fuse(items, FUSE_OPTIONS), [items]);
+
   const { filteredItems, highlightTerms } = useMemo(
     () =>
       filterDirectoryItems({
@@ -99,9 +93,21 @@ function RouteComponent() {
         sortBy,
         selectedTags,
         selectedLocations,
+        fuseInstance,
       }),
-    [keyword, category, items, sortBy, selectedTags, selectedLocations],
+    [
+      keyword,
+      category,
+      items,
+      sortBy,
+      selectedTags,
+      selectedLocations,
+      fuseInstance,
+    ],
   );
+
+  const filteredRef = useRef(filteredItems);
+  filteredRef.current = filteredItems;
 
   const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMore = visibleCount < filteredItems.length;
@@ -112,17 +118,18 @@ function RouteComponent() {
     }
     setIsLoading(true);
     setTimeout(() => {
+      const currentItems = filteredRef.current;
       setVisibleCount(
         (prev) =>
           prev +
-          (filteredItems.length - prev < ITEMS_PER_PAGE &&
-          (filteredItems.length - prev) % ITEMS_PER_PAGE !== 0
-            ? filteredItems.length - prev
+          (currentItems.length - prev < ITEMS_PER_PAGE &&
+          (currentItems.length - prev) % ITEMS_PER_PAGE !== 0
+            ? currentItems.length - prev
             : ITEMS_PER_PAGE),
       );
       setIsLoading(false);
     }, 300);
-  }, [isLoading, hasMore, filteredItems]);
+  }, [isLoading, hasMore]);
 
   useEffect(() => {
     const loader = loaderRef.current;

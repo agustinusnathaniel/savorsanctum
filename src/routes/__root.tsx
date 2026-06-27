@@ -118,11 +118,6 @@ export const Route = createRootRoute({
         rel: 'apple-touch-icon',
         href: '/apple-touch-icon-180x180.png',
       },
-      // TODO: uncomment this if enable PWA
-      // {
-      //   rel: 'manifest',
-      //   href: '/manifest.webmanifest',
-      // },
     ],
     scripts: [
       ...(import.meta.env.VITE_UMAMI_SCRIPT_URL &&

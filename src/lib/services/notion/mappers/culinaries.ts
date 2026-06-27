@@ -5,6 +5,7 @@ import type {
   NotionPage,
   QueryNotionDatabaseConfig,
 } from '@/lib/services/notion/types';
+import { extractImage } from '@/lib/services/notion/types';
 
 const culinariesFilter: QueryNotionDatabaseConfig['filter'] = {
   and: [
@@ -23,14 +24,7 @@ const culinariesSorts: QueryNotionDatabaseConfig['sorts'] = [
   { property: 'Created time', direction: 'descending' },
 ];
 
-function extractImage(
-  files: Array<{ external?: { url: string }; file?: { url: string } }>,
-): string {
-  const first = files?.[0];
-  return first?.external?.url ?? first?.file?.url ?? '';
-}
-
-function mapCulinariesPage(page: NotionPage): DirectoryItem {
+export function mapCulinariesPage(page: NotionPage): DirectoryItem {
   const { properties } = page;
 
   return {
@@ -41,15 +35,7 @@ function mapCulinariesPage(page: NotionPage): DirectoryItem {
         ? (properties.Name.title?.[0]?.plain_text ?? '')
         : '',
     link: properties.Link.type === 'url' ? (properties.Link.url ?? '') : '',
-    image:
-      properties.Image.type === 'files'
-        ? extractImage(
-            properties.Image.files as Array<{
-              external?: { url: string };
-              file?: { url: string };
-            }>,
-          )
-        : '',
+    image: extractImage(properties, 'Image'),
     reviews:
       properties.Review.type === 'multi_select'
         ? properties.Review.multi_select.filter(
@@ -70,10 +56,6 @@ function mapCulinariesPage(page: NotionPage): DirectoryItem {
         ? properties['Created time'].created_time
         : '',
   };
-}
-
-export function getCulinariesMapper() {
-  return mapCulinariesPage;
 }
 
 export function getCulinaries(adapter: NotionClientAdapter) {

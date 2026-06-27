@@ -28,3 +28,5 @@ coverage/
 
 # Internal tooling
 .impeccable/
+
+plans/

@@ -9,10 +9,10 @@
     "ignoreUnknown": false,
     "includes": [
       "src/**/*",
+      "!src/lib/components/ui/**/*",
       "*.config.ts",
       "!src/*.gen.ts",
       "!turbo",
-      "!src/lib/components/ui/**/*",
       "!**/*.css",
       "!.agents",
       "!.claude"

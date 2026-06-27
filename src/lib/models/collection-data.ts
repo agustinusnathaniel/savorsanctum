@@ -1,4 +1,4 @@
-export const DIR_CATEGORIES = ['food', 'products', 'reading'] as const;
+export const DIR_CATEGORIES = ['food', 'products'] as const;
 
 export type Category = (typeof DIR_CATEGORIES)[number];
 

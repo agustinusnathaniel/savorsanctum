@@ -1,10 +1,10 @@
-# Foodies DB (Savorsanctum)
+# SavorSanctum
 
 A curated directory website powered by Notion as a CMS, built with modern web technologies.
 
 ## Overview
 
-Foodies DB is a web app that serves as a catalog for culinary items, products, and reading materials. It leverages Notion's API to fetch content, allowing for easy content management without code changes.
+SavorSanctum is a curated directory of culinary items, products, and reading materials. It leverages Notion's API to fetch content, allowing for easy content management without code changes.
 
 ### System Architecture
 
