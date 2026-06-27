@@ -113,8 +113,7 @@ code {
   --color-category-food-foreground: oklch(0.4 0.1 40);
   --color-category-products: oklch(0.85 0.08 250);
   --color-category-products-foreground: oklch(0.4 0.08 250);
-  --color-category-reading: oklch(0.85 0.08 150);
-  --color-category-reading-foreground: oklch(0.4 0.08 150);
+
   --radius: 0.75rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
@@ -155,8 +154,7 @@ code {
   --color-category-food-foreground: oklch(0.9 0.06 60);
   --color-category-products: oklch(0.35 0.06 250);
   --color-category-products-foreground: oklch(0.9 0.05 250);
-  --color-category-reading: oklch(0.35 0.06 150);
-  --color-category-reading-foreground: oklch(0.9 0.05 150);
+
   --sidebar: oklch(0.205 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);

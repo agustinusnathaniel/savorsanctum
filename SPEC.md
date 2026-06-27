@@ -1,6 +1,6 @@
 # Specification (SPEC.md)
 
-This document defines the technical specifications, data models, and system invariants for Foodies DB.
+This document defines the technical specifications, data models, and system invariants for SavorSanctum.
 
 ## 1. System Invariants
 
@@ -14,20 +14,32 @@ This document defines the technical specifications, data models, and system inva
 The application supports the following content categories:
 - `food`
 - `products`
-- `reading`
+
+### Named Entry
+A generic entry with just a `name` field, used within other types.
+
+```typescript
+interface NamedEntry {
+  name: string;
+}
+```
 
 ### Directory Item
 The core entity is the `DirectoryItem`.
 
 ```typescript
-type Category = 'food' | 'products' | 'reading';
+type Category = 'food' | 'products';
 
 interface DirectoryItem {
   id: string;
-  title: string;
+  name: string;
   category: Category;
-  image?: string; // URL to the image
-  // Additional fields mapped from Notion properties
+  link: string;
+  image: string;
+  reviews: Array<NamedEntry>;
+  tags: Array<NamedEntry>;
+  location: Array<NamedEntry>;
+  created_time: string;
 }
 ```
 
@@ -36,7 +48,8 @@ interface DirectoryItem {
 | Variable | Required | Description |
 |----------|----------|-------------|
 | `VITE_NOTION_TOKEN` | Yes | API Token for Notion Integration |
-| `VITE_NOTION_DATABASE_ID` | Yes | ID of the source Notion database |
+| `VITE_NOTION_CULINARIES_DATASOURCE_ID` | Yes | Notion database ID for culinary items |
+| `VITE_NOTION_PRODUCTS_DATASOURCE_ID` | Yes | Notion database ID for products |
 
 ## 4. Data Flow
 

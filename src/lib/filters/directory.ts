@@ -4,7 +4,7 @@ import type { DirectoryItem } from '@/lib/models/collection-data';
 
 const WHITESPACE_REGEX = /\s+/;
 
-const FUSE_OPTIONS: IFuseOptions<DirectoryItem> = {
+export const FUSE_OPTIONS: IFuseOptions<DirectoryItem> = {
   includeMatches: true,
   ignoreDiacritics: true,
   threshold: 0.3,
@@ -18,18 +18,26 @@ interface DirectoryFilterParams {
   sortBy: 'recent' | 'alphabetical';
   selectedTags: Array<string>;
   selectedLocations: Array<string>;
+  fuseInstance?: Fuse<DirectoryItem>;
 }
 
 export function filterDirectoryItems(params: DirectoryFilterParams) {
-  const { items, keyword, category, sortBy, selectedTags, selectedLocations } =
-    params;
+  const {
+    items,
+    keyword,
+    category,
+    sortBy,
+    selectedTags,
+    selectedLocations,
+    fuseInstance,
+  } = params;
 
   const highlightTerms = keyword.trim().split(WHITESPACE_REGEX).filter(Boolean);
 
   let results = items;
 
   if (keyword.trim()) {
-    const fuse = new Fuse(items, FUSE_OPTIONS);
+    const fuse = fuseInstance ?? new Fuse(items, FUSE_OPTIONS);
     results = fuse.search(keyword).map((result) => result.item);
   }
 

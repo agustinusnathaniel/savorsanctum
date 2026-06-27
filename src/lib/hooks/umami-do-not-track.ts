@@ -6,13 +6,19 @@ type TrackStatus = (typeof trackStatuses)[number];
 const UMAMI_DISABLED_STORAGE_KEY = 'umami.disabled';
 
 export const useUmamiDoNotTrack = () => {
-  const [trackStatus, setTrackStatus] = useState<TrackStatus>(
-    window.localStorage.getItem(UMAMI_DISABLED_STORAGE_KEY) === 'true'
+  const [trackStatus, setTrackStatus] = useState<TrackStatus>(() => {
+    if (typeof window === 'undefined') {
+      return 'ENABLED';
+    }
+    return window.localStorage.getItem(UMAMI_DISABLED_STORAGE_KEY) === 'true'
       ? 'DISABLED'
-      : 'ENABLED',
-  );
+      : 'ENABLED';
+  });
 
   const toggleTrackStatus = () => {
+    if (typeof window === 'undefined') {
+      return;
+    }
     if (trackStatus === 'ENABLED') {
       window.localStorage.setItem(UMAMI_DISABLED_STORAGE_KEY, 'true');
     } else {

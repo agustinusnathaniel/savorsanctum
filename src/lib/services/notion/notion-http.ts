@@ -3,6 +3,7 @@ import type {
   QueryDataSourceResponse,
 } from '@notionhq/client';
 
+import { cachedQuery } from '@/lib/services/notion/cache';
 import { notion } from '@/lib/services/notion/core';
 import type { NotionClientAdapter } from '@/lib/services/notion/types';
 
@@ -10,5 +11,7 @@ export const createNotionHttpAdapter = (): NotionClientAdapter => ({
   query: (
     params: Omit<QueryDataSourceParameters, 'auth'>,
   ): Promise<QueryDataSourceResponse> =>
-    notion.dataSources.query(params as QueryDataSourceParameters),
+    cachedQuery(params, () =>
+      notion.dataSources.query(params as QueryDataSourceParameters),
+    ),
 });

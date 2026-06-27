@@ -5,6 +5,7 @@ import type {
   NotionPage,
   QueryNotionDatabaseConfig,
 } from '@/lib/services/notion/types';
+import { extractImage } from '@/lib/services/notion/types';
 
 const productsFilter: QueryNotionDatabaseConfig['filter'] = {
   and: [
@@ -22,14 +23,7 @@ const productsSorts: QueryNotionDatabaseConfig['sorts'] = [
   { property: 'Created time', direction: 'descending' },
 ];
 
-function extractImage(
-  files: Array<{ external?: { url: string }; file?: { url: string } }>,
-): string {
-  const first = files?.[0];
-  return first?.external?.url ?? first?.file?.url ?? '';
-}
-
-function mapProductsPage(page: NotionPage): DirectoryItem {
+export function mapProductsPage(page: NotionPage): DirectoryItem {
   const { properties } = page;
 
   return {
@@ -40,15 +34,7 @@ function mapProductsPage(page: NotionPage): DirectoryItem {
         ? (properties.Name.title?.[0]?.plain_text ?? '')
         : '',
     link: properties.Link.type === 'url' ? (properties.Link.url ?? '') : '',
-    image:
-      properties.Image.type === 'files'
-        ? extractImage(
-            properties.Image.files as Array<{
-              external?: { url: string };
-              file?: { url: string };
-            }>,
-          )
-        : '',
+    image: extractImage(properties, 'Image'),
     reviews: [],
     tags:
       properties.Tags.type === 'multi_select'
@@ -63,10 +49,6 @@ function mapProductsPage(page: NotionPage): DirectoryItem {
         ? properties['Created time'].created_time
         : '',
   };
-}
-
-export function getProductsMapper() {
-  return mapProductsPage;
 }
 
 export function getProducts(adapter: NotionClientAdapter) {
