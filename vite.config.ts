@@ -79,9 +79,6 @@ export default defineConfig(({ mode }) => {
         : []),
       VitePWA(pwaOptions),
     ]),
-    server: {
-      open: true,
-    },
     resolve: {
       tsconfigPaths: true,
     },
