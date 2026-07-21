@@ -20,7 +20,8 @@
       "inputs": [
         "biome.json",
         "src/**"
-      ]
+      ],
+      "env": ["VITEST"]
     },
     "biome:ci": {
       "outputs": [],
