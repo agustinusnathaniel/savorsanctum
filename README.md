@@ -4,7 +4,7 @@ A curated directory website powered by Notion as a CMS, built with modern web te
 
 ## Overview
 
-SavorSanctum is a curated directory of culinary items, products, and reading materials. It leverages Notion's API to fetch content, allowing for easy content management without code changes.
+SavorSanctum is a curated directory of culinary places and products. It leverages Notion's API to fetch content, allowing for easy content management without code changes.
 
 ### System Architecture
 
