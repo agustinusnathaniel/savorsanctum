@@ -81,7 +81,6 @@ One sentence summarizing the value, not the implementation.
 - **Tag values**: `"new"` for new features, `"improved"` for fixes/refinements, `"fixed"` for bug fixes.
 - **Perspective**: Always from the user's point of view. Describe what they can do, not how it was built.
 - **No technical jargon**: Never mention libraries, frameworks, APIs, or implementation details (e.g., "Notion", "ISR", "CSP", "fuzzy search"). Use plain language instead (e.g., "constantly updated", "faster loading", "smoother browsing").
-- **No technical jargon**: Never mention libraries, frameworks, APIs, or implementation details (e.g., "Notion", "ISR", "CSP", "fuzzy search"). Use plain language instead (e.g., "constantly updated", "faster loading", "smoother browsing").
 
 ## 4. Documentation References
 
