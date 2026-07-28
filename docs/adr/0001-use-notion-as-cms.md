@@ -6,7 +6,7 @@
 
 ## Context
 
-The application needs a content management system for curating culinary items, products, and reading materials. The content is maintained by a non-technical editor who needs a familiar interface for adding and updating entries. A headless CMS would introduce third-party costs and a separate admin panel to learn.
+The application needs a content management system for curating culinary places and products. The content is maintained by a non-technical editor who needs a familiar interface for adding and updating entries. A headless CMS would introduce third-party costs and a separate admin panel to learn.
 
 ## Decision
 
