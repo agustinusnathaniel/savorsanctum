@@ -1,11 +1,17 @@
 import type { DirectoryItem } from '@/lib/models/collection-data';
+import {
+  getCreatedTime,
+  getFilesImage,
+  getMultiSelectNames,
+  getTitleText,
+  getUrl,
+} from '@/lib/services/notion/mappers/extractors';
 import { queryNotionDatabase } from '@/lib/services/notion/query';
 import type {
   NotionClientAdapter,
   NotionPage,
   QueryNotionDatabaseConfig,
 } from '@/lib/services/notion/types';
-import { extractImage } from '@/lib/services/notion/types';
 
 const productsFilter: QueryNotionDatabaseConfig['filter'] = {
   and: [
@@ -29,25 +35,13 @@ export function mapProductsPage(page: NotionPage): DirectoryItem {
   return {
     id: page.id,
     category: 'products',
-    name:
-      properties.Name.type === 'title'
-        ? (properties.Name.title?.[0]?.plain_text ?? '')
-        : '',
-    link: properties.Link.type === 'url' ? (properties.Link.url ?? '') : '',
-    image: extractImage(properties, 'Image'),
+    name: getTitleText(properties, 'Name'),
+    link: getUrl(properties, 'Link'),
+    image: getFilesImage(properties, 'Image'),
     reviews: [],
-    tags:
-      properties.Tags.type === 'multi_select'
-        ? properties.Tags.multi_select
-        : [],
-    location:
-      properties.Location.type === 'multi_select'
-        ? properties.Location.multi_select
-        : [],
-    created_time:
-      properties['Created time'].type === 'created_time'
-        ? properties['Created time'].created_time
-        : '',
+    tags: getMultiSelectNames(properties, 'Tags'),
+    location: getMultiSelectNames(properties, 'Location'),
+    created_time: getCreatedTime(properties, 'Created time'),
   };
 }
 
