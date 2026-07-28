@@ -6,11 +6,11 @@ brand
 
 ## Users
 
-Food enthusiasts and curious explorers looking for curated culinary recommendations. They browse casually, discovering new food places, products, and reading material. Context: relaxed browsing, often on mobile, looking for inspiration rather than utility.
+Food enthusiasts and curious explorers looking for curated culinary recommendations. They browse casually, discovering new food places. The content is organized into curated categories. Context: relaxed browsing, often on mobile, looking for inspiration rather than utility.
 
 ## Product Purpose
 
-SavorSanctum is a curated directory of culinary experiences: food places, products, and reading materials. It leverages Notion as a CMS to keep content fresh without code changes. Success looks like users discovering something new and feeling inspired to explore further.
+SavorSanctum is a curated directory of culinary experiences: food places. The content is organized into curated categoriess. It leverages Notion as a CMS to keep content fresh without code changes. Success looks like users discovering something new and feeling inspired to explore further.
 
 ## Brand Personality
 
