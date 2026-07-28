@@ -120,12 +120,7 @@ function RouteComponent() {
     setTimeout(() => {
       const currentItems = filteredRef.current;
       setVisibleCount(
-        (prev) =>
-          prev +
-          (currentItems.length - prev < ITEMS_PER_PAGE &&
-          (currentItems.length - prev) % ITEMS_PER_PAGE !== 0
-            ? currentItems.length - prev
-            : ITEMS_PER_PAGE),
+        (prev) => prev + Math.min(currentItems.length - prev, ITEMS_PER_PAGE),
       );
       setIsLoading(false);
     }, 300);
