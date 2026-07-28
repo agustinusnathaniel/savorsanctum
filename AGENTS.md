@@ -21,7 +21,7 @@ It inherits rules from the [Canonical Guidelines](https://github.com/agustinusna
 - **Do not** modify `pnpm-lock.yaml` manually.
 - **Do not** use `any` type. Always define proper interfaces or use `unknown` if necessary.
 - **Do not** create new CSS files. Use `globals.css` or Tailwind utilities.
-- **Do not** use `useEffect` for data fetching. Use appropriate services or TanStack Query (if added).
+- **Do not** use `useEffect` for data fetching. Use route loaders (`Route.useLoaderData()`) and `createServerFn` from `@tanstack/react-start` instead.
 
 ### MUST DO:
 - **Must** run `pnpm biome:check` before confirming changes.

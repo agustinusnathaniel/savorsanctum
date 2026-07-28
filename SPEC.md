@@ -50,6 +50,8 @@ interface DirectoryItem {
 | `VITE_NOTION_TOKEN` | Yes | API Token for Notion Integration |
 | `VITE_NOTION_CULINARIES_DATASOURCE_ID` | Yes | Notion database ID for culinary items |
 | `VITE_NOTION_PRODUCTS_DATASOURCE_ID` | Yes | Notion database ID for products |
+| `VITE_UMAMI_SCRIPT_URL` | No | Umami analytics script URL |
+| `VITE_UMAMI_WEBSITE_ID` | No | Umami analytics website ID |
 
 ## 4. Data Flow
 
