@@ -65,7 +65,9 @@ export async function cachedQuery<T>(
       return cached.data;
     }
     // Cache hit (stale) — trigger background refresh, return stale data
-    executeAndCache(query, executor, key);
+    executeAndCache(query, executor, key).catch(() => {
+      // Background refresh failed — keep serving stale data; next request retries
+    });
     return cached.data;
   }
 
