@@ -9,6 +9,12 @@ allowBuilds:
 "overrides":
   "vite": 'catalog:'
   "vitest": 'catalog:'
+  # Force patched seroval chain (GHSA-66fc-rw6m-c2q6, GHSA-mv8w-475r-vwqw,
+  # GHSA-3rxj-6cgf-8cfw, GHSA-hj76-42vx-jwp4, GHSA-3j22-8qj3-26mx,
+  # GHSA-hx9m-jf43-8ffr): solid-js >= 1.9.14 uses seroval ~1.5.4
+  "seroval": "1.5.5"
+  "seroval-plugins": "1.5.5"
+  "solid-js": "1.9.14"
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
   vitest: 4.1.10
