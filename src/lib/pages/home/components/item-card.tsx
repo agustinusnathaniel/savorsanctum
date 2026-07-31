@@ -56,17 +56,8 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
     [highlightRegex],
   );
 
-  return (
-    <a
-      href={item.link ?? '#'}
-      data-umami-event="item-click"
-      data-umami-event-category={item.category}
-      data-umami-event-itemname={item.name}
-      target={item.link ? '_blank' : undefined}
-      rel="noopener noreferrer"
-      className="group block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
-      tabIndex={0}
-    >
+  const cardContent = (
+    <>
       {item.image && (
         <ImageWithLoader
           ratio="4/3"
@@ -125,6 +116,29 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
           ))}
         </div>
       </div>
+    </>
+  );
+
+  if (!item.link) {
+    return (
+      <div className="block rounded-lg bg-card p-3 border border-border">
+        {cardContent}
+      </div>
+    );
+  }
+
+  return (
+    <a
+      href={item.link}
+      data-umami-event="item-click"
+      data-umami-event-category={item.category}
+      data-umami-event-itemname={item.name}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+      tabIndex={0}
+    >
+      {cardContent}
     </a>
   );
 }
