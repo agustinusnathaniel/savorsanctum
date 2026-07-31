@@ -15,6 +15,18 @@ allowBuilds:
   "seroval": "1.5.5"
   "seroval-plugins": "1.5.5"
   "solid-js": "1.9.14"
+  # Force patched sharp (GHSA-f88m-g3jw-g9cj: libvips CVEs). Global override covers
+  # all chains: miniflare (0.35.2 via wrangler 4.116.0/vite-plugin 1.49.0), assets-generator
+  # direct (^0.33.5), and sharp-ico's '*' dep (was resolving to 0.34.5). 0.35.3 is a patch
+  # over miniflare's 0.35.2 pin. (Nested scoped selectors like
+  # "@vite-pwa/assets-generator>sharp-ico>sharp" fail pnpm's selector parser.)
+  "sharp": "0.35.3"
+  # brace-expansion DoS (GHSA-mh99-v99m-4gvg): patched only in >=5.0.8, which is
+  # API-incompatible with minimatch@3/5 (export shape changed). Force minimatch@10 under
+  # the two unmaintained consumers (dotgitignore -> release tooling, filelist -> PWA build)
+  # so brace-expansion resolves to ^5.0.8 (verified makeRe/.match compat).
+  "dotgitignore>minimatch": "10.2.6"
+  "filelist>minimatch": "10.2.6"
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
   vitest: 4.1.10
