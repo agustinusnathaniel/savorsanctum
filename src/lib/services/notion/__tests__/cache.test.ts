@@ -17,6 +17,16 @@ describe('cachedQuery', () => {
     expect(executor).toHaveBeenCalledTimes(1);
   });
 
+  it('cache miss -> concurrent requests share one in-flight promise, executor called once', async () => {
+    const executor = vi.fn().mockResolvedValue('fresh');
+    const first = cachedQuery({ type: 'dedup-shared' }, executor);
+    const second = cachedQuery({ type: 'dedup-shared' }, executor);
+
+    await expect(first).resolves.toBe('fresh');
+    await expect(second).resolves.toBe('fresh');
+    expect(executor).toHaveBeenCalledTimes(1);
+  });
+
   it('fresh cache hit -> returns cached data, executor NOT called again', async () => {
     const executor = vi.fn().mockResolvedValue('fresh');
     await cachedQuery({ type: 'fresh-hit' }, executor);
@@ -55,5 +65,72 @@ describe('cachedQuery', () => {
     expect(executor).toHaveBeenCalledTimes(2);
 
     await vi.runAllTimersAsync();
+  });
+
+  it('concurrent request during failed background refresh -> serves stale data, does NOT throw', async () => {
+    vi.useFakeTimers();
+    const executor = vi.fn().mockResolvedValue('fresh');
+    await cachedQuery({ type: 'concurrent-fail' }, executor);
+    expect(executor).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(CACHE_TTL + 1);
+
+    executor.mockRejectedValueOnce(new Error('Notion API down'));
+    const staleResult = await cachedQuery(
+      { type: 'concurrent-fail' },
+      executor,
+    );
+    expect(staleResult).toBe('fresh');
+
+    const concurrentResult = await cachedQuery(
+      { type: 'concurrent-fail' },
+      executor,
+    );
+    expect(concurrentResult).toBe('fresh');
+
+    await vi.runAllTimersAsync();
+  });
+
+  it('concurrent request during in-flight background refresh failure -> serves stale data, does NOT throw', async () => {
+    vi.useFakeTimers();
+    const executor = vi.fn().mockResolvedValue('fresh');
+    await cachedQuery({ type: 'concurrent-fail-2' }, executor);
+    expect(executor).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(CACHE_TTL + 1);
+
+    let rejectRefresh!: (err: Error) => void;
+    const deferred = new Promise<never>((_, reject) => {
+      rejectRefresh = reject;
+    });
+    executor.mockReturnValueOnce(deferred);
+
+    const staleResult = await cachedQuery(
+      { type: 'concurrent-fail-2' },
+      executor,
+    );
+    expect(staleResult).toBe('fresh');
+    expect(executor).toHaveBeenCalledTimes(2);
+
+    const concurrentPromise = cachedQuery(
+      { type: 'concurrent-fail-2' },
+      executor,
+    );
+
+    rejectRefresh(new Error('Notion API down'));
+
+    await expect(concurrentPromise).resolves.toBe('fresh');
+    await vi.runAllTimersAsync();
+  });
+
+  it('concurrent request during failing cache-miss -> rejects with fallback error, no unhandled rejection', async () => {
+    const executor = vi.fn().mockRejectedValue(new Error('Notion API down'));
+    const first = cachedQuery({ type: 'no-cache-fail' }, executor);
+    const concurrent = cachedQuery({ type: 'no-cache-fail' }, executor);
+
+    await expect(first).rejects.toThrow('Notion API down');
+    await expect(concurrent).rejects.toThrow(
+      'Query failed and no cached data available',
+    );
   });
 });

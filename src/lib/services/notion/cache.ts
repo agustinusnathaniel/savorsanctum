@@ -54,7 +54,13 @@ export async function cachedQuery<T>(
   // Deduplicate concurrent requests per key
   const pending = pendingPromises.get(key);
   if (pending) {
-    return pending as Promise<T>;
+    return pending.catch(() => {
+      const cached = getFromCache<T>(query);
+      if (cached) {
+        return cached.data;
+      }
+      throw new Error('Query failed and no cached data available');
+    }) as Promise<T>;
   }
 
   // Check cache
