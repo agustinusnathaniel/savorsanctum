@@ -17,6 +17,16 @@ describe('cachedQuery', () => {
     expect(executor).toHaveBeenCalledTimes(1);
   });
 
+  it('cache miss -> concurrent requests share one in-flight promise, executor called once', async () => {
+    const executor = vi.fn().mockResolvedValue('fresh');
+    const first = cachedQuery({ type: 'dedup-shared' }, executor);
+    const second = cachedQuery({ type: 'dedup-shared' }, executor);
+
+    await expect(first).resolves.toBe('fresh');
+    await expect(second).resolves.toBe('fresh');
+    expect(executor).toHaveBeenCalledTimes(1);
+  });
+
   it('fresh cache hit -> returns cached data, executor NOT called again', async () => {
     const executor = vi.fn().mockResolvedValue('fresh');
     await cachedQuery({ type: 'fresh-hit' }, executor);
