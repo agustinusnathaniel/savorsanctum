@@ -11,6 +11,7 @@ import { EmptyState } from '@/lib/pages/home/components/empty-state';
 import { EndOfList } from '@/lib/pages/home/components/end-of-list';
 import { Header } from '@/lib/pages/home/components/header';
 import { ItemGrid } from '@/lib/pages/home/components/item-grid';
+import { LoadErrorState } from '@/lib/pages/home/components/load-error-state';
 import { ResultCounter } from '@/lib/pages/home/components/result-counter';
 import { ScrollToTop } from '@/lib/pages/home/components/scroll-to-top';
 import { SearchBar } from '@/lib/pages/home/components/search-bar';
@@ -51,6 +52,7 @@ export const Route = createFileRoute('/')({
 
     return {
       items: result.items,
+      error: result.error,
     };
   },
   headers: () => ({
@@ -67,7 +69,7 @@ export const Route = createFileRoute('/')({
 const ITEMS_PER_PAGE = 12;
 
 function RouteComponent() {
-  const { items } = Route.useLoaderData();
+  const { items, error } = Route.useLoaderData();
   const { keyword, category, sortBy, tags, location } = Route.useSearch();
   const selectedTags = useMemo(
     () => (tags ? tags.split(',').filter(Boolean) : []),
@@ -259,7 +261,9 @@ function RouteComponent() {
         />
       )}
 
-      {filteredItems.length === 0 ? (
+      {error ? (
+        <LoadErrorState />
+      ) : filteredItems.length === 0 ? (
         <EmptyState />
       ) : (
         <>
