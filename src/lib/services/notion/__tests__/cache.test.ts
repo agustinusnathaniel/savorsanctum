@@ -56,4 +56,60 @@ describe('cachedQuery', () => {
 
     await vi.runAllTimersAsync();
   });
+
+  it('concurrent request during failed background refresh -> serves stale data, does NOT throw', async () => {
+    vi.useFakeTimers();
+    const executor = vi.fn().mockResolvedValue('fresh');
+    await cachedQuery({ type: 'concurrent-fail' }, executor);
+    expect(executor).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(CACHE_TTL + 1);
+
+    executor.mockRejectedValueOnce(new Error('Notion API down'));
+    const staleResult = await cachedQuery(
+      { type: 'concurrent-fail' },
+      executor,
+    );
+    expect(staleResult).toBe('fresh');
+
+    const concurrentResult = await cachedQuery(
+      { type: 'concurrent-fail' },
+      executor,
+    );
+    expect(concurrentResult).toBe('fresh');
+
+    await vi.runAllTimersAsync();
+  });
+
+  it('concurrent request during in-flight background refresh failure -> serves stale data, does NOT throw', async () => {
+    vi.useFakeTimers();
+    const executor = vi.fn().mockResolvedValue('fresh');
+    await cachedQuery({ type: 'concurrent-fail-2' }, executor);
+    expect(executor).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(CACHE_TTL + 1);
+
+    let rejectRefresh!: (err: Error) => void;
+    const deferred = new Promise<never>((_, reject) => {
+      rejectRefresh = reject;
+    });
+    executor.mockReturnValueOnce(deferred);
+
+    const staleResult = await cachedQuery(
+      { type: 'concurrent-fail-2' },
+      executor,
+    );
+    expect(staleResult).toBe('fresh');
+    expect(executor).toHaveBeenCalledTimes(2);
+
+    const concurrentPromise = cachedQuery(
+      { type: 'concurrent-fail-2' },
+      executor,
+    );
+
+    rejectRefresh(new Error('Notion API down'));
+
+    await expect(concurrentPromise).resolves.toBe('fresh');
+    await vi.runAllTimersAsync();
+  });
 });
