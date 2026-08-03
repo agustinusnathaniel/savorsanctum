@@ -112,4 +112,15 @@ describe('cachedQuery', () => {
     await expect(concurrentPromise).resolves.toBe('fresh');
     await vi.runAllTimersAsync();
   });
+
+  it('concurrent request during failing cache-miss -> rejects with fallback error, no unhandled rejection', async () => {
+    const executor = vi.fn().mockRejectedValue(new Error('Notion API down'));
+    const first = cachedQuery({ type: 'no-cache-fail' }, executor);
+    const concurrent = cachedQuery({ type: 'no-cache-fail' }, executor);
+
+    await expect(first).rejects.toThrow('Notion API down');
+    await expect(concurrent).rejects.toThrow(
+      'Query failed and no cached data available',
+    );
+  });
 });
