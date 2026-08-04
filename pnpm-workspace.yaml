@@ -27,6 +27,16 @@ allowBuilds:
   # so brace-expansion resolves to ^5.0.8 (verified makeRe/.match compat).
   "dotgitignore>minimatch": "10.2.6"
   "filelist>minimatch": "10.2.6"
+  # Audit: undici <7.29.0 (cross-user info disclosure, CRLF injection, cookie
+  # attribute injection, downstream response) via miniflare/wrangler/jsdom. Exact
+  # pin keeps jsdom's deep import (undici/lib/handler/wrap-handler.js) on v7.
+  "undici": "7.29.0"
+  # Audit: fast-uri <3.1.5 (host confusion via backslash authority) via
+  # commitlint ajv + workbox-build ajv.
+  "fast-uri": "3.1.5"
+  # Audit: postcss <=8.5.22 (GHSA-fxqj-rqcc-2cmp sourceMappingURL .map read) via
+  # vite-plus-core / tailwindcss build chain.
+  "postcss": "8.5.23"
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
   vitest: 4.1.10
