@@ -48,3 +48,6 @@ peerDependencyRules:
   allowedVersions:
     vite: '*'
     vitest: '*'
+minimumReleaseAgeExclude:
+  - "@base-ui/react"
+  - "@base-ui/utils"
