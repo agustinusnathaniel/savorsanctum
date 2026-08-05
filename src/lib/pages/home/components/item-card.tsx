@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router';
-import { ExternalLink, MapPin } from 'lucide-react';
+import { ExternalLink, Eye, MapPin } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
@@ -130,7 +130,7 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
       className="absolute top-2 right-2 z-10 inline-flex items-center justify-center size-8 rounded-full bg-background/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
       title="View details"
     >
-      <ExternalLink className="h-4 w-4" />
+      <Eye className="h-4 w-4" />
     </Link>
   );
 

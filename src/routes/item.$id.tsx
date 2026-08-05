@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
+import { setResponseStatus } from '@tanstack/react-start/server';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
@@ -9,6 +10,8 @@ import { getItems } from '@/lib/services/notion/get-items';
 
 const FALLBACK_OG_IMAGE =
   'https://og.sznm.dev/api/generate?heading=SavorSanctum&text=Discover%20amazing%20culinary%20experiences%20and%20products&template=color';
+
+const SITE_URL = 'https://savorsanctum.sznm.dev';
 
 function formatAddedDate(value: string): string | null {
   const date = new Date(value);
@@ -25,7 +28,13 @@ function formatAddedDate(value: string): string | null {
 export const Route = createFileRoute('/item/$id')({
   loader: async ({ params }): Promise<DirectoryItem | undefined> => {
     const result = await getItems();
-    return result.items.find((item) => item.id === params.id);
+    const item = result.items.find((item) => item.id === params.id);
+
+    if (!item) {
+      setResponseStatus(404);
+    }
+
+    return item;
   },
   headers: () => ({
     'Cache-Control': 'public, max-age=300, stale-while-revalidate=600',
@@ -39,6 +48,7 @@ export const Route = createFileRoute('/item/$id')({
       ? `A curated find on SavorSanctum: ${item.name}.`
       : 'This item could not be found.';
     const ogImage = item?.image || FALLBACK_OG_IMAGE;
+    const itemUrl = item ? `${SITE_URL}/item/${item.id}` : SITE_URL;
 
     return {
       meta: [
@@ -48,10 +58,18 @@ export const Route = createFileRoute('/item/$id')({
         { name: 'og:title', content: title },
         { name: 'og:description', content: description },
         { name: 'og:image', content: ogImage },
+        { name: 'og:url', content: itemUrl },
         { name: 'twitter:card', content: 'summary_large_image' },
+        { name: 'twitter:url', content: itemUrl },
         { name: 'twitter:title', content: title },
         { name: 'twitter:description', content: description },
         { name: 'twitter:image', content: ogImage },
+      ],
+      links: [
+        {
+          rel: 'canonical',
+          href: itemUrl,
+        },
       ],
     };
   },
@@ -60,6 +78,9 @@ export const Route = createFileRoute('/item/$id')({
 
 function ItemDetailPage() {
   const item = Route.useLoaderData();
+  const addedDate = item?.created_time
+    ? formatAddedDate(item.created_time)
+    : null;
 
   if (!item) {
     return (
@@ -127,9 +148,9 @@ function ItemDetailPage() {
           </p>
         )}
 
-        {item.created_time && formatAddedDate(item.created_time) && (
+        {addedDate && (
           <p className="text-xs text-muted-foreground mb-6">
-            Added {formatAddedDate(item.created_time)}
+            Added {addedDate}
           </p>
         )}
 
