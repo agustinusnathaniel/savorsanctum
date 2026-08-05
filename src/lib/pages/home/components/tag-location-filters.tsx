@@ -1,5 +1,5 @@
 import { MapPin, Tag } from 'lucide-react';
-import { useMemo } from 'react';
+import { type ReactNode, useMemo } from 'react';
 
 import {
   Combobox,
@@ -20,6 +20,55 @@ interface TagLocationFiltersProps {
   selectedLocations: Array<string>;
   onTagsChange: (tags: Array<string>) => void;
   onLocationsChange: (locations: Array<string>) => void;
+}
+
+interface MultiSelectFilterProps {
+  icon: ReactNode;
+  placeholder: string;
+  emptyLabel: string;
+  items: Array<string>;
+  value: Array<string>;
+  onValueChange: (value: Array<string>) => void;
+}
+
+function MultiSelectFilter({
+  icon,
+  placeholder,
+  emptyLabel,
+  items,
+  value,
+  onValueChange,
+}: MultiSelectFilterProps) {
+  return (
+    <div className="flex items-center gap-2 flex-1 min-w-0">
+      {icon}
+      <Combobox
+        items={items}
+        multiple
+        value={value}
+        onValueChange={onValueChange}
+      >
+        <ComboboxChips className="flex-1 min-w-0">
+          <ComboboxValue>
+            {value.map((item) => (
+              <ComboboxChip key={item}>{item}</ComboboxChip>
+            ))}
+          </ComboboxValue>
+          <ComboboxChipsInput placeholder={placeholder} />
+        </ComboboxChips>
+        <ComboboxContent>
+          <ComboboxEmpty>{emptyLabel}</ComboboxEmpty>
+          <ComboboxList>
+            {(item) => (
+              <ComboboxItem key={item} value={item}>
+                {item}
+              </ComboboxItem>
+            )}
+          </ComboboxList>
+        </ComboboxContent>
+      </Combobox>
+    </div>
+  );
 }
 
 export function TagLocationFilters({
@@ -56,65 +105,27 @@ export function TagLocationFilters({
   return (
     <div className="mt-3 flex flex-col gap-2 sm:flex-row">
       {availableTags.length > 0 && (
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Tag className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-          <Combobox
-            items={availableTags}
-            multiple
-            value={selectedTags}
-            onValueChange={onTagsChange}
-          >
-            <ComboboxChips className="flex-1 min-w-0">
-              <ComboboxValue>
-                {selectedTags.map((tag) => (
-                  <ComboboxChip key={tag}>{tag}</ComboboxChip>
-                ))}
-              </ComboboxValue>
-              <ComboboxChipsInput placeholder="Filter tags" />
-            </ComboboxChips>
-            <ComboboxContent>
-              <ComboboxEmpty>No tags found.</ComboboxEmpty>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item} value={item}>
-                    {item}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
-        </div>
+        <MultiSelectFilter
+          icon={<Tag className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />}
+          placeholder="Filter tags"
+          emptyLabel="No tags found."
+          items={availableTags}
+          value={selectedTags}
+          onValueChange={onTagsChange}
+        />
       )}
 
       {availableLocations.length > 0 && (
-        <div className="flex items-center gap-2 flex-1 min-w-0">
-          <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-          <Combobox
-            items={availableLocations}
-            multiple
-            value={selectedLocations}
-            onValueChange={onLocationsChange}
-          >
-            <ComboboxChips className="flex-1 min-w-0">
-              <ComboboxValue>
-                {selectedLocations.map((loc) => (
-                  <ComboboxChip key={loc}>{loc}</ComboboxChip>
-                ))}
-              </ComboboxValue>
-              <ComboboxChipsInput placeholder="Filter locations" />
-            </ComboboxChips>
-            <ComboboxContent>
-              <ComboboxEmpty>No locations found.</ComboboxEmpty>
-              <ComboboxList>
-                {(item) => (
-                  <ComboboxItem key={item} value={item}>
-                    {item}
-                  </ComboboxItem>
-                )}
-              </ComboboxList>
-            </ComboboxContent>
-          </Combobox>
-        </div>
+        <MultiSelectFilter
+          icon={
+            <MapPin className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
+          }
+          placeholder="Filter locations"
+          emptyLabel="No locations found."
+          items={availableLocations}
+          value={selectedLocations}
+          onValueChange={onLocationsChange}
+        />
       )}
     </div>
   );
