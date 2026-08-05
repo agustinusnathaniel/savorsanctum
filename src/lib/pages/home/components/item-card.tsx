@@ -1,3 +1,4 @@
+import { Link } from '@tanstack/react-router';
 import { ExternalLink, MapPin } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 
@@ -119,26 +120,44 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
     </>
   );
 
+  const detailLink = (
+    <Link
+      to="/item/$id"
+      params={{ id: item.id }}
+      data-umami-event="item-detail"
+      data-umami-event-itemname={item.name}
+      aria-label={`View details for ${item.name}`}
+      className="absolute top-2 right-2 z-10 inline-flex items-center justify-center size-8 rounded-full bg-background/80 backdrop-blur-sm border border-border text-muted-foreground hover:text-foreground hover:bg-background transition-colors"
+      title="View details"
+    >
+      <ExternalLink className="h-4 w-4" />
+    </Link>
+  );
+
   if (!item.link) {
     return (
-      <div className="block rounded-lg bg-card p-3 border border-border">
+      <div className="relative block rounded-lg bg-card p-3 border border-border">
         {cardContent}
+        {detailLink}
       </div>
     );
   }
 
   return (
-    <a
-      href={item.link}
-      data-umami-event="item-click"
-      data-umami-event-category={item.category}
-      data-umami-event-itemname={item.name}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
-      tabIndex={0}
-    >
-      {cardContent}
-    </a>
+    <div className="relative">
+      <a
+        href={item.link}
+        data-umami-event="item-click"
+        data-umami-event-category={item.category}
+        data-umami-event-itemname={item.name}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
+        tabIndex={0}
+      >
+        {cardContent}
+      </a>
+      {detailLink}
+    </div>
   );
 }
