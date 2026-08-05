@@ -1,5 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
-import { setResponseStatus } from '@tanstack/react-start/server';
+import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
@@ -25,13 +24,31 @@ function formatAddedDate(value: string): string | null {
   });
 }
 
+function ItemNotFound() {
+  return (
+    <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
+      <div className="mb-4 text-5xl">🍽️</div>
+      <h2 className="text-lg font-semibold text-foreground mb-2">
+        Item not found
+      </h2>
+      <p className="text-muted-foreground text-center mb-6">
+        This item may have been removed or the link is incorrect.
+      </p>
+      <Button render={<Link to="/" />}>
+        <ArrowLeft className="h-4 w-4" />
+        Back to the collection
+      </Button>
+    </div>
+  );
+}
+
 export const Route = createFileRoute('/item/$id')({
-  loader: async ({ params }): Promise<DirectoryItem | undefined> => {
+  loader: async ({ params }): Promise<DirectoryItem> => {
     const result = await getItems();
     const item = result.items.find((item) => item.id === params.id);
 
     if (!item) {
-      setResponseStatus(404);
+      throw notFound();
     }
 
     return item;
@@ -74,31 +91,14 @@ export const Route = createFileRoute('/item/$id')({
     };
   },
   component: ItemDetailPage,
+  notFoundComponent: ItemNotFound,
 });
 
 function ItemDetailPage() {
   const item = Route.useLoaderData();
-  const addedDate = item?.created_time
+  const addedDate = item.created_time
     ? formatAddedDate(item.created_time)
     : null;
-
-  if (!item) {
-    return (
-      <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
-        <div className="mb-4 text-5xl">🍽️</div>
-        <h2 className="text-lg font-semibold text-foreground mb-2">
-          Item not found
-        </h2>
-        <p className="text-muted-foreground text-center mb-6">
-          This item may have been removed or the link is incorrect.
-        </p>
-        <Button render={<Link to="/" />}>
-          <ArrowLeft className="h-4 w-4" />
-          Back to the collection
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-2xl mx-auto">
