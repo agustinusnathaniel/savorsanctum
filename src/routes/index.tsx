@@ -6,6 +6,7 @@ import z from 'zod';
 
 import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
+import { buildItemListSchema } from '@/lib/models/structured-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
 import { EmptyState } from '@/lib/pages/home/components/empty-state';
 import { EndOfList } from '@/lib/pages/home/components/end-of-list';
@@ -64,6 +65,14 @@ export const Route = createFileRoute('/')({
   search: {
     middlewares: [stripSearchParams(defaultSearchParams)],
   },
+  head: ({ loaderData }) => ({
+    scripts: [
+      {
+        type: 'application/ld+json',
+        children: JSON.stringify(buildItemListSchema(loaderData?.items ?? [])),
+      },
+    ],
+  }),
 });
 
 const ITEMS_PER_PAGE = 12;

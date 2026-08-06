@@ -8,23 +8,21 @@ import {
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import { securityHeaders } from '@/lib/constants/security-headers';
+import { SITE_DESCRIPTION, SITE_TITLE, SITE_URL } from '@/lib/constants/site';
 import { Layout } from '@/lib/layout';
 import globalCss from '@/lib/styles/globals.css?url';
 
-const title = 'SavorSanctum';
-const description = 'Discover amazing culinary experiences and products';
-const url = 'https://savorsanctum.sznm.dev';
-const ogImgUrl = `https://og.sznm.dev/api/generate?heading=${encodeURIComponent(title)}&text=${encodeURIComponent(description)}&template=color`;
+const ogImgUrl = `https://og.sznm.dev/api/generate?heading=${encodeURIComponent(SITE_TITLE)}&text=${encodeURIComponent(SITE_DESCRIPTION)}&template=color`;
 
 export const Route = createRootRoute({
   head: () => ({
     meta: [
       {
-        title,
+        title: SITE_TITLE,
       },
       {
         name: 'description',
-        content: description,
+        content: SITE_DESCRIPTION,
       },
       {
         name: 'viewport',
@@ -32,7 +30,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'application-name',
-        content: title,
+        content: SITE_TITLE,
       },
       {
         name: 'apple-mobile-web-app-capable',
@@ -44,7 +42,7 @@ export const Route = createRootRoute({
       },
       {
         name: 'apple-mobile-web-app-title',
-        content: title,
+        content: SITE_TITLE,
       },
       {
         name: 'format-detection',
@@ -70,15 +68,15 @@ export const Route = createRootRoute({
       },
       {
         name: 'og:url',
-        content: url,
+        content: SITE_URL,
       },
       {
         name: 'og:title',
-        content: title,
+        content: SITE_TITLE,
       },
       {
         name: 'og:description',
-        content: description,
+        content: SITE_DESCRIPTION,
       },
       {
         name: 'og:image',
@@ -90,15 +88,15 @@ export const Route = createRootRoute({
       },
       {
         name: 'twitter:url',
-        content: url,
+        content: SITE_URL,
       },
       {
         name: 'twitter:title',
-        content: title,
+        content: SITE_TITLE,
       },
       {
         name: 'twitter:description',
-        content: description,
+        content: SITE_DESCRIPTION,
       },
       {
         name: 'twitter:image',
