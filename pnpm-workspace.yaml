@@ -37,6 +37,12 @@ allowBuilds:
   # Audit: postcss <=8.5.22 (GHSA-fxqj-rqcc-2cmp sourceMappingURL .map read) via
   # vite-plus-core / tailwindcss build chain.
   "postcss": "8.5.23"
+  # Audit: js-yaml <4.3.1 (CVE-2026-59870 quadratic CPU consumption in !!omap
+  # resolution) via commitlint cosmiconfig + TanStack start-plugin xmlbuilder2.
+  "js-yaml": "4.3.1"
+  # Audit: nanoid <3.3.17 (GHSA-2v37-7h3g-55p8 custom generators can loop
+  # indefinitely when size is zero) via postcss build chain.
+  "nanoid": "3.3.17"
 catalog:
   vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
   vitest: 4.1.10
