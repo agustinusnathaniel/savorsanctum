@@ -1,5 +1,5 @@
-import { ExternalLink, MapPin } from 'lucide-react';
-import { useCallback, useMemo } from 'react';
+import { Check, ExternalLink, Link, MapPin } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
 import { Badge } from '@/lib/components/ui/badge';
@@ -9,6 +9,7 @@ import { cn } from '@/lib/styles/utils';
 interface ItemCardProps {
   item: DirectoryItem;
   highlightTerms?: Array<string>;
+  highlightId?: string;
 }
 
 const categoryColors: Partial<Record<Category, string>> = {
@@ -17,7 +18,8 @@ const categoryColors: Partial<Record<Category, string>> = {
     'bg-[var(--color-category-products)] text-[var(--color-category-products-foreground)]',
 };
 
-export function ItemCard({ item, highlightTerms }: ItemCardProps) {
+export function ItemCard({ item, highlightTerms, highlightId }: ItemCardProps) {
+  const isHighlighted = item.id === highlightId;
   // Memoize regex to avoid recreating it multiple times per card render
   const highlightRegex = useMemo(() => {
     if (!highlightTerms || highlightTerms.length === 0) {
@@ -55,6 +57,22 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
     },
     [highlightRegex],
   );
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = useCallback(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('highlight', item.id);
+    navigator.clipboard
+      .writeText(url.toString())
+      .then(() => {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      })
+      .catch(() => {
+        // Clipboard unavailable — silently fail
+      });
+  }, [item.id]);
 
   const cardContent = (
     <>
@@ -119,26 +137,49 @@ export function ItemCard({ item, highlightTerms }: ItemCardProps) {
     </>
   );
 
-  if (!item.link) {
-    return (
-      <div className="block rounded-lg bg-card p-3 border border-border">
-        {cardContent}
-      </div>
-    );
-  }
-
   return (
-    <a
-      href={item.link}
-      data-umami-event="item-click"
-      data-umami-event-category={item.category}
-      data-umami-event-itemname={item.name}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="group block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2"
-      tabIndex={0}
-    >
-      {cardContent}
-    </a>
+    <div id={`item-${item.id}`} className="relative group">
+      {item.link ? (
+        <a
+          href={item.link}
+          data-umami-event="item-click"
+          data-umami-event-category={item.category}
+          data-umami-event-itemname={item.name}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={cn(
+            'block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2',
+            isHighlighted && 'ring-2 ring-primary/70 shadow-md',
+          )}
+          tabIndex={0}
+        >
+          {cardContent}
+        </a>
+      ) : (
+        <div
+          className={cn(
+            'block rounded-lg bg-card p-3 border border-border',
+            isHighlighted && 'ring-2 ring-primary/70 shadow-md',
+          )}
+        >
+          {cardContent}
+        </div>
+      )}
+
+      <button
+        type="button"
+        onClick={handleCopyLink}
+        data-umami-event="item-share"
+        data-umami-event-itemname={item.name}
+        aria-label={`Copy link to ${item.name}`}
+        className="absolute top-2 right-2 z-10 rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      >
+        {copied ? (
+          <Check className="h-3.5 w-3.5" />
+        ) : (
+          <Link className="h-3.5 w-3.5" />
+        )}
+      </button>
+    </div>
   );
 }

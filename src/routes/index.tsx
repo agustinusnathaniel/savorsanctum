@@ -19,6 +19,7 @@ import { SearchBar } from '@/lib/pages/home/components/search-bar';
 import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
+import { visibleCountForIndex } from '@/lib/pages/home/highlight';
 import { getItems } from '@/lib/services/notion/get-items';
 import { trackEvent } from '@/lib/utils/umami';
 
@@ -31,6 +32,7 @@ const searchSchema = z.object({
   sortBy: z.enum(['recent', 'alphabetical']).default('recent').catch('recent'),
   tags: z.string().optional().catch(undefined),
   location: z.string().optional().catch(undefined),
+  highlight: z.string().optional().catch(undefined),
 });
 
 type SearchSchema = z.infer<typeof searchSchema>;
@@ -79,7 +81,8 @@ const ITEMS_PER_PAGE = 12;
 
 function RouteComponent() {
   const { items, error } = Route.useLoaderData();
-  const { keyword, category, sortBy, tags, location } = Route.useSearch();
+  const { keyword, category, sortBy, tags, location, highlight } =
+    Route.useSearch();
   const selectedTags = useMemo(
     () => (tags ? tags.split(',').filter(Boolean) : []),
     [tags],
@@ -91,6 +94,7 @@ function RouteComponent() {
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [isLoading, setIsLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
+  const handledHighlightRef = useRef<string | null>(null);
   const navigate = Route.useNavigate();
 
   const fuseInstance = useMemo(() => new Fuse(items, FUSE_OPTIONS), [items]);
@@ -119,6 +123,38 @@ function RouteComponent() {
 
   const filteredRef = useRef(filteredItems);
   filteredRef.current = filteredItems;
+
+  useEffect(() => {
+    if (!highlight || handledHighlightRef.current === highlight) {
+      return;
+    }
+    const index = filteredRef.current.findIndex(
+      (item) => item.id === highlight,
+    );
+    if (index === -1) {
+      handledHighlightRef.current = highlight;
+      return;
+    }
+    setVisibleCount((prev) =>
+      visibleCountForIndex(
+        index,
+        prev,
+        ITEMS_PER_PAGE,
+        filteredRef.current.length,
+      ),
+    );
+    const tryScroll = () => {
+      const el = document.getElementById(`item-${highlight}`);
+      if (el) {
+        handledHighlightRef.current = highlight;
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        requestAnimationFrame(tryScroll);
+      }
+    };
+    const raf = requestAnimationFrame(tryScroll);
+    return () => cancelAnimationFrame(raf);
+  }, [highlight]);
 
   const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMore = visibleCount < filteredItems.length;
@@ -276,7 +312,11 @@ function RouteComponent() {
         <EmptyState />
       ) : (
         <>
-          <ItemGrid items={visibleItems} highlightTerms={highlightTerms} />
+          <ItemGrid
+            items={visibleItems}
+            highlightTerms={highlightTerms}
+            highlightId={highlight}
+          />
 
           {isLoading && (
             <div className="mt-8 columns-1 gap-4 md:columns-2 lg:columns-3">
