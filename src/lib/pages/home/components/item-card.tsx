@@ -1,8 +1,9 @@
 import { Check, ExternalLink, Link, MapPin } from 'lucide-react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
 import { Badge } from '@/lib/components/ui/badge';
+import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
 import type { Category, DirectoryItem } from '@/lib/models/collection-data';
 import { cn } from '@/lib/styles/utils';
 
@@ -58,21 +59,13 @@ export function ItemCard({ item, highlightTerms, highlightId }: ItemCardProps) {
     [highlightRegex],
   );
 
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const handleCopyLink = useCallback(() => {
     const url = new URL(window.location.href);
     url.searchParams.set('highlight', item.id);
-    navigator.clipboard
-      .writeText(url.toString())
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {
-        // Clipboard unavailable — silently fail
-      });
-  }, [item.id]);
+    copy(url.toString());
+  }, [copy, item.id]);
 
   const cardContent = (
     <>

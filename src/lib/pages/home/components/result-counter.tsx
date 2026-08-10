@@ -1,5 +1,7 @@
 import { Check, Link } from 'lucide-react';
-import { useCallback, useState } from 'react';
+import { useCallback } from 'react';
+
+import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
 
 interface ResultCounterProps {
   current: number;
@@ -14,20 +16,11 @@ export function ResultCounter({
   sortBy,
   onSortChange,
 }: ResultCounterProps) {
-  const [copied, setCopied] = useState(false);
+  const { copied, copy } = useCopyToClipboard();
 
   const handleCopyLink = useCallback(() => {
-    navigator.clipboard
-      .writeText(window.location.href)
-      .then(() => {
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-      })
-      .catch(() => {
-        // Clipboard API unavailable (non-HTTPS, older browser)
-        // Silently fail; the share button label won't change
-      });
-  }, []);
+    copy(window.location.href);
+  }, [copy]);
 
   return (
     <div className="flex items-center justify-between py-3 text-sm">
