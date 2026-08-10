@@ -1,4 +1,10 @@
-import { Gift, LayoutGrid, Utensils } from 'lucide-react';
+import {
+  Bookmark,
+  BookmarkCheck,
+  Gift,
+  LayoutGrid,
+  Utensils,
+} from 'lucide-react';
 import type React from 'react';
 
 import type { Category } from '@/lib/models/collection-data';
@@ -7,6 +13,8 @@ import { cn } from '@/lib/styles/utils';
 interface CategoryFiltersProps {
   selected: Category | 'all';
   onSelect: (category: Category | 'all') => void;
+  saved?: boolean;
+  onToggleSaved?: () => void;
 }
 
 const categories: Array<{
@@ -19,7 +27,12 @@ const categories: Array<{
   { id: 'products', label: 'Products', icon: <Gift className="h-4 w-4" /> },
 ];
 
-export function CategoryFilters({ selected, onSelect }: CategoryFiltersProps) {
+export function CategoryFilters({
+  selected,
+  onSelect,
+  saved,
+  onToggleSaved,
+}: CategoryFiltersProps) {
   return (
     <div className="mt-4 flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
       {categories.map((category) => (
@@ -41,6 +54,27 @@ export function CategoryFilters({ selected, onSelect }: CategoryFiltersProps) {
           {category.label}
         </button>
       ))}
+      {onToggleSaved && (
+        <button
+          type="button"
+          onClick={onToggleSaved}
+          aria-pressed={saved ?? false}
+          data-umami-event="saved-filter"
+          className={cn(
+            'flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors active:scale-95',
+            saved
+              ? 'bg-primary text-primary-foreground shadow-md'
+              : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+          )}
+        >
+          {saved ? (
+            <BookmarkCheck className="h-4 w-4" />
+          ) : (
+            <Bookmark className="h-4 w-4" />
+          )}
+          Saved
+        </button>
+      )}
     </div>
   );
 }

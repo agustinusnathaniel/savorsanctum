@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
+import { useSavedItems } from '@/lib/hooks/use-saved-items';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
 import { buildItemListSchema } from '@/lib/models/structured-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
@@ -19,7 +20,10 @@ import { SearchBar } from '@/lib/pages/home/components/search-bar';
 import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
-import { visibleCountForIndex } from '@/lib/pages/home/highlight';
+import {
+  getHighlightScrollY,
+  visibleCountForIndex,
+} from '@/lib/pages/home/highlight';
 import { getItems } from '@/lib/services/notion/get-items';
 import { trackEvent } from '@/lib/utils/umami';
 
@@ -33,6 +37,7 @@ const searchSchema = z.object({
   tags: z.string().optional().catch(undefined),
   location: z.string().optional().catch(undefined),
   highlight: z.string().optional().catch(undefined),
+  saved: z.boolean().optional().catch(undefined),
 });
 
 type SearchSchema = z.infer<typeof searchSchema>;
@@ -41,6 +46,7 @@ const defaultSearchParams: SearchSchema = {
   keyword: '',
   category: 'all',
   sortBy: 'recent',
+  saved: false,
   // pageSize: 20,
 };
 
@@ -81,8 +87,9 @@ const ITEMS_PER_PAGE = 12;
 
 function RouteComponent() {
   const { items, error } = Route.useLoaderData();
-  const { keyword, category, sortBy, tags, location, highlight } =
+  const { keyword, category, sortBy, tags, location, highlight, saved } =
     Route.useSearch();
+  const { savedIds, toggleSaved } = useSavedItems();
   const selectedTags = useMemo(
     () => (tags ? tags.split(',').filter(Boolean) : []),
     [tags],
@@ -108,6 +115,8 @@ function RouteComponent() {
         sortBy,
         selectedTags,
         selectedLocations,
+        savedOnly: saved ?? false,
+        savedIds,
         fuseInstance,
       }),
     [
@@ -117,6 +126,8 @@ function RouteComponent() {
       sortBy,
       selectedTags,
       selectedLocations,
+      saved,
+      savedIds,
       fuseInstance,
     ],
   );
@@ -147,7 +158,14 @@ function RouteComponent() {
       const el = document.getElementById(`item-${highlight}`);
       if (el) {
         handledHighlightRef.current = highlight;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const headerEl = document.querySelector('[data-sticky-header]');
+        const headerHeight = headerEl?.getBoundingClientRect().height ?? 0;
+        const top = getHighlightScrollY(
+          el.getBoundingClientRect().top,
+          window.scrollY,
+          headerHeight,
+        );
+        window.scrollTo({ top, behavior: 'smooth' });
       } else {
         requestAnimationFrame(tryScroll);
       }
@@ -277,15 +295,32 @@ function RouteComponent() {
     [navigate],
   );
 
+  const handleToggleSaved = useCallback(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+    navigate({
+      to: '/',
+      search: (prev) => ({
+        ...prev,
+        category: 'all',
+        saved: !prev.saved,
+      }),
+    });
+  }, [navigate]);
+
   return (
     <>
-      <div className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6">
+      <div
+        className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
+        data-sticky-header
+      >
         <Header items={items} />
         <div className="pb-4 pt-2 border-b">
           <SearchBar initialValue={keyword} onChange={handleChangeKeyword} />
           <CategoryFilters
             selected={category}
             onSelect={handleChangeCategory}
+            saved={saved ?? false}
+            onToggleSaved={handleToggleSaved}
           />
           <TagLocationFilters
             items={items}
@@ -309,13 +344,22 @@ function RouteComponent() {
       {error ? (
         <LoadErrorState />
       ) : filteredItems.length === 0 ? (
-        <EmptyState />
+        saved ? (
+          <EmptyState
+            title="No saved items yet"
+            description="Tap the ⋯ button on any item to save it for later."
+          />
+        ) : (
+          <EmptyState />
+        )
       ) : (
         <>
           <ItemGrid
             items={visibleItems}
             highlightTerms={highlightTerms}
             highlightId={highlight}
+            savedIds={savedIds}
+            onToggleSave={toggleSaved}
           />
 
           {isLoading && (

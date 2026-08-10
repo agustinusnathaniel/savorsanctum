@@ -18,6 +18,8 @@ interface DirectoryFilterParams {
   sortBy: 'recent' | 'alphabetical';
   selectedTags: Array<string>;
   selectedLocations: Array<string>;
+  savedOnly?: boolean;
+  savedIds?: Array<string>;
   fuseInstance?: Fuse<DirectoryItem>;
 }
 
@@ -29,6 +31,8 @@ export function filterDirectoryItems(params: DirectoryFilterParams) {
     sortBy,
     selectedTags,
     selectedLocations,
+    savedOnly,
+    savedIds,
     fuseInstance,
   } = params;
 
@@ -55,6 +59,10 @@ export function filterDirectoryItems(params: DirectoryFilterParams) {
     results = results.filter((item) =>
       item.location.some((loc) => selectedLocations.includes(loc.name)),
     );
+  }
+
+  if (savedOnly) {
+    results = results.filter((item) => savedIds?.includes(item.id) ?? false);
   }
 
   if (sortBy === 'alphabetical') {
