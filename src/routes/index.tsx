@@ -1,10 +1,12 @@
 import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 import Fuse from 'fuse.js';
+import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
 import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
+import { useSavedItems } from '@/lib/hooks/use-saved-items';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
 import { buildItemListSchema } from '@/lib/models/structured-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
@@ -21,6 +23,7 @@ import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
 import { visibleCountForIndex } from '@/lib/pages/home/highlight';
 import { getItems } from '@/lib/services/notion/get-items';
+import { cn } from '@/lib/styles/utils';
 import { trackEvent } from '@/lib/utils/umami';
 
 const searchSchema = z.object({
@@ -33,6 +36,7 @@ const searchSchema = z.object({
   tags: z.string().optional().catch(undefined),
   location: z.string().optional().catch(undefined),
   highlight: z.string().optional().catch(undefined),
+  saved: z.boolean().optional().catch(undefined),
 });
 
 type SearchSchema = z.infer<typeof searchSchema>;
@@ -41,6 +45,7 @@ const defaultSearchParams: SearchSchema = {
   keyword: '',
   category: 'all',
   sortBy: 'recent',
+  saved: false,
   // pageSize: 20,
 };
 
@@ -81,8 +86,9 @@ const ITEMS_PER_PAGE = 12;
 
 function RouteComponent() {
   const { items, error } = Route.useLoaderData();
-  const { keyword, category, sortBy, tags, location, highlight } =
+  const { keyword, category, sortBy, tags, location, highlight, saved } =
     Route.useSearch();
+  const { savedIds, toggleSaved } = useSavedItems();
   const selectedTags = useMemo(
     () => (tags ? tags.split(',').filter(Boolean) : []),
     [tags],
@@ -108,6 +114,8 @@ function RouteComponent() {
         sortBy,
         selectedTags,
         selectedLocations,
+        savedOnly: saved ?? false,
+        savedIds,
         fuseInstance,
       }),
     [
@@ -117,6 +125,8 @@ function RouteComponent() {
       sortBy,
       selectedTags,
       selectedLocations,
+      saved,
+      savedIds,
       fuseInstance,
     ],
   );
@@ -277,6 +287,18 @@ function RouteComponent() {
     [navigate],
   );
 
+  const handleToggleSaved = useCallback(() => {
+    setVisibleCount(ITEMS_PER_PAGE);
+    navigate({
+      to: '/',
+      search: (prev) => ({
+        ...prev,
+        category: 'all',
+        saved: !prev.saved,
+      }),
+    });
+  }, [navigate]);
+
   return (
     <>
       <div className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6">
@@ -287,6 +309,25 @@ function RouteComponent() {
             selected={category}
             onSelect={handleChangeCategory}
           />
+          <button
+            type="button"
+            onClick={handleToggleSaved}
+            aria-pressed={saved ?? false}
+            data-umami-event="saved-filter"
+            className={cn(
+              'mt-2 flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors active:scale-95',
+              saved
+                ? 'bg-primary text-primary-foreground shadow-md'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+            )}
+          >
+            {saved ? (
+              <BookmarkCheck className="h-4 w-4" />
+            ) : (
+              <Bookmark className="h-4 w-4" />
+            )}
+            Saved
+          </button>
           <TagLocationFilters
             items={items}
             selectedTags={selectedTags}
@@ -309,13 +350,22 @@ function RouteComponent() {
       {error ? (
         <LoadErrorState />
       ) : filteredItems.length === 0 ? (
-        <EmptyState />
+        saved ? (
+          <EmptyState
+            title="No saved items yet"
+            description="Tap the bookmark icon on any item to save it for later."
+          />
+        ) : (
+          <EmptyState />
+        )
       ) : (
         <>
           <ItemGrid
             items={visibleItems}
             highlightTerms={highlightTerms}
             highlightId={highlight}
+            savedIds={savedIds}
+            onToggleSave={toggleSaved}
           />
 
           {isLoading && (

@@ -1,4 +1,11 @@
-import { Check, ExternalLink, Link, MapPin } from 'lucide-react';
+import {
+  Bookmark,
+  BookmarkCheck,
+  Check,
+  ExternalLink,
+  Link,
+  MapPin,
+} from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
@@ -11,6 +18,8 @@ interface ItemCardProps {
   item: DirectoryItem;
   highlightTerms?: Array<string>;
   highlightId?: string;
+  isSaved: boolean;
+  onToggleSave: (id: string) => void;
 }
 
 const categoryColors: Partial<Record<Category, string>> = {
@@ -19,7 +28,13 @@ const categoryColors: Partial<Record<Category, string>> = {
     'bg-[var(--color-category-products)] text-[var(--color-category-products-foreground)]',
 };
 
-export function ItemCard({ item, highlightTerms, highlightId }: ItemCardProps) {
+export function ItemCard({
+  item,
+  highlightTerms,
+  highlightId,
+  isSaved,
+  onToggleSave,
+}: ItemCardProps) {
   const isHighlighted = item.id === highlightId;
   // Memoize regex to avoid recreating it multiple times per card render
   const highlightRegex = useMemo(() => {
@@ -158,6 +173,24 @@ export function ItemCard({ item, highlightTerms, highlightId }: ItemCardProps) {
           {cardContent}
         </div>
       )}
+
+      <button
+        type="button"
+        onClick={() => onToggleSave(item.id)}
+        data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
+        data-umami-event-itemname={item.name}
+        aria-label={
+          isSaved ? `Remove ${item.name} from saved` : `Save ${item.name}`
+        }
+        aria-pressed={isSaved}
+        className="absolute top-2 left-2 z-10 rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+      >
+        {isSaved ? (
+          <BookmarkCheck className="h-3.5 w-3.5" />
+        ) : (
+          <Bookmark className="h-3.5 w-3.5" />
+        )}
+      </button>
 
       <button
         type="button"
