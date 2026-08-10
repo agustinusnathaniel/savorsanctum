@@ -5,11 +5,18 @@ import {
   ExternalLink,
   Link,
   MapPin,
+  MoreVertical,
 } from 'lucide-react';
 import { useCallback, useMemo } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
 import { Badge } from '@/lib/components/ui/badge';
+import {
+  Menu,
+  MenuContent,
+  MenuItem,
+  MenuTrigger,
+} from '@/lib/components/ui/menu';
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
 import type { Category, DirectoryItem } from '@/lib/models/collection-data';
 import { cn } from '@/lib/styles/utils';
@@ -183,12 +190,12 @@ export function ItemCard({
           isSaved ? `Remove ${item.name} from saved` : `Save ${item.name}`
         }
         aria-pressed={isSaved}
-        className="absolute top-2 left-2 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 md:min-h-0 md:min-w-0 md:p-1.5"
+        className="hidden md:flex absolute top-2 left-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity md:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
       >
         {isSaved ? (
-          <BookmarkCheck className="h-4 w-4 md:h-3.5 md:w-3.5" />
+          <BookmarkCheck className="h-3.5 w-3.5" />
         ) : (
-          <Bookmark className="h-4 w-4 md:h-3.5 md:w-3.5" />
+          <Bookmark className="h-3.5 w-3.5" />
         )}
       </button>
 
@@ -198,14 +205,52 @@ export function ItemCard({
         data-umami-event="item-share"
         data-umami-event-itemname={item.name}
         aria-label={`Copy link to ${item.name}`}
-        className="absolute top-2 right-2 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 md:min-h-0 md:min-w-0 md:p-1.5"
+        className="hidden md:flex absolute top-2 right-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity md:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
       >
         {copied ? (
-          <Check className="h-4 w-4 md:h-3.5 md:w-3.5" />
+          <Check className="h-3.5 w-3.5" />
         ) : (
-          <Link className="h-4 w-4 md:h-3.5 md:w-3.5" />
+          <Link className="h-3.5 w-3.5" />
         )}
       </button>
+
+      <Menu>
+        <MenuTrigger
+          type="button"
+          aria-label={`Actions for ${item.name}`}
+          data-umami-event="item-menu"
+          data-umami-event-itemname={item.name}
+          className="absolute top-2 right-2 z-10 flex size-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 md:hidden"
+        >
+          <MoreVertical className="h-4 w-4" />
+        </MenuTrigger>
+        <MenuContent>
+          <MenuItem
+            onClick={() => onToggleSave(item.id)}
+            data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
+            data-umami-event-itemname={item.name}
+          >
+            {isSaved ? (
+              <BookmarkCheck className="h-4 w-4" />
+            ) : (
+              <Bookmark className="h-4 w-4" />
+            )}
+            {isSaved ? 'Remove from saved' : 'Save item'}
+          </MenuItem>
+          <MenuItem
+            onClick={handleCopyLink}
+            data-umami-event="item-share"
+            data-umami-event-itemname={item.name}
+          >
+            {copied ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Link className="h-4 w-4" />
+            )}
+            {copied ? 'Link copied' : 'Copy link'}
+          </MenuItem>
+        </MenuContent>
+      </Menu>
     </div>
   );
 }

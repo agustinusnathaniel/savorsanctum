@@ -347,7 +347,7 @@ function RouteComponent() {
         saved ? (
           <EmptyState
             title="No saved items yet"
-            description="Tap the bookmark icon on any item to save it for later."
+            description="Tap the ⋯ button on any item to save it for later."
           />
         ) : (
           <EmptyState />
