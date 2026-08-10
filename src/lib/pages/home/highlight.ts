@@ -14,3 +14,16 @@ export function visibleCountForIndex(
   }
   return Math.min(total, Math.ceil((index + 1) / pageSize) * pageSize);
 }
+
+/**
+ * Scroll target that places the top of the highlighted item just below
+ * the sticky filter header, with a small breathing gap.
+ */
+export function getHighlightScrollY(
+  itemTop: number,
+  scrollY: number,
+  headerHeight: number,
+  gap = 12,
+): number {
+  return Math.max(0, itemTop + scrollY - headerHeight - gap);
+}

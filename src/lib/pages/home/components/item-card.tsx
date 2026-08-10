@@ -183,12 +183,12 @@ export function ItemCard({
           isSaved ? `Remove ${item.name} from saved` : `Save ${item.name}`
         }
         aria-pressed={isSaved}
-        className="absolute top-2 left-2 z-10 rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="absolute top-2 left-2 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 md:min-h-0 md:min-w-0 md:p-1.5"
       >
         {isSaved ? (
-          <BookmarkCheck className="h-3.5 w-3.5" />
+          <BookmarkCheck className="h-4 w-4 md:h-3.5 md:w-3.5" />
         ) : (
-          <Bookmark className="h-3.5 w-3.5" />
+          <Bookmark className="h-4 w-4 md:h-3.5 md:w-3.5" />
         )}
       </button>
 
@@ -198,12 +198,12 @@ export function ItemCard({
         data-umami-event="item-share"
         data-umami-event-itemname={item.name}
         aria-label={`Copy link to ${item.name}`}
-        className="absolute top-2 right-2 z-10 rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+        className="absolute top-2 right-2 z-10 flex min-h-11 min-w-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity pointer-fine:opacity-0 pointer-fine:group-hover:opacity-100 pointer-fine:focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 md:min-h-0 md:min-w-0 md:p-1.5"
       >
         {copied ? (
-          <Check className="h-3.5 w-3.5" />
+          <Check className="h-4 w-4 md:h-3.5 md:w-3.5" />
         ) : (
-          <Link className="h-3.5 w-3.5" />
+          <Link className="h-4 w-4 md:h-3.5 md:w-3.5" />
         )}
       </button>
     </div>

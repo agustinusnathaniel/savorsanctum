@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vite-plus/test';
 
-import { visibleCountForIndex } from '@/lib/pages/home/highlight';
+import {
+  getHighlightScrollY,
+  visibleCountForIndex,
+} from '@/lib/pages/home/highlight';
 
 describe('visibleCountForIndex', () => {
   it('returns current unchanged when index is already visible', () => {
@@ -21,5 +24,28 @@ describe('visibleCountForIndex', () => {
 
   it('returns current unchanged when current is already a larger multiple', () => {
     expect(visibleCountForIndex(3, 24, 12, 100)).toBe(24);
+  });
+});
+
+describe('getHighlightScrollY', () => {
+  it('places the item top below the sticky header', () => {
+    expect(getHighlightScrollY(600, 0, 300)).toBe(288);
+  });
+
+  it('accounts for current scroll position', () => {
+    expect(getHighlightScrollY(600, 1200, 300)).toBe(1488);
+  });
+
+  it('clamps to 0 when the item is already above the target', () => {
+    expect(getHighlightScrollY(100, 0, 300)).toBe(0);
+  });
+
+  it('uses the default 12px gap', () => {
+    expect(getHighlightScrollY(312, 0, 300)).toBe(0);
+    expect(getHighlightScrollY(313, 0, 300)).toBe(1);
+  });
+
+  it('accepts a custom gap', () => {
+    expect(getHighlightScrollY(620, 0, 300, 20)).toBe(300);
   });
 });

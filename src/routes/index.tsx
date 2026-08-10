@@ -1,7 +1,6 @@
 import { debounce } from '@tanstack/react-pacer';
 import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
 import Fuse from 'fuse.js';
-import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
@@ -21,9 +20,11 @@ import { SearchBar } from '@/lib/pages/home/components/search-bar';
 import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
-import { visibleCountForIndex } from '@/lib/pages/home/highlight';
+import {
+  getHighlightScrollY,
+  visibleCountForIndex,
+} from '@/lib/pages/home/highlight';
 import { getItems } from '@/lib/services/notion/get-items';
-import { cn } from '@/lib/styles/utils';
 import { trackEvent } from '@/lib/utils/umami';
 
 const searchSchema = z.object({
@@ -157,7 +158,14 @@ function RouteComponent() {
       const el = document.getElementById(`item-${highlight}`);
       if (el) {
         handledHighlightRef.current = highlight;
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        const headerEl = document.querySelector('[data-sticky-header]');
+        const headerHeight = headerEl?.getBoundingClientRect().height ?? 0;
+        const top = getHighlightScrollY(
+          el.getBoundingClientRect().top,
+          window.scrollY,
+          headerHeight,
+        );
+        window.scrollTo({ top, behavior: 'smooth' });
       } else {
         requestAnimationFrame(tryScroll);
       }
@@ -301,33 +309,19 @@ function RouteComponent() {
 
   return (
     <>
-      <div className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6">
+      <div
+        className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
+        data-sticky-header
+      >
         <Header items={items} />
         <div className="pb-4 pt-2 border-b">
           <SearchBar initialValue={keyword} onChange={handleChangeKeyword} />
           <CategoryFilters
             selected={category}
             onSelect={handleChangeCategory}
+            saved={saved ?? false}
+            onToggleSaved={handleToggleSaved}
           />
-          <button
-            type="button"
-            onClick={handleToggleSaved}
-            aria-pressed={saved ?? false}
-            data-umami-event="saved-filter"
-            className={cn(
-              'mt-2 flex shrink-0 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition-colors active:scale-95',
-              saved
-                ? 'bg-primary text-primary-foreground shadow-md'
-                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-            )}
-          >
-            {saved ? (
-              <BookmarkCheck className="h-4 w-4" />
-            ) : (
-              <Bookmark className="h-4 w-4" />
-            )}
-            Saved
-          </button>
           <TagLocationFilters
             items={items}
             selectedTags={selectedTags}
