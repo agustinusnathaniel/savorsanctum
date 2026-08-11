@@ -27,3 +27,16 @@ export function getHighlightScrollY(
 ): number {
   return Math.max(0, itemTop + scrollY - headerHeight - gap);
 }
+
+/**
+ * Builds a shareable URL for a single item that keeps the item visible to
+ * any recipient. The `saved` filter is stripped because the recipient's
+ * saved list differs from the sender's — leaving it in would hide the
+ * shared item behind the "no saved items" empty state.
+ */
+export function buildItemShareUrl(href: string, itemId: string): string {
+  const url = new URL(href);
+  url.searchParams.delete('saved');
+  url.searchParams.set('highlight', itemId);
+  return url.toString();
+}
