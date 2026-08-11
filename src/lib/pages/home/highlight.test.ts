@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vite-plus/test';
 
 import {
+  buildItemShareUrl,
   getHighlightScrollY,
   visibleCountForIndex,
 } from '@/lib/pages/home/highlight';
@@ -47,5 +48,39 @@ describe('getHighlightScrollY', () => {
 
   it('accepts a custom gap', () => {
     expect(getHighlightScrollY(620, 0, 300, 20)).toBe(300);
+  });
+});
+
+describe('buildItemShareUrl', () => {
+  it('sets the highlight param', () => {
+    expect(buildItemShareUrl('https://example.com/', 'item-1')).toBe(
+      'https://example.com/?highlight=item-1',
+    );
+  });
+
+  it('strips the saved filter so the item is visible to any recipient', () => {
+    expect(
+      buildItemShareUrl(
+        'https://example.com/?saved=true&category=food',
+        'item-1',
+      ),
+    ).toBe('https://example.com/?category=food&highlight=item-1');
+  });
+
+  it('preserves other search params', () => {
+    expect(
+      buildItemShareUrl(
+        'https://example.com/?keyword=ramen&sortBy=recent&tags=a%2Cb',
+        'item-1',
+      ),
+    ).toBe(
+      'https://example.com/?keyword=ramen&sortBy=recent&tags=a%2Cb&highlight=item-1',
+    );
+  });
+
+  it('overwrites an existing highlight param', () => {
+    expect(
+      buildItemShareUrl('https://example.com/?highlight=old', 'item-2'),
+    ).toBe('https://example.com/?highlight=item-2');
   });
 });

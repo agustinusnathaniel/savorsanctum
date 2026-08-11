@@ -19,6 +19,7 @@ import {
 } from '@/lib/components/ui/menu';
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
 import type { Category, DirectoryItem } from '@/lib/models/collection-data';
+import { buildItemShareUrl } from '@/lib/pages/home/highlight';
 import { cn } from '@/lib/styles/utils';
 
 interface ItemCardProps {
@@ -84,9 +85,7 @@ export function ItemCard({
   const { copied, copy } = useCopyToClipboard();
 
   const handleCopyLink = useCallback(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('highlight', item.id);
-    copy(url.toString());
+    copy(buildItemShareUrl(window.location.href, item.id));
   }, [copy, item.id]);
 
   const cardContent = (
