@@ -189,7 +189,7 @@ export function ItemCard({
           isSaved ? `Remove ${item.name} from saved` : `Save ${item.name}`
         }
         aria-pressed={isSaved}
-        className="hidden md:flex absolute top-2 left-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity md:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
+        className="hidden pointer-fine:flex absolute top-2 left-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
       >
         {isSaved ? (
           <BookmarkCheck className="h-3.5 w-3.5" />
@@ -204,7 +204,7 @@ export function ItemCard({
         data-umami-event="item-share"
         data-umami-event-itemname={item.name}
         aria-label={`Copy link to ${item.name}`}
-        className="hidden md:flex absolute top-2 right-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity md:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
+        className="hidden pointer-fine:flex absolute top-2 right-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
       >
         {copied ? (
           <Check className="h-3.5 w-3.5" />
@@ -219,7 +219,7 @@ export function ItemCard({
           aria-label={`Actions for ${item.name}`}
           data-umami-event="item-menu"
           data-umami-event-itemname={item.name}
-          className="absolute top-2 right-2 z-10 flex size-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 md:hidden"
+          className="absolute top-2 right-2 z-10 flex size-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 pointer-fine:hidden"
         >
           <MoreVertical className="h-4 w-4" />
         </MenuTrigger>
