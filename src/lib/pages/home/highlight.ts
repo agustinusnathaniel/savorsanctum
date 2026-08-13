@@ -1,3 +1,5 @@
+import type { DirectoryItem } from '@/lib/models/collection-data';
+
 /**
  * Returns the visible count needed so that the item at `index` is rendered.
  * - If the index is already visible (< current), returns current unchanged.
@@ -39,4 +41,32 @@ export function buildItemShareUrl(href: string, itemId: string): string {
   url.searchParams.delete('saved');
   url.searchParams.set('highlight', itemId);
   return url.toString();
+}
+
+export interface SocialMeta {
+  title: string;
+  description: string;
+  image?: string;
+}
+
+export function buildItemSocialMeta(
+  item: DirectoryItem,
+  fallback: { title: string; description: string; image?: string },
+): SocialMeta {
+  const parts: Array<string> = [];
+  if (item.location.length > 0) {
+    parts.push(item.location.map((loc) => loc.name).join(', '));
+  }
+  if (item.tags.length > 0) {
+    parts.push(item.tags.map((tag) => tag.name).join(', '));
+  }
+  return {
+    title: item.name,
+    description: parts.length > 0 ? parts.join(' · ') : fallback.description,
+    ...(item.image
+      ? { image: item.image }
+      : fallback.image
+        ? { image: fallback.image }
+        : {}),
+  };
 }

@@ -1,10 +1,27 @@
 import { describe, expect, it } from 'vite-plus/test';
 
+import type { DirectoryItem } from '@/lib/models/collection-data';
 import {
   buildItemShareUrl,
+  buildItemSocialMeta,
   getHighlightScrollY,
   visibleCountForIndex,
 } from '@/lib/pages/home/highlight';
+
+function makeItem(overrides: Partial<DirectoryItem> = {}): DirectoryItem {
+  return {
+    id: '1',
+    name: 'Sushi Bar',
+    category: 'food',
+    link: 'https://sushi.example.com',
+    image: 'sushi.jpg',
+    reviews: [{ name: 'great' }],
+    tags: [{ name: 'japanese' }],
+    location: [{ name: 'Tokyo' }],
+    created_time: '2024-01-01',
+    ...overrides,
+  };
+}
 
 describe('visibleCountForIndex', () => {
   it('returns current unchanged when index is already visible', () => {
@@ -82,5 +99,53 @@ describe('buildItemShareUrl', () => {
     expect(
       buildItemShareUrl('https://example.com/?highlight=old', 'item-2'),
     ).toBe('https://example.com/?highlight=item-2');
+  });
+});
+
+describe('buildItemSocialMeta', () => {
+  const fallback = {
+    title: 'Site Title',
+    description: 'Site description',
+    image: 'fallback.jpg',
+  };
+
+  it('uses item.name as title', () => {
+    const meta = buildItemSocialMeta(
+      makeItem({ name: 'Ramen Shop' }),
+      fallback,
+    );
+    expect(meta.title).toBe('Ramen Shop');
+  });
+
+  it('joins location names and tag names with the " · " separator', () => {
+    const meta = buildItemSocialMeta(
+      makeItem({
+        location: [{ name: 'Kyoto' }, { name: 'Osaka' }],
+        tags: [{ name: 'ramen' }, { name: 'trending' }],
+      }),
+      fallback,
+    );
+    expect(meta.description).toBe('Kyoto, Osaka · ramen, trending');
+  });
+
+  it('falls back to fallback.description when the item has no locations or tags', () => {
+    const meta = buildItemSocialMeta(
+      makeItem({ location: [], tags: [] }),
+      fallback,
+    );
+    expect(meta.description).toBe('Site description');
+  });
+
+  it('uses item.image when present', () => {
+    const meta = buildItemSocialMeta(
+      makeItem({ image: 'ramen.jpg' }),
+      fallback,
+    );
+    expect(meta.image).toBe('ramen.jpg');
+  });
+
+  it('uses fallback.image when item.image is absent', () => {
+    const meta = buildItemSocialMeta(makeItem({ image: '' }), fallback);
+    expect(meta.image).toBe('fallback.jpg');
   });
 });
