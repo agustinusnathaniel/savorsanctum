@@ -1,4 +1,7 @@
-export function LoadErrorState() {
+import { Button } from '@/lib/components/ui/button';
+import { cn } from '@/lib/styles/utils';
+
+export function LoadErrorState({ onRetry }: { onRetry?: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
       <div className="mb-4 text-5xl">⚠️</div>
@@ -9,6 +12,11 @@ export function LoadErrorState() {
         Something went wrong while fetching the latest items. Please try again
         in a moment.
       </p>
+      {onRetry && (
+        <Button onClick={onRetry} className={cn('cursor-pointer')}>
+          Try again
+        </Button>
+      )}
     </div>
   );
 }
