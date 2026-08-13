@@ -4,6 +4,7 @@ import Fuse from 'fuse.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
 
+import { SITE_DESCRIPTION, SITE_TITLE } from '@/lib/constants/site';
 import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
 import { useSavedItems } from '@/lib/hooks/use-saved-items';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
@@ -21,6 +22,7 @@ import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
 import {
+  buildItemSocialMeta,
   getHighlightScrollY,
   visibleCountForIndex,
 } from '@/lib/pages/home/highlight';
@@ -73,14 +75,42 @@ export const Route = createFileRoute('/')({
   search: {
     middlewares: [stripSearchParams(defaultSearchParams)],
   },
-  head: ({ loaderData }) => ({
-    scripts: [
-      {
-        type: 'application/ld+json',
-        children: JSON.stringify(buildItemListSchema(loaderData?.items ?? [])),
-      },
-    ],
-  }),
+  head: ({ loaderData, match }) => {
+    const highlightId = match.search.highlight;
+    const highlightedItem = highlightId
+      ? loaderData?.items.find((item) => item.id === highlightId)
+      : undefined;
+    const socialMeta = highlightedItem
+      ? buildItemSocialMeta(highlightedItem, {
+          title: SITE_TITLE,
+          description: SITE_DESCRIPTION,
+        })
+      : null;
+    return {
+      meta: socialMeta
+        ? [
+            { name: 'og:title', content: socialMeta.title },
+            { name: 'og:description', content: socialMeta.description },
+            ...(socialMeta.image
+              ? [{ name: 'og:image', content: socialMeta.image }]
+              : []),
+            { name: 'twitter:title', content: socialMeta.title },
+            { name: 'twitter:description', content: socialMeta.description },
+            ...(socialMeta.image
+              ? [{ name: 'twitter:image', content: socialMeta.image }]
+              : []),
+          ]
+        : undefined,
+      scripts: [
+        {
+          type: 'application/ld+json',
+          children: JSON.stringify(
+            buildItemListSchema(loaderData?.items ?? []),
+          ),
+        },
+      ],
+    };
+  },
 });
 
 const ITEMS_PER_PAGE = 12;
