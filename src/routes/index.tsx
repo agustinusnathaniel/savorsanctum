@@ -1,5 +1,9 @@
 import { debounce } from '@tanstack/react-pacer';
-import { createFileRoute, stripSearchParams } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  stripSearchParams,
+  useRouter,
+} from '@tanstack/react-router';
 import Fuse from 'fuse.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import z from 'zod';
@@ -86,6 +90,7 @@ export const Route = createFileRoute('/')({
 const ITEMS_PER_PAGE = 12;
 
 function RouteComponent() {
+  const router = useRouter();
   const { items, error } = Route.useLoaderData();
   const { keyword, category, sortBy, tags, location, highlight, saved } =
     Route.useSearch();
@@ -342,7 +347,7 @@ function RouteComponent() {
       )}
 
       {error ? (
-        <LoadErrorState />
+        <LoadErrorState onRetry={() => router.invalidate()} />
       ) : filteredItems.length === 0 ? (
         saved ? (
           <EmptyState
