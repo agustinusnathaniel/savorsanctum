@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [1.3.0](https://github.com/agustinusnathaniel/savorsanctum/compare/v1.2.3...v1.3.0) (2026-08-13)
+
+### Features
+
+* add JSON-LD ItemList structured data and centralize site metadata ([#37](https://github.com/agustinusnathaniel/savorsanctum/issues/37)) ([5ef92b9](https://github.com/agustinusnathaniel/savorsanctum/commit/5ef92b9ccc4ae8aeb69c20c6da29bb410813ad46))
+* add per-item share links with highlight deep-linking ([#39](https://github.com/agustinusnathaniel/savorsanctum/issues/39)) ([3a806d5](https://github.com/agustinusnathaniel/savorsanctum/commit/3a806d524b52f1a464cb3143e691a7ff465f4bae))
+* add saved items bookmarking with localStorage persistence ([#41](https://github.com/agustinusnathaniel/savorsanctum/issues/41)) ([a12551c](https://github.com/agustinusnathaniel/savorsanctum/commit/a12551cc32be54ed0bb34fa20b3bf0658770291d))
+
+### Bug Fixes
+
+* gate card actions behind pointer-fine to stop invisible tap interception ([#43](https://github.com/agustinusnathaniel/savorsanctum/issues/43)) ([2724591](https://github.com/agustinusnathaniel/savorsanctum/commit/2724591bafe5c9da6a40dd3e538af0feae168637))
+* handle background cache refresh rejection to prevent unhandled promise rejection ([#28](https://github.com/agustinusnathaniel/savorsanctum/issues/28)) ([5c7b8f7](https://github.com/agustinusnathaniel/savorsanctum/commit/5c7b8f795e11d58eedb8a822b9f2edec0fba1745))
+* handle linkless item cards and remove fake image srcset ([#29](https://github.com/agustinusnathaniel/savorsanctum/issues/29)) ([3361188](https://github.com/agustinusnathaniel/savorsanctum/commit/3361188987e0f1827e1b1ccad157fb0b4ca5e1f9))
+* make useSavedItems hydration-safe with useSyncExternalStore ([#44](https://github.com/agustinusnathaniel/savorsanctum/issues/44)) ([9b094b9](https://github.com/agustinusnathaniel/savorsanctum/commit/9b094b9974e7f732cd7cd6ade68b9dbca38bfe42))
+* pin patched js-yaml and nanoid chains ([#38](https://github.com/agustinusnathaniel/savorsanctum/issues/38)) ([e1102c1](https://github.com/agustinusnathaniel/savorsanctum/commit/e1102c13efd3d2b819a4f4bcdc3f53d9a91a528c))
+* pin patched seroval chain and bump react-devtools ([#30](https://github.com/agustinusnathaniel/savorsanctum/issues/30)) ([46dc240](https://github.com/agustinusnathaniel/savorsanctum/commit/46dc240bfe9b2dce978c0bba3982f2c36f51d098))
+* pin patched undici, fast-uri, and postcss chains ([#34](https://github.com/agustinusnathaniel/savorsanctum/issues/34)) ([e34fdb5](https://github.com/agustinusnathaniel/savorsanctum/commit/e34fdb5bb5207f24cd3590b9bb54b69e185117ef))
+* serve stale data to concurrent requests during failed cache refresh ([#32](https://github.com/agustinusnathaniel/savorsanctum/issues/32)) ([7830bc8](https://github.com/agustinusnathaniel/savorsanctum/commit/7830bc8e272ff77830427bd8edbbf6080cff91e7))
+* strip saved filter from per-item share links ([#42](https://github.com/agustinusnathaniel/savorsanctum/issues/42)) ([151d8f8](https://github.com/agustinusnathaniel/savorsanctum/commit/151d8f82251157f5d0116ef5f81a2d2e715d822f))
+* surface Notion load error instead of misleading empty state ([#33](https://github.com/agustinusnathaniel/savorsanctum/issues/33)) ([7d0711c](https://github.com/agustinusnathaniel/savorsanctum/commit/7d0711c2b94b402cb100e8dfe0459f057cf3488e))
+* update PWA manifest branding while keeping PWA disabled ([#26](https://github.com/agustinusnathaniel/savorsanctum/issues/26)) ([da69ede](https://github.com/agustinusnathaniel/savorsanctum/commit/da69ede8915353b84de194a9175be1efac3e2451))
 ## [1.2.3](https://github.com/agustinusnathaniel/savorsanctum/compare/v1.2.2...v1.2.3) (2026-06-19)
 
 ## [1.2.2](https://github.com/agustinusnathaniel/savorsanctum/compare/v1.2.1...v1.2.2) (2026-06-11)
