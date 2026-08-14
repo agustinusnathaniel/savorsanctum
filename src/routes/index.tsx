@@ -19,6 +19,7 @@ import { EndOfList } from '@/lib/pages/home/components/end-of-list';
 import { Header } from '@/lib/pages/home/components/header';
 import { ItemGrid } from '@/lib/pages/home/components/item-grid';
 import { LoadErrorState } from '@/lib/pages/home/components/load-error-state';
+import { LoadWarningBanner } from '@/lib/pages/home/components/load-warning-banner';
 import { ResultCounter } from '@/lib/pages/home/components/result-counter';
 import { ScrollToTop } from '@/lib/pages/home/components/scroll-to-top';
 import { SearchBar } from '@/lib/pages/home/components/search-bar';
@@ -376,41 +377,49 @@ function RouteComponent() {
         />
       )}
 
-      {error ? (
+      {error && items.length === 0 ? (
         <LoadErrorState onRetry={() => router.invalidate()} />
-      ) : filteredItems.length === 0 ? (
-        saved ? (
-          <EmptyState
-            title="No saved items yet"
-            description="Tap the ⋯ button on any item to save it for later."
-          />
-        ) : (
-          <EmptyState />
-        )
       ) : (
         <>
-          <ItemGrid
-            items={visibleItems}
-            highlightTerms={highlightTerms}
-            highlightId={highlight}
-            savedIds={savedIds}
-            onToggleSave={toggleSaved}
-          />
-
-          {isLoading && (
-            <div className="mt-8 columns-1 gap-4 md:columns-2 lg:columns-3">
-              {Array.from({ length: 3 }).map((_, idx) => (
-                // biome-ignore lint/suspicious/noArrayIndexKey: -
-                <div key={idx} className="mb-4 break-inside-avoid">
-                  <SkeletonCard />
-                </div>
-              ))}
-            </div>
+          {error && items.length > 0 && (
+            <LoadWarningBanner onRetry={() => router.invalidate()} />
           )}
 
-          {!hasMore && filteredItems.length > 0 && <EndOfList />}
+          {filteredItems.length === 0 ? (
+            saved ? (
+              <EmptyState
+                title="No saved items yet"
+                description="Tap the ⋯ button on any item to save it for later."
+              />
+            ) : (
+              <EmptyState />
+            )
+          ) : (
+            <>
+              <ItemGrid
+                items={visibleItems}
+                highlightTerms={highlightTerms}
+                highlightId={highlight}
+                savedIds={savedIds}
+                onToggleSave={toggleSaved}
+              />
 
-          {hasMore && <div ref={loaderRef} className="mt-8 h-12" />}
+              {isLoading && (
+                <div className="mt-8 columns-1 gap-4 md:columns-2 lg:columns-3">
+                  {Array.from({ length: 3 }).map((_, idx) => (
+                    // biome-ignore lint/suspicious/noArrayIndexKey: -
+                    <div key={idx} className="mb-4 break-inside-avoid">
+                      <SkeletonCard />
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {!hasMore && filteredItems.length > 0 && <EndOfList />}
+
+              {hasMore && <div ref={loaderRef} className="mt-8 h-12" />}
+            </>
+          )}
         </>
       )}
 
