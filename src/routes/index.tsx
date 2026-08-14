@@ -44,7 +44,13 @@ const searchSchema = z.object({
   tags: z.string().optional().catch(undefined),
   location: z.string().optional().catch(undefined),
   highlight: z.string().optional().catch(undefined),
-  saved: z.boolean().optional().catch(undefined),
+  saved: z
+    .union([z.boolean(), z.enum(['true', 'false'])])
+    .optional()
+    .catch(undefined)
+    .transform((v) =>
+      v === undefined ? undefined : v === true || v === 'true',
+    ),
 });
 
 type SearchSchema = z.infer<typeof searchSchema>;
