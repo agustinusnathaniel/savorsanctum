@@ -181,11 +181,10 @@ function RouteComponent() {
     if (!highlight || handledHighlightRef.current === highlight) {
       return;
     }
-    const index = filteredRef.current.findIndex(
-      (item) => item.id === highlight,
-    );
+    const index = filteredItems.findIndex((item) => item.id === highlight);
     if (index === -1) {
-      handledHighlightRef.current = highlight;
+      // Item is filtered out by the current search/filters — leave the
+      // highlight pending so it fires once the item becomes visible.
       return;
     }
     setVisibleCount((prev) =>
@@ -214,7 +213,7 @@ function RouteComponent() {
     };
     const raf = requestAnimationFrame(tryScroll);
     return () => cancelAnimationFrame(raf);
-  }, [highlight]);
+  }, [highlight, filteredItems]);
 
   const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMore = visibleCount < filteredItems.length;
