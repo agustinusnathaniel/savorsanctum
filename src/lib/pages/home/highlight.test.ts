@@ -4,6 +4,7 @@ import type { DirectoryItem } from '@/lib/models/collection-data';
 import {
   buildItemShareUrl,
   buildItemSocialMeta,
+  buildViewShareUrl,
   getHighlightScrollY,
   visibleCountForIndex,
 } from '@/lib/pages/home/highlight';
@@ -99,6 +100,40 @@ describe('buildItemShareUrl', () => {
     expect(
       buildItemShareUrl('https://example.com/?highlight=old', 'item-2'),
     ).toBe('https://example.com/?highlight=item-2');
+  });
+});
+
+describe('buildViewShareUrl', () => {
+  it('keeps a plain URL unchanged', () => {
+    expect(buildViewShareUrl('https://example.com/')).toBe(
+      'https://example.com/',
+    );
+  });
+
+  it('strips saved=true', () => {
+    expect(
+      buildViewShareUrl('https://example.com/?saved=true&category=food'),
+    ).toBe('https://example.com/?category=food');
+  });
+
+  it('strips saved=false too', () => {
+    expect(
+      buildViewShareUrl('https://example.com/?saved=false&sortBy=recent'),
+    ).toBe('https://example.com/?sortBy=recent');
+  });
+
+  it('preserves other params', () => {
+    expect(
+      buildViewShareUrl(
+        'https://example.com/?keyword=ramen&tags=a%2Cb&saved=true',
+      ),
+    ).toBe('https://example.com/?keyword=ramen&tags=a%2Cb');
+  });
+
+  it('preserves a highlight param', () => {
+    expect(
+      buildViewShareUrl('https://example.com/?highlight=item-1&saved=true'),
+    ).toBe('https://example.com/?highlight=item-1');
   });
 });
 
