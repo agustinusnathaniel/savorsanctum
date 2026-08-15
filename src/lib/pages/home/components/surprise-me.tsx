@@ -1,28 +1,23 @@
 import { Shuffle } from 'lucide-react';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import type { DirectoryItem } from '@/lib/models/collection-data';
 
 interface SurpriseMeProps {
   items: Array<DirectoryItem>;
+  onPick: (item: DirectoryItem) => void;
 }
 
-export function SurpriseMe({ items }: SurpriseMeProps) {
-  const linkedItems = useMemo(
-    () => items.filter((item) => Boolean(item.link)),
-    [items],
-  );
-
+export function SurpriseMe({ items, onPick }: SurpriseMeProps) {
   const pickRandom = useCallback(() => {
-    if (linkedItems.length === 0) {
+    if (items.length === 0) {
       return;
     }
-    const randomItem =
-      linkedItems[Math.floor(Math.random() * linkedItems.length)];
-    window.open(randomItem.link, '_blank', 'noopener,noreferrer');
-  }, [linkedItems]);
+    const randomItem = items[Math.floor(Math.random() * items.length)];
+    onPick(randomItem);
+  }, [items, onPick]);
 
-  if (linkedItems.length === 0) {
+  if (items.length === 0) {
     return null;
   }
 
@@ -32,7 +27,7 @@ export function SurpriseMe({ items }: SurpriseMeProps) {
       onClick={pickRandom}
       data-umami-event="surprise-me"
       className="fixed z-20 bottom-8 left-6 rounded-full bg-primary text-primary-foreground p-3 shadow-lg hover:shadow-xl hover:scale-110 transition-colors duration-200 active:scale-95 motion-safe:animate-bounce-in motion-reduce:opacity-100"
-      aria-label="Surprise me — open a random item"
+      aria-label="Surprise me — reveal a random item"
     >
       <Shuffle className="h-5 w-5" />
     </button>

@@ -11,7 +11,10 @@ import z from 'zod';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/lib/constants/site';
 import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
 import { useSavedItems } from '@/lib/hooks/use-saved-items';
-import { DIR_CATEGORIES } from '@/lib/models/collection-data';
+import {
+  DIR_CATEGORIES,
+  type DirectoryItem,
+} from '@/lib/models/collection-data';
 import { buildItemListSchema } from '@/lib/models/structured-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
 import { EmptyState } from '@/lib/pages/home/components/empty-state';
@@ -344,6 +347,17 @@ function RouteComponent() {
     });
   }, [navigate]);
 
+  const handleSurprisePick = useCallback(
+    (item: DirectoryItem) => {
+      handledHighlightRef.current = null;
+      navigate({
+        to: '/',
+        search: (prev) => ({ ...prev, highlight: item.id }),
+      });
+    },
+    [navigate],
+  );
+
   return (
     <>
       <div
@@ -424,7 +438,7 @@ function RouteComponent() {
         </>
       )}
 
-      <SurpriseMe items={filteredItems} />
+      <SurpriseMe items={filteredItems} onPick={handleSurprisePick} />
       <ScrollToTop />
     </>
   );
