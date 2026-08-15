@@ -181,21 +181,16 @@ function RouteComponent() {
     if (!highlight || handledHighlightRef.current === highlight) {
       return;
     }
-    const index = filteredRef.current.findIndex(
-      (item) => item.id === highlight,
-    );
+    const index = filteredItems.findIndex((item) => item.id === highlight);
     if (index === -1) {
-      handledHighlightRef.current = highlight;
+      // Item is filtered out by the current search/filters — leave the
+      // highlight pending so it fires once the item becomes visible.
       return;
     }
     setVisibleCount((prev) =>
-      visibleCountForIndex(
-        index,
-        prev,
-        ITEMS_PER_PAGE,
-        filteredRef.current.length,
-      ),
+      visibleCountForIndex(index, prev, ITEMS_PER_PAGE, filteredItems.length),
     );
+    let raf = 0;
     const tryScroll = () => {
       const el = document.getElementById(`item-${highlight}`);
       if (el) {
@@ -209,12 +204,12 @@ function RouteComponent() {
         );
         window.scrollTo({ top, behavior: 'smooth' });
       } else {
-        requestAnimationFrame(tryScroll);
+        raf = requestAnimationFrame(tryScroll);
       }
     };
-    const raf = requestAnimationFrame(tryScroll);
+    raf = requestAnimationFrame(tryScroll);
     return () => cancelAnimationFrame(raf);
-  }, [highlight]);
+  }, [highlight, filteredItems]);
 
   const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMore = visibleCount < filteredItems.length;
