@@ -188,13 +188,9 @@ function RouteComponent() {
       return;
     }
     setVisibleCount((prev) =>
-      visibleCountForIndex(
-        index,
-        prev,
-        ITEMS_PER_PAGE,
-        filteredRef.current.length,
-      ),
+      visibleCountForIndex(index, prev, ITEMS_PER_PAGE, filteredItems.length),
     );
+    let raf = 0;
     const tryScroll = () => {
       const el = document.getElementById(`item-${highlight}`);
       if (el) {
@@ -208,10 +204,10 @@ function RouteComponent() {
         );
         window.scrollTo({ top, behavior: 'smooth' });
       } else {
-        requestAnimationFrame(tryScroll);
+        raf = requestAnimationFrame(tryScroll);
       }
     };
-    const raf = requestAnimationFrame(tryScroll);
+    raf = requestAnimationFrame(tryScroll);
     return () => cancelAnimationFrame(raf);
   }, [highlight, filteredItems]);
 
