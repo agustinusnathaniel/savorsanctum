@@ -362,7 +362,7 @@ function RouteComponent() {
   return (
     <>
       <div
-        className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
+        className="sticky top-0 z-20 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
         data-sticky-header
       >
         <Header items={items} />
