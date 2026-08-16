@@ -11,7 +11,10 @@ import z from 'zod';
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/lib/constants/site';
 import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
 import { useSavedItems } from '@/lib/hooks/use-saved-items';
-import { DIR_CATEGORIES } from '@/lib/models/collection-data';
+import {
+  DIR_CATEGORIES,
+  type DirectoryItem,
+} from '@/lib/models/collection-data';
 import { buildItemListSchema } from '@/lib/models/structured-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
 import { EmptyState } from '@/lib/pages/home/components/empty-state';
@@ -344,10 +347,22 @@ function RouteComponent() {
     });
   }, [navigate]);
 
+  const handleSurprisePick = useCallback(
+    (item: DirectoryItem) => {
+      handledHighlightRef.current = null;
+      navigate({
+        to: '/',
+        search: (prev) => ({ ...prev, highlight: item.id }),
+        resetScroll: false,
+      });
+    },
+    [navigate],
+  );
+
   return (
     <>
       <div
-        className="sticky top-0 z-10 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
+        className="sticky top-0 z-20 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
         data-sticky-header
       >
         <Header items={items} />
@@ -424,7 +439,7 @@ function RouteComponent() {
         </>
       )}
 
-      <SurpriseMe items={filteredItems} />
+      <SurpriseMe items={filteredItems} onPick={handleSurprisePick} />
       <ScrollToTop />
     </>
   );
