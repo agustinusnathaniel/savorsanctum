@@ -353,6 +353,7 @@ function RouteComponent() {
       navigate({
         to: '/',
         search: (prev) => ({ ...prev, highlight: item.id }),
+        resetScroll: false,
       });
     },
     [navigate],
