@@ -43,6 +43,19 @@ export function buildItemShareUrl(href: string, itemId: string): string {
   return url.toString();
 }
 
+/**
+ * Builds a shareable URL for the current filtered view. The `saved` filter is
+ * stripped because the recipient's saved list differs from the sender's —
+ * leaving it in would hide the whole collection behind the "no saved items"
+ * empty state. All other search params (keyword, category, tags, location,
+ * sortBy, highlight) are preserved.
+ */
+export function buildViewShareUrl(href: string): string {
+  const url = new URL(href);
+  url.searchParams.delete('saved');
+  return url.toString();
+}
+
 export interface SocialMeta {
   title: string;
   description: string;

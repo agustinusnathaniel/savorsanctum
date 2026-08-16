@@ -2,6 +2,7 @@ import { Check, Link } from 'lucide-react';
 import { useCallback } from 'react';
 
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
+import { buildViewShareUrl } from '@/lib/pages/home/highlight';
 
 interface ResultCounterProps {
   current: number;
@@ -19,7 +20,7 @@ export function ResultCounter({
   const { copied, copy } = useCopyToClipboard();
 
   const handleCopyLink = useCallback(() => {
-    copy(window.location.href);
+    copy(buildViewShareUrl(window.location.href));
   }, [copy]);
 
   return (
