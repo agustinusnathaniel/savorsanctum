@@ -143,6 +143,13 @@ function RouteComponent() {
     () => (location ? location.split(',').filter(Boolean) : []),
     [location],
   );
+  const categoryItems = useMemo(
+    () =>
+      category === 'all'
+        ? items
+        : items.filter((item) => item.category === category),
+    [items, category],
+  );
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
   const [isLoading, setIsLoading] = useState(false);
   const loaderRef = useRef<HTMLDivElement>(null);
@@ -375,7 +382,7 @@ function RouteComponent() {
             onToggleSaved={handleToggleSaved}
           />
           <TagLocationFilters
-            items={items}
+            items={categoryItems}
             selectedTags={selectedTags}
             selectedLocations={selectedLocations}
             onTagsChange={handleChangeTags}
