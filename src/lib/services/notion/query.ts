@@ -21,46 +21,49 @@ function isPage(
 async function fetchAllPages(
   adapter: NotionClientAdapter,
   params: Omit<QueryDataSourceParameters, 'auth'>,
-): Promise<Array<NotionPage>> {
-  const results: Array<NotionPage> = [];
+): Promise<{ pages: Array<NotionPage>; error?: string }> {
+  const pages: Array<NotionPage> = [];
   let nextCursor: string | null | undefined;
 
   do {
-    const res: QueryDataSourceResponse = await adapter.query({
-      ...params,
-      start_cursor: nextCursor || undefined,
-    });
+    try {
+      const res: QueryDataSourceResponse = await adapter.query({
+        ...params,
+        start_cursor: nextCursor || undefined,
+      });
 
-    for (const page of res.results) {
-      if (isFullPageOrDataSource(page) && isPage(page)) {
-        results.push(page);
+      for (const page of res.results) {
+        if (isFullPageOrDataSource(page) && isPage(page)) {
+          pages.push(page);
+        }
       }
-    }
 
-    nextCursor = res.has_more ? res.next_cursor : undefined;
+      nextCursor = res.has_more ? res.next_cursor : undefined;
+    } catch (error) {
+      // Keep the pages fetched so far; carry the error so the UI can show
+      // a warning banner instead of a full error state.
+      return {
+        pages,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
   } while (nextCursor);
 
-  return results;
+  return { pages };
 }
 
 export async function queryNotionDatabase<T>(
   adapter: NotionClientAdapter,
   config: QueryNotionDatabaseConfig,
 ): Promise<DirectoryQueryResult<T>> {
-  try {
-    const pages = await fetchAllPages(adapter, {
-      data_source_id: config.dataSourceId,
-      sorts: config.sorts,
-      filter: config.filter,
-      page_size: 100,
-    });
+  const { pages, error } = await fetchAllPages(adapter, {
+    data_source_id: config.dataSourceId,
+    sorts: config.sorts,
+    filter: config.filter,
+    page_size: 100,
+  });
 
-    const items = config.mapPages(pages) as Array<T>;
-    return { items };
-  } catch (error) {
-    return {
-      items: [],
-      error: error instanceof Error ? error.message : String(error),
-    };
-  }
+  const items = config.mapPages(pages) as Array<T>;
+
+  return error ? { items, error } : { items };
 }
