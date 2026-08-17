@@ -3,6 +3,7 @@ import { useCallback } from 'react';
 
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
 import { buildViewShareUrl } from '@/lib/pages/home/highlight';
+import { cn } from '@/lib/styles/utils';
 
 interface ResultCounterProps {
   current: number;
@@ -35,11 +36,12 @@ export function ResultCounter({
           onClick={() => onSortChange('recent')}
           data-umami-event="sort-change"
           data-umami-event-sort="recent"
-          className={`px-3 py-2 rounded-full text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none ${
+          className={cn(
+            'px-3 py-2 rounded-full text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none',
             sortBy === 'recent'
               ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary text-secondary-foreground hover:bg-muted'
-          }`}
+              : 'bg-secondary text-secondary-foreground hover:bg-muted',
+          )}
         >
           Recent
         </button>
@@ -48,11 +50,12 @@ export function ResultCounter({
           onClick={() => onSortChange('alphabetical')}
           data-umami-event="sort-change"
           data-umami-event-sort="alphabetical"
-          className={`px-3 py-2 rounded-full text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none ${
+          className={cn(
+            'px-3 py-2 rounded-full text-xs transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none',
             sortBy === 'alphabetical'
               ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary text-secondary-foreground hover:bg-muted'
-          }`}
+              : 'bg-secondary text-secondary-foreground hover:bg-muted',
+          )}
         >
           A-Z
         </button>
