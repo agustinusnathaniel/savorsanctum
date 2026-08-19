@@ -46,6 +46,7 @@ export const ImageWithLoader = ({
             width={800}
             height={600}
             loading="lazy"
+            decoding="async"
             onLoad={() => setLoaded(true)}
             onError={() => setError(true)}
             className={cn(
