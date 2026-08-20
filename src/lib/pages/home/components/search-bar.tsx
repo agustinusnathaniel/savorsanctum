@@ -1,5 +1,5 @@
 import { Search, X } from 'lucide-react';
-import { type ChangeEventHandler, useEffect, useState } from 'react';
+import { type ChangeEventHandler, useEffect, useRef, useState } from 'react';
 
 import {
   InputGroup,
@@ -15,10 +15,7 @@ interface SearchBarProps {
 
 export function SearchBar({ initialValue, onChange }: SearchBarProps) {
   const [input, setInput] = useState(initialValue ?? '');
-
-  useEffect(() => {
-    setInput(initialValue ?? '');
-  }, [initialValue]);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     onChange(e.target.value);
@@ -30,11 +27,42 @@ export function SearchBar({ initialValue, onChange }: SearchBarProps) {
     setInput('');
   };
 
+  useEffect(() => {
+    setInput(initialValue ?? '');
+  }, [initialValue]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable
+      ) {
+        if (e.key === 'Escape' && target === inputRef.current) {
+          onChange('');
+          setInput('');
+          inputRef.current?.blur();
+        }
+        return;
+      }
+
+      if (e.key === '/') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [onChange]);
+
   return (
     <InputGroup className="bg-background">
       <InputGroupInput
+        ref={inputRef}
         value={input}
-        placeholder="Search places or products…"
+        placeholder="Search places or products… (press /)"
         onChange={handleChange}
       />
       <InputGroupAddon>
