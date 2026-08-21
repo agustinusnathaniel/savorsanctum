@@ -44,7 +44,7 @@ const searchSchema = z.object({
     ),
 });
 
-type SearchSchema = z.infer<typeof searchSchema>;
+export type SearchSchema = z.infer<typeof searchSchema>;
 
 const defaultSearchParams: SearchSchema = {
   keyword: '',

@@ -13,7 +13,7 @@ import {
   visibleCountForIndex,
 } from '@/lib/pages/home/highlight';
 import { trackEvent } from '@/lib/utils/umami';
-import { Route } from '@/routes/index';
+import { Route, type SearchSchema } from '@/routes/index';
 
 const ITEMS_PER_PAGE = 12;
 
@@ -44,6 +44,14 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
   const loaderRef = useRef<HTMLDivElement>(null);
   const handledHighlightRef = useRef<string | null>(null);
   const navigate = Route.useNavigate();
+
+  const updateFilter = useCallback(
+    (patch: Partial<SearchSchema>) => {
+      setVisibleCount(ITEMS_PER_PAGE);
+      navigate({ to: '/', search: (prev) => ({ ...prev, ...patch }) });
+    },
+    [navigate],
+  );
 
   const fuseInstance = useMemo(() => new Fuse(items, FUSE_OPTIONS), [items]);
 
@@ -152,96 +160,56 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
     }
   }, [keyword, filteredItems.length]);
 
-  const handleChangeKeyword = useMemo(
-    () =>
-      debounce(
-        (keyword: string) => {
-          setVisibleCount(ITEMS_PER_PAGE);
-          navigate({
-            to: '/',
-            search: (prev) => ({ ...prev, keyword }),
-          });
-          if (keyword.trim()) {
-            trackEvent('search', { query: keyword.trim() });
-          }
-        },
-        {
-          wait: 500,
-        },
-      ),
-    [navigate],
+  const handleChangeKeyword = debounce(
+    (keyword: string) => {
+      updateFilter({ keyword });
+      if (keyword.trim()) {
+        trackEvent('search', { query: keyword.trim() });
+      }
+    },
+    { wait: 500 },
   );
 
   const handleChangeCategory = useCallback(
-    (category: CategoryFilter) => {
-      setVisibleCount(ITEMS_PER_PAGE);
-      navigate({
-        to: '/',
-        search: (prev) => ({ ...prev, category }),
-      });
-    },
-    [navigate],
+    (category: CategoryFilter) => updateFilter({ category }),
+    [updateFilter],
   );
 
   const handleChangeSortBy = useCallback(
-    (sortBy: SortByFilter) => {
-      setVisibleCount(ITEMS_PER_PAGE);
-      navigate({
-        to: '/',
-        search: (prev) => ({ ...prev, sortBy }),
-      });
-    },
-    [navigate],
+    (sortBy: SortByFilter) => updateFilter({ sortBy }),
+    [updateFilter],
   );
 
   const handleChangeTags = useCallback(
     (newTags: Array<string>) => {
-      setVisibleCount(ITEMS_PER_PAGE);
-      navigate({
-        to: '/',
-        search: (prev) => ({
-          ...prev,
-          category: 'all',
-          tags: newTags.length > 0 ? newTags.join(',') : undefined,
-        }),
+      updateFilter({
+        category: 'all',
+        tags: newTags.length > 0 ? newTags.join(',') : undefined,
       });
       if (newTags.length > 0) {
         trackEvent('filter-tags', { tags: newTags.join(',') });
       }
     },
-    [navigate],
+    [updateFilter],
   );
 
   const handleChangeLocations = useCallback(
     (newLocations: Array<string>) => {
-      setVisibleCount(ITEMS_PER_PAGE);
-      navigate({
-        to: '/',
-        search: (prev) => ({
-          ...prev,
-          category: 'all',
-          location:
-            newLocations.length > 0 ? newLocations.join(',') : undefined,
-        }),
+      updateFilter({
+        category: 'all',
+        location: newLocations.length > 0 ? newLocations.join(',') : undefined,
       });
       if (newLocations.length > 0) {
         trackEvent('filter-locations', { locations: newLocations.join(',') });
       }
     },
-    [navigate],
+    [updateFilter],
   );
 
-  const handleToggleSaved = useCallback(() => {
-    setVisibleCount(ITEMS_PER_PAGE);
-    navigate({
-      to: '/',
-      search: (prev) => ({
-        ...prev,
-        category: 'all',
-        saved: !prev.saved,
-      }),
-    });
-  }, [navigate]);
+  const handleToggleSaved = useCallback(
+    () => updateFilter({ category: 'all', saved: !saved }),
+    [updateFilter, saved],
+  );
 
   const handleSurprisePick = useCallback(
     (item: DirectoryItem) => {
