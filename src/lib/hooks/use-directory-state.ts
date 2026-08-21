@@ -1,4 +1,4 @@
-import { debounce } from '@tanstack/react-pacer';
+import { useDebouncedCallback } from '@tanstack/react-pacer';
 import Fuse from 'fuse.js';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -160,7 +160,7 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
     }
   }, [keyword, filteredItems.length]);
 
-  const handleChangeKeyword = debounce(
+  const handleChangeKeyword = useDebouncedCallback(
     (keyword: string) => {
       updateFilter({ keyword });
       if (keyword.trim()) {
