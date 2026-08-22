@@ -1,7 +1,7 @@
 import { Check, Link } from 'lucide-react';
 import { useCallback } from 'react';
 
-import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
+import { useShare } from '@/lib/hooks/use-share';
 import { buildViewShareUrl } from '@/lib/pages/home/highlight';
 import { cn } from '@/lib/styles/utils';
 
@@ -18,11 +18,15 @@ export function ResultCounter({
   sortBy,
   onSortChange,
 }: ResultCounterProps) {
-  const { copied, copy } = useCopyToClipboard();
+  const { shared, share } = useShare();
 
   const handleCopyLink = useCallback(() => {
-    copy(buildViewShareUrl(window.location.href));
-  }, [copy]);
+    share({
+      title: document.title,
+      text: 'Found this curated list on SavorSanctum',
+      url: buildViewShareUrl(window.location.href),
+    });
+  }, [share]);
 
   return (
     <div className="flex items-center justify-between py-3 text-sm">
@@ -64,12 +68,12 @@ export function ResultCounter({
           onClick={handleCopyLink}
           data-umami-event="share-link"
           className="flex items-center gap-1 px-3 py-2 rounded-full text-xs transition-colors bg-secondary text-secondary-foreground hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 outline-none"
-          aria-label="Copy link to current view"
+          aria-label="Share the current view"
         >
-          {copied ? (
+          {shared ? (
             <>
               <Check className="h-3 w-3" />
-              Copied!
+              Shared!
             </>
           ) : (
             <>
