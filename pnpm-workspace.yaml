@@ -44,9 +44,11 @@ allowBuilds:
   # indefinitely when size is zero) via postcss build chain.
   "nanoid": "3.3.17"
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@^0.2.5
+  vite: npm:@voidzero-dev/vite-plus-core@^0.2.9
+  # Pinned to match vite-plus@0.2.9's exact vitest dependency (must resolve to
+  # the same instance; 4.1.11 causes unmet-peer mismatches with @vitest/browser).
   vitest: 4.1.10
-  vite-plus: ^0.2.5
+  vite-plus: ^0.2.9
 peerDependencyRules:
   allowAny:
     - vite
@@ -59,3 +61,15 @@ minimumReleaseAgeExclude:
   - "@base-ui/utils"
   - "@tanstack/react-table"
   - "@tanstack/table-core"
+  # TEMP: 2026-08-21 — prune once versions age past minimumReleaseAge
+  - "wrangler"
+  - "@cloudflare/vite-plugin"
+  - "@notionhq/client"
+  - "@tanstack/devtools"
+  - "@tanstack/devtools-vite"
+  - "@tanstack/react-devtools"
+  - "@tanstack/devtools-bundler-core"
+  - "miniflare"
+  # TEMP: 2026-08-21 — transitive (browserslist data) flagged by frozen-install gate
+  - "baseline-browser-mapping"
+  - "electron-to-chromium"
