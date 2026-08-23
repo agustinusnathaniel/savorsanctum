@@ -17,7 +17,7 @@ import {
   MenuItem,
   MenuTrigger,
 } from '@/lib/components/ui/menu';
-import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard';
+import { useShare } from '@/lib/hooks/use-share';
 import type { Category, DirectoryItem } from '@/lib/models/collection-data';
 import { buildItemShareUrl } from '@/lib/pages/home/highlight';
 import { cn } from '@/lib/styles/utils';
@@ -82,11 +82,15 @@ export function ItemCard({
     [highlightRegex],
   );
 
-  const { copied, copy } = useCopyToClipboard();
+  const { shared, share } = useShare();
 
   const handleCopyLink = useCallback(() => {
-    copy(buildItemShareUrl(window.location.href, item.id));
-  }, [copy, item.id]);
+    share({
+      title: item.name,
+      text: item.name,
+      url: buildItemShareUrl(window.location.href, item.id),
+    });
+  }, [share, item.id, item.name]);
 
   const cardContent = (
     <>
@@ -203,10 +207,10 @@ export function ItemCard({
         onClick={handleCopyLink}
         data-umami-event="item-share"
         data-umami-event-itemname={item.name}
-        aria-label={`Copy link to ${item.name}`}
+        aria-label={`Share ${item.name}`}
         className="hidden pointer-fine:flex absolute top-2 right-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
       >
-        {copied ? (
+        {shared ? (
           <Check className="h-3.5 w-3.5" />
         ) : (
           <Link className="h-3.5 w-3.5" />
@@ -241,12 +245,12 @@ export function ItemCard({
             data-umami-event="item-share"
             data-umami-event-itemname={item.name}
           >
-            {copied ? (
+            {shared ? (
               <Check className="h-4 w-4" />
             ) : (
               <Link className="h-4 w-4" />
             )}
-            {copied ? 'Link copied' : 'Copy link'}
+            {shared ? 'Link shared' : 'Share'}
           </MenuItem>
         </MenuContent>
       </Menu>
