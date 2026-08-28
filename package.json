@@ -8,11 +8,11 @@
   "devEngines": {
     "runtime": {
       "name": "node",
-      "version": "24.16.0",
+      "version": "^24.16.0",
       "onFail": "download"
     }
   },
-  "packageManager": "pnpm@11.8.0",
+  "packageManager": "pnpm@12.0.0",
   "scripts": {
     "dev": "vp dev",
     "build": "vp build",
