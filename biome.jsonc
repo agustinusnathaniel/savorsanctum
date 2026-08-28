@@ -1,5 +1,9 @@
+// Policy: pnpm biome:check uses --error-on-warnings. Intentional complexity
+// warnings in test files are downgraded to "info" so they remain visible but
+// do not fail CI. See overrides for **/*.test.*. Do not raise to warn/error
+// without updating policy.
 {
-  "$schema": "https://biomejs.dev/schemas/2.5.4/schema.json",
+  "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -92,6 +96,25 @@
     }
   },
   "overrides": [
+    {
+      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"],
+      "linter": {
+        "rules": {
+          "complexity": {
+            "noExcessiveLinesPerFunction": {
+              "level": "info",
+              "options": { "maxLines": 60 }
+            }
+          },
+          "style": {
+            "noExcessiveLinesPerFile": {
+              "level": "info",
+              "options": { "maxLines": 500, "skipBlankLines": true }
+            }
+          }
+        }
+      }
+    },
     {
       "includes": ["src/lib/pages/**/index.tsx", "src/*.ts", "*.ts"],
       "linter": {
