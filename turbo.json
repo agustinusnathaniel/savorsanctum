@@ -18,7 +18,7 @@
     "biome:check": {
       "outputs": [],
       "inputs": [
-        "biome.json",
+        "biome.jsonc",
         "src/**"
       ],
       "env": ["VITEST"]
@@ -26,7 +26,7 @@
     "biome:ci": {
       "outputs": [],
       "inputs": [
-        "biome.json",
+        "biome.jsonc",
         "src/**"
       ]
     },
