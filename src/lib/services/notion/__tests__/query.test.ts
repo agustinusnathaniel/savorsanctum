@@ -72,7 +72,9 @@ describe('queryNotionDatabase pagination', () => {
     expect(result.items).toEqual([{ id: 'page-1a' }]);
     expect(result.error).toBe('Notion API failure on page 2');
   });
+});
 
+describe('queryNotionDatabase pagination', () => {
   it('returns empty items plus error when the first page request fails', async () => {
     const adapter = makeAdapter([
       () => {

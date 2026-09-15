@@ -37,7 +37,9 @@ describe('cachedQuery', () => {
     expect(result).toBe('fresh');
     expect(secondExecutor).not.toHaveBeenCalled();
   });
+});
 
+describe('cachedQuery', () => {
   it('stale hit -> returns stale data immediately AND triggers background refresh', async () => {
     vi.useFakeTimers();
     const executor = vi.fn().mockResolvedValue('fresh');
@@ -66,7 +68,9 @@ describe('cachedQuery', () => {
 
     await vi.runAllTimersAsync();
   });
+});
 
+describe('cachedQuery', () => {
   it('concurrent request during failed background refresh -> serves stale data, does NOT throw', async () => {
     vi.useFakeTimers();
     const executor = vi.fn().mockResolvedValue('fresh');
@@ -90,7 +94,9 @@ describe('cachedQuery', () => {
 
     await vi.runAllTimersAsync();
   });
+});
 
+describe('cachedQuery', () => {
   it('concurrent request during in-flight background refresh failure -> serves stale data, does NOT throw', async () => {
     vi.useFakeTimers();
     const executor = vi.fn().mockResolvedValue('fresh');

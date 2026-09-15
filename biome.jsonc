@@ -1,7 +1,7 @@
-// Policy: pnpm biome:check uses --error-on-warnings. Intentional complexity
-// warnings in test files are downgraded to "info" so they remain visible but
-// do not fail CI. See overrides for **/*.test.*. Do not raise to warn/error
-// without updating policy.
+// Policy: strict function/file size limits (error/60 per function,
+// error/500 per file with skipBlankLines). pnpm biome:check uses
+// --error-on-warnings. No test override: tests follow the same limits;
+// split long describe blocks into consecutive same-name chunks.
 {
   "$schema": "https://biomejs.dev/schemas/2.5.9/schema.json",
   "vcs": {
@@ -36,6 +36,10 @@
       },
       "complexity": {
         "noExcessiveCognitiveComplexity": "error",
+        "noExcessiveLinesPerFunction": {
+          "level": "error",
+          "options": { "maxLines": 60 }
+        },
         "noUselessStringConcat": "error",
         "noUselessUndefinedInitialization": "error",
         "useSimplifiedLogicExpression": "error",
@@ -55,6 +59,10 @@
       },
       "style": {
         "noDefaultExport": "error",
+        "noExcessiveLinesPerFile": {
+          "level": "error",
+          "options": { "maxLines": 500, "skipBlankLines": true }
+        },
         "noIncrementDecrement": "off",
         "useDestructuring": "off",
         "useBlockStatements": "error",
@@ -96,25 +104,6 @@
     }
   },
   "overrides": [
-    {
-      "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"],
-      "linter": {
-        "rules": {
-          "complexity": {
-            "noExcessiveLinesPerFunction": {
-              "level": "info",
-              "options": { "maxLines": 60 }
-            }
-          },
-          "style": {
-            "noExcessiveLinesPerFile": {
-              "level": "info",
-              "options": { "maxLines": 500, "skipBlankLines": true }
-            }
-          }
-        }
-      }
-    },
     {
       "includes": ["src/lib/pages/**/index.tsx", "src/*.ts", "*.ts"],
       "linter": {

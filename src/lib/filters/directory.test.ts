@@ -83,7 +83,9 @@ describe('filterDirectoryItems', () => {
     expect(result.filteredItems).toHaveLength(1);
     expect(result.filteredItems[0].name).toBe('Cool Gadget');
   });
+});
 
+describe('filterDirectoryItems', () => {
   it('filters by category: all', () => {
     const result = filterDirectoryItems({
       items: mockItems,
@@ -121,7 +123,9 @@ describe('filterDirectoryItems', () => {
     expect(result.filteredItems).toHaveLength(1);
     expect(result.filteredItems[0].name).toBe('Sushi Bar');
   });
+});
 
+describe('filterDirectoryItems', () => {
   it('filters by tag', () => {
     const result = filterDirectoryItems({
       items: mockItems,
@@ -160,7 +164,9 @@ describe('filterDirectoryItems', () => {
     expect(result.filteredItems).toHaveLength(1);
     expect(result.filteredItems[0].name).toBe('Sushi Bar');
   });
+});
 
+describe('filterDirectoryItems', () => {
   it('returns empty results for a non-existent keyword', () => {
     const result = filterDirectoryItems({
       items: mockItems,
@@ -200,7 +206,9 @@ describe('filterDirectoryItems', () => {
     });
     expect(result.filteredItems).toHaveLength(3);
   });
+});
 
+describe('filterDirectoryItems', () => {
   it('filters by multiple tags', () => {
     const result = filterDirectoryItems({
       items: mockItems,
@@ -246,7 +254,9 @@ describe('filterDirectoryItems', () => {
       'Sushi Bar',
     ]);
   });
+});
 
+describe('filterDirectoryItems', () => {
   it('returns empty when savedOnly is true and savedIds is empty', () => {
     const result = filterDirectoryItems({
       items: mockItems,

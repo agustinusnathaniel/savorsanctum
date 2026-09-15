@@ -21,6 +21,12 @@ We welcome contributions! Please follow the guidelines below to ensure a smooth 
 This project follows strict coding standards enforced by **Biome** and **TypeScript**.
 
 - **Formatting**: We use Biome. Do not use Prettier or ESLint.
+- **Lint policy**: `pnpm biome:check` runs with `--error-on-warnings`, so any
+  `warn` fails CI. Function/file size limits are strict everywhere
+  (`noExcessiveLinesPerFunction` 60 lines, `noExcessiveLinesPerFile`
+  500 lines): split long test `describe` blocks into consecutive same-name
+  chunks and extract helpers instead of raising limits. Do not add test
+  overrides or raise limits silently.
 - **Type Safety**: No `any`. Strict null checks are on.
 - **Components**: Functional components only. Use hooks.
 - **Styling**: TailwindCSS. Keep standard sizing and colors.

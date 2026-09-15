@@ -63,6 +63,18 @@ describe('useSavedItems', () => {
       JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? '[]'),
     ).toEqual(['item-2']);
   });
+});
+
+describe('useSavedItems', () => {
+  beforeEach(() => {
+    __resetSavedItemsStore();
+    window.localStorage.clear();
+  });
+
+  afterEach(() => {
+    __resetSavedItemsStore();
+    window.localStorage.clear();
+  });
 
   it('restores saved ids from localStorage on first render', () => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(['item-9']));
@@ -91,6 +103,18 @@ describe('useSavedItems', () => {
       result.current.toggleSaved('a');
     });
     expect(result.current.savedIds).toEqual(['b']);
+  });
+});
+
+describe('useSavedItems', () => {
+  beforeEach(() => {
+    __resetSavedItemsStore();
+    window.localStorage.clear();
+  });
+
+  afterEach(() => {
+    __resetSavedItemsStore();
+    window.localStorage.clear();
   });
 
   it('renders empty on the server even when localStorage has saved ids', () => {
