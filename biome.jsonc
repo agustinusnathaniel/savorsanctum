@@ -96,6 +96,16 @@
     }
   },
   "overrides": [
+    // Phase 1C decision (Option A, 2026-09-15): keep test complexity findings
+    // at "info" so they stay visible without failing CI (biome:check uses
+    // --error-on-warnings, which only fails on warn+). Rationale: the 7
+    // current infos are all long top-level describe blocks (largest 211 lines
+    // in directory.test.ts vs the 60-line function limit); splitting them
+    // into helpers would churn 6 test files for no behavior or readability
+    // gain. Debt ceiling: largest test file 292 lines vs the 500-line file
+    // limit; do not raise either limit silently. Owner: maintainers.
+    // Review by 2026-12-15, or sooner if a test file approaches 500 lines
+    // or a new non-test file trips these rules.
     {
       "includes": ["**/*.test.ts", "**/*.test.tsx", "**/*.spec.ts"],
       "linter": {

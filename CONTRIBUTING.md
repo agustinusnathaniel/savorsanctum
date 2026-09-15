@@ -21,6 +21,10 @@ We welcome contributions! Please follow the guidelines below to ensure a smooth 
 This project follows strict coding standards enforced by **Biome** and **TypeScript**.
 
 - **Formatting**: We use Biome. Do not use Prettier or ESLint.
+- **Lint policy**: `pnpm biome:check` runs with `--error-on-warnings`, so any
+  `warn` fails CI. Long test `describe` blocks are intentionally downgraded to
+  `info` in `biome.jsonc` (visible, non-failing); see the override comment for
+  the debt ceiling and review date. Do not raise limits silently.
 - **Type Safety**: No `any`. Strict null checks are on.
 - **Components**: Functional components only. Use hooks.
 - **Styling**: TailwindCSS. Keep standard sizing and colors.
