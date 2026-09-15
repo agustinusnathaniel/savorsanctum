@@ -7,6 +7,7 @@ import z from 'zod';
 
 import { SITE_DESCRIPTION, SITE_TITLE } from '@/lib/constants/site';
 import { useDirectoryState } from '@/lib/hooks/use-directory-state';
+import type { DirectoryItem } from '@/lib/models/collection-data';
 import { DIR_CATEGORIES } from '@/lib/models/collection-data';
 import { buildItemListSchema } from '@/lib/models/structured-data';
 import { CategoryFilters } from '@/lib/pages/home/components/category-filter';
@@ -115,20 +116,71 @@ export const Route = createFileRoute('/')({
   },
 });
 
-function RouteComponent() {
-  const router = useRouter();
-  const { items, error } = Route.useLoaderData();
+type DirectoryState = ReturnType<typeof useDirectoryState>;
+
+function DirectoryHeader({
+  items,
+  state,
+}: {
+  items: Array<DirectoryItem>;
+  state: DirectoryState;
+}) {
   const {
     keyword,
     category,
+    saved,
+    selectedTags,
+    selectedLocations,
+    categoryItems,
+    handleChangeKeyword,
+    handleChangeCategory,
+    handleToggleSaved,
+    handleChangeTags,
+    handleChangeLocations,
+  } = state;
+  return (
+    <div
+      className="sticky top-0 z-20 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
+      data-sticky-header
+    >
+      <Header items={items} />
+      <div className="pb-4 pt-2 border-b">
+        <SearchBar initialValue={keyword} onChange={handleChangeKeyword} />
+        <CategoryFilters
+          selected={category}
+          onSelect={handleChangeCategory}
+          saved={saved ?? false}
+          onToggleSaved={handleToggleSaved}
+        />
+        <TagLocationFilters
+          items={categoryItems}
+          selectedTags={selectedTags}
+          selectedLocations={selectedLocations}
+          onTagsChange={handleChangeTags}
+          onLocationsChange={handleChangeLocations}
+        />
+      </div>
+    </div>
+  );
+}
+
+function DirectoryResults({
+  items,
+  error,
+  state,
+  onRetry,
+}: {
+  items: Array<DirectoryItem>;
+  error?: string;
+  state: DirectoryState;
+  onRetry: () => void;
+}) {
+  const {
     sortBy,
     saved,
     highlight,
     savedIds,
     toggleSaved,
-    selectedTags,
-    selectedLocations,
-    categoryItems,
     filteredItems,
     highlightTerms,
     visibleCount,
@@ -136,40 +188,10 @@ function RouteComponent() {
     hasMore,
     isLoading,
     loaderRef,
-    handleChangeKeyword,
-    handleChangeCategory,
     handleChangeSortBy,
-    handleChangeTags,
-    handleChangeLocations,
-    handleToggleSaved,
-    handleSurprisePick,
-  } = useDirectoryState(items);
-
+  } = state;
   return (
     <>
-      <div
-        className="sticky top-0 z-20 -mx-4 bg-background px-4 md:-mx-6 md:px-6"
-        data-sticky-header
-      >
-        <Header items={items} />
-        <div className="pb-4 pt-2 border-b">
-          <SearchBar initialValue={keyword} onChange={handleChangeKeyword} />
-          <CategoryFilters
-            selected={category}
-            onSelect={handleChangeCategory}
-            saved={saved ?? false}
-            onToggleSaved={handleToggleSaved}
-          />
-          <TagLocationFilters
-            items={categoryItems}
-            selectedTags={selectedTags}
-            selectedLocations={selectedLocations}
-            onTagsChange={handleChangeTags}
-            onLocationsChange={handleChangeLocations}
-          />
-        </div>
-      </div>
-
       {filteredItems.length > 0 && (
         <ResultCounter
           current={visibleCount}
@@ -180,12 +202,10 @@ function RouteComponent() {
       )}
 
       {error && items.length === 0 ? (
-        <LoadErrorState onRetry={() => router.invalidate()} />
+        <LoadErrorState onRetry={onRetry} />
       ) : (
         <>
-          {error && items.length > 0 && (
-            <LoadWarningBanner onRetry={() => router.invalidate()} />
-          )}
+          {error && items.length > 0 && <LoadWarningBanner onRetry={onRetry} />}
 
           {filteredItems.length === 0 ? (
             saved ? (
@@ -224,6 +244,26 @@ function RouteComponent() {
           )}
         </>
       )}
+    </>
+  );
+}
+
+function RouteComponent() {
+  const router = useRouter();
+  const { items, error } = Route.useLoaderData();
+  const state = useDirectoryState(items);
+  const { filteredItems, handleSurprisePick } = state;
+
+  return (
+    <>
+      <DirectoryHeader items={items} state={state} />
+
+      <DirectoryResults
+        items={items}
+        error={error}
+        state={state}
+        onRetry={() => router.invalidate()}
+      />
 
       <SurpriseMe items={filteredItems} onPick={handleSurprisePick} />
       <ScrollToTop />

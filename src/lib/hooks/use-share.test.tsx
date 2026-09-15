@@ -11,50 +11,59 @@ import {
 
 import { useShare } from '@/lib/hooks/use-share';
 
+const sharePayload = {
+  title: 'Test',
+  text: 'Test',
+  url: 'https://example.com/item',
+};
+
+function setupShareTestEnv() {
+  const writeText = vi.fn().mockResolvedValue(undefined);
+  Object.defineProperty(navigator, 'clipboard', {
+    value: { writeText },
+    configurable: true,
+  });
+  // Ensure navigator.share is undefined by default
+  if ('share' in navigator) {
+    // biome-ignore lint/suspicious/noExplicitAny: test setup
+    delete (navigator as any).share;
+  }
+  return writeText;
+}
+
+function teardownShareTestEnv() {
+  Object.defineProperty(navigator, 'clipboard', {
+    value: undefined,
+    configurable: true,
+  });
+  if ('share' in navigator) {
+    // biome-ignore lint/suspicious/noExplicitAny: test cleanup
+    delete (navigator as any).share;
+  }
+}
+
 describe('useShare', () => {
   let writeText: ReturnType<typeof vi.fn>;
 
   beforeEach(() => {
-    writeText = vi.fn().mockResolvedValue(undefined);
-    Object.defineProperty(navigator, 'clipboard', {
-      value: { writeText },
-      configurable: true,
-    });
-    // Ensure navigator.share is undefined by default
-    if ('share' in navigator) {
-      // biome-ignore lint/suspicious/noExplicitAny: test setup
-      delete (navigator as any).share;
-    }
+    writeText = setupShareTestEnv();
     vi.useFakeTimers();
   });
 
   afterEach(() => {
     vi.useRealTimers();
     vi.restoreAllMocks();
-    Object.defineProperty(navigator, 'clipboard', {
-      value: undefined,
-      configurable: true,
-    });
-    if ('share' in navigator) {
-      // biome-ignore lint/suspicious/noExplicitAny: test cleanup
-      delete (navigator as any).share;
-    }
+    teardownShareTestEnv();
   });
 
   it('falls back to clipboard when navigator.share is undefined', async () => {
     const { result } = renderHook(() => useShare());
 
-    const payload = {
-      title: 'Test',
-      text: 'Test',
-      url: 'https://example.com/item',
-    };
-
     await act(async () => {
-      await result.current.share(payload);
+      await result.current.share(sharePayload);
     });
 
-    expect(writeText).toHaveBeenCalledWith(payload.url);
+    expect(writeText).toHaveBeenCalledWith(sharePayload.url);
     expect(result.current.shared).toBe(true);
   });
 
@@ -68,19 +77,28 @@ describe('useShare', () => {
 
     const { result } = renderHook(() => useShare());
 
-    const payload = {
-      title: 'Test',
-      text: 'Test',
-      url: 'https://example.com/item',
-    };
-
     await act(async () => {
-      await result.current.share(payload);
+      await result.current.share(sharePayload);
     });
 
-    expect(shareMock).toHaveBeenCalledWith(payload);
+    expect(shareMock).toHaveBeenCalledWith(sharePayload);
     expect(writeText).not.toHaveBeenCalled();
     expect(result.current.shared).toBe(true);
+  });
+});
+
+describe('useShare', () => {
+  let writeText: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    writeText = setupShareTestEnv();
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+    teardownShareTestEnv();
   });
 
   it('does nothing when user dismisses the share sheet', async () => {
@@ -95,14 +113,8 @@ describe('useShare', () => {
 
     const { result } = renderHook(() => useShare());
 
-    const payload = {
-      title: 'Test',
-      text: 'Test',
-      url: 'https://example.com/item',
-    };
-
     await act(async () => {
-      await result.current.share(payload);
+      await result.current.share(sharePayload);
     });
 
     expect(writeText).not.toHaveBeenCalled();
@@ -121,17 +133,11 @@ describe('useShare', () => {
 
     const { result } = renderHook(() => useShare());
 
-    const payload = {
-      title: 'Test',
-      text: 'Test',
-      url: 'https://example.com/item',
-    };
-
     await act(async () => {
-      await result.current.share(payload);
+      await result.current.share(sharePayload);
     });
 
-    expect(writeText).toHaveBeenCalledWith(payload.url);
+    expect(writeText).toHaveBeenCalledWith(sharePayload.url);
     expect(result.current.shared).toBe(true);
   });
 });

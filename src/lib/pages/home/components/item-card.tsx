@@ -7,7 +7,7 @@ import {
   MapPin,
   MoreVertical,
 } from 'lucide-react';
-import { useCallback, useMemo } from 'react';
+import { type ReactNode, useCallback, useMemo } from 'react';
 
 import { ImageWithLoader } from '@/lib/components/image-with-loader';
 import { Badge } from '@/lib/components/ui/badge';
@@ -30,20 +30,15 @@ interface ItemCardProps {
   onToggleSave: (id: string) => void;
 }
 
+type HighlightText = (text: string) => ReactNode;
+
 const categoryColors: Partial<Record<Category, string>> = {
   food: 'bg-[var(--color-category-food)] text-[var(--color-category-food-foreground)]',
   products:
     'bg-[var(--color-category-products)] text-[var(--color-category-products-foreground)]',
 };
 
-export function ItemCard({
-  item,
-  highlightTerms,
-  highlightId,
-  isSaved,
-  onToggleSave,
-}: ItemCardProps) {
-  const isHighlighted = item.id === highlightId;
+function useHighlightText(highlightTerms?: Array<string>): HighlightText {
   // Memoize regex to avoid recreating it multiple times per card render
   const highlightRegex = useMemo(() => {
     if (!highlightTerms || highlightTerms.length === 0) {
@@ -56,14 +51,12 @@ export function ItemCard({
   }, [highlightTerms]);
 
   // Helper function to highlight search terms in text
-  const highlightText = useCallback(
+  return useCallback(
     (text: string) => {
       if (!highlightRegex) {
         return text;
       }
-
       const parts = text.split(highlightRegex);
-
       return (
         <>
           {parts.map((part, i) =>
@@ -81,9 +74,10 @@ export function ItemCard({
     },
     [highlightRegex],
   );
+}
 
+function useItemShare(item: DirectoryItem) {
   const { shared, share } = useShare();
-
   const handleCopyLink = useCallback(() => {
     share({
       title: item.name,
@@ -91,8 +85,69 @@ export function ItemCard({
       url: buildItemShareUrl(window.location.href, item.id),
     });
   }, [share, item.id, item.name]);
+  return { shared, handleCopyLink };
+}
 
-  const cardContent = (
+function CardBadges({
+  item,
+  highlightText,
+}: {
+  item: DirectoryItem;
+  highlightText: HighlightText;
+}) {
+  return (
+    <>
+      {item.location.length > 0 ? (
+        <div className="mt-1.5 flex items-start gap-1 text-sm text-muted-foreground">
+          <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.75" />
+          <span className="flex gap-2 flex-wrap">
+            {item.location.map((location) => (
+              <Badge variant="outline" key={location.name}>
+                {highlightText(location.name)}
+              </Badge>
+            ))}
+          </span>
+        </div>
+      ) : null}
+
+      <div className="mt-3 mb-2 flex flex-wrap items-center gap-2">
+        <span
+          className={cn(
+            'rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize shadow-sm',
+            categoryColors[item.category],
+          )}
+        >
+          {highlightText(item.category)}
+        </span>
+        {item.reviews.map((review) => (
+          <span
+            key={review.name}
+            className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
+          >
+            {highlightText(review.name)}
+          </span>
+        ))}
+        {item.tags.map((tag) => (
+          <span
+            key={tag.name}
+            className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
+          >
+            {highlightText(tag.name)}
+          </span>
+        ))}
+      </div>
+    </>
+  );
+}
+
+function CardBody({
+  item,
+  highlightText,
+}: {
+  item: DirectoryItem;
+  highlightText: HighlightText;
+}) {
+  return (
     <>
       {item.image && (
         <ImageWithLoader
@@ -112,48 +167,124 @@ export function ItemCard({
           <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
 
-        {item.location.length > 0 ? (
-          <div className="mt-1.5 flex items-start gap-1 text-sm text-muted-foreground">
-            <MapPin className="h-3.5 w-3.5 shrink-0 mt-0.75" />
-            <span className="flex gap-2 flex-wrap">
-              {item.location.map((location) => (
-                <Badge variant="outline" key={location.name}>
-                  {highlightText(location.name)}
-                </Badge>
-              ))}
-            </span>
-          </div>
-        ) : null}
-
-        <div className="mt-3 mb-2 flex flex-wrap items-center gap-2">
-          <span
-            className={cn(
-              'rounded-full px-2.5 py-0.5 text-xs font-semibold capitalize shadow-sm',
-              categoryColors[item.category],
-            )}
-          >
-            {highlightText(item.category)}
-          </span>
-          {item.reviews.map((review) => (
-            <span
-              key={review.name}
-              className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
-            >
-              {highlightText(review.name)}
-            </span>
-          ))}
-          {item.tags.map((tag) => (
-            <span
-              key={tag.name}
-              className="rounded-full bg-muted/50 px-2.5 py-0.5 text-xs text-muted-foreground hover:bg-muted transition-colors"
-            >
-              {highlightText(tag.name)}
-            </span>
-          ))}
-        </div>
+        <CardBadges item={item} highlightText={highlightText} />
       </div>
     </>
   );
+}
+
+interface CardActionProps {
+  item: DirectoryItem;
+  isSaved: boolean;
+  onToggleSave: (id: string) => void;
+  shared: boolean;
+  onCopyLink: () => void;
+}
+
+function CardIconButtons({
+  item,
+  isSaved,
+  onToggleSave,
+  shared,
+  onCopyLink,
+}: CardActionProps) {
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => onToggleSave(item.id)}
+        data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
+        data-umami-event-itemname={item.name}
+        aria-label={
+          isSaved ? `Remove ${item.name} from saved` : `Save ${item.name}`
+        }
+        aria-pressed={isSaved}
+        className="hidden pointer-fine:flex absolute top-2 left-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
+      >
+        {isSaved ? (
+          <BookmarkCheck className="h-3.5 w-3.5" />
+        ) : (
+          <Bookmark className="h-3.5 w-3.5" />
+        )}
+      </button>
+
+      <button
+        type="button"
+        onClick={onCopyLink}
+        data-umami-event="item-share"
+        data-umami-event-itemname={item.name}
+        aria-label={`Share ${item.name}`}
+        className="hidden pointer-fine:flex absolute top-2 right-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
+      >
+        {shared ? (
+          <Check className="h-3.5 w-3.5" />
+        ) : (
+          <Link className="h-3.5 w-3.5" />
+        )}
+      </button>
+    </>
+  );
+}
+
+function CardMenu({
+  item,
+  isSaved,
+  onToggleSave,
+  shared,
+  onCopyLink,
+}: CardActionProps) {
+  return (
+    <Menu>
+      <MenuTrigger
+        type="button"
+        aria-label={`Actions for ${item.name}`}
+        data-umami-event="item-menu"
+        data-umami-event-itemname={item.name}
+        className="absolute top-2 right-2 z-10 flex size-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 pointer-fine:hidden"
+      >
+        <MoreVertical className="h-4 w-4" />
+      </MenuTrigger>
+      <MenuContent>
+        <MenuItem
+          onClick={() => onToggleSave(item.id)}
+          data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
+          data-umami-event-itemname={item.name}
+        >
+          {isSaved ? (
+            <BookmarkCheck className="h-4 w-4" />
+          ) : (
+            <Bookmark className="h-4 w-4" />
+          )}
+          {isSaved ? 'Remove from saved' : 'Save item'}
+        </MenuItem>
+        <MenuItem
+          onClick={onCopyLink}
+          data-umami-event="item-share"
+          data-umami-event-itemname={item.name}
+        >
+          {shared ? (
+            <Check className="h-4 w-4" />
+          ) : (
+            <Link className="h-4 w-4" />
+          )}
+          {shared ? 'Link shared' : 'Share'}
+        </MenuItem>
+      </MenuContent>
+    </Menu>
+  );
+}
+
+export function ItemCard({
+  item,
+  highlightTerms,
+  highlightId,
+  isSaved,
+  onToggleSave,
+}: ItemCardProps) {
+  const isHighlighted = item.id === highlightId;
+  const highlightText = useHighlightText(highlightTerms);
+  const { shared, handleCopyLink } = useItemShare(item);
+  const cardContent = <CardBody item={item} highlightText={highlightText} />;
 
   return (
     <div id={`item-${item.id}`} className="relative group">
@@ -184,76 +315,20 @@ export function ItemCard({
         </div>
       )}
 
-      <button
-        type="button"
-        onClick={() => onToggleSave(item.id)}
-        data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
-        data-umami-event-itemname={item.name}
-        aria-label={
-          isSaved ? `Remove ${item.name} from saved` : `Save ${item.name}`
-        }
-        aria-pressed={isSaved}
-        className="hidden pointer-fine:flex absolute top-2 left-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
-      >
-        {isSaved ? (
-          <BookmarkCheck className="h-3.5 w-3.5" />
-        ) : (
-          <Bookmark className="h-3.5 w-3.5" />
-        )}
-      </button>
-
-      <button
-        type="button"
-        onClick={handleCopyLink}
-        data-umami-event="item-share"
-        data-umami-event-itemname={item.name}
-        aria-label={`Share ${item.name}`}
-        className="hidden pointer-fine:flex absolute top-2 right-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
-      >
-        {shared ? (
-          <Check className="h-3.5 w-3.5" />
-        ) : (
-          <Link className="h-3.5 w-3.5" />
-        )}
-      </button>
-
-      <Menu>
-        <MenuTrigger
-          type="button"
-          aria-label={`Actions for ${item.name}`}
-          data-umami-event="item-menu"
-          data-umami-event-itemname={item.name}
-          className="absolute top-2 right-2 z-10 flex size-11 items-center justify-center rounded-full bg-background/90 p-2.5 shadow-sm border border-border opacity-100 transition-opacity focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95 pointer-fine:hidden"
-        >
-          <MoreVertical className="h-4 w-4" />
-        </MenuTrigger>
-        <MenuContent>
-          <MenuItem
-            onClick={() => onToggleSave(item.id)}
-            data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
-            data-umami-event-itemname={item.name}
-          >
-            {isSaved ? (
-              <BookmarkCheck className="h-4 w-4" />
-            ) : (
-              <Bookmark className="h-4 w-4" />
-            )}
-            {isSaved ? 'Remove from saved' : 'Save item'}
-          </MenuItem>
-          <MenuItem
-            onClick={handleCopyLink}
-            data-umami-event="item-share"
-            data-umami-event-itemname={item.name}
-          >
-            {shared ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <Link className="h-4 w-4" />
-            )}
-            {shared ? 'Link shared' : 'Share'}
-          </MenuItem>
-        </MenuContent>
-      </Menu>
+      <CardIconButtons
+        item={item}
+        isSaved={isSaved}
+        onToggleSave={onToggleSave}
+        shared={shared}
+        onCopyLink={handleCopyLink}
+      />
+      <CardMenu
+        item={item}
+        isSaved={isSaved}
+        onToggleSave={onToggleSave}
+        shared={shared}
+        onCopyLink={handleCopyLink}
+      />
     </div>
   );
 }

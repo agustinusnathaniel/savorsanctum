@@ -1,6 +1,15 @@
 import { useDebouncedCallback } from '@tanstack/react-pacer';
 import Fuse from 'fuse.js';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  type Dispatch,
+  type RefObject,
+  type SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 import { FUSE_OPTIONS, filterDirectoryItems } from '@/lib/filters/directory';
 import { useSavedItems } from '@/lib/hooks/use-saved-items';
@@ -19,11 +28,10 @@ const ITEMS_PER_PAGE = 12;
 
 type CategoryFilter = (typeof DIR_CATEGORIES)[number] | 'all';
 type SortByFilter = 'recent' | 'alphabetical';
+type Navigate = ReturnType<typeof Route.useNavigate>;
+type UpdateFilter = (patch: Partial<SearchSchema>) => void;
 
-export function useDirectoryState(items: Array<DirectoryItem>) {
-  const { keyword, category, sortBy, tags, location, highlight, saved } =
-    Route.useSearch();
-  const { savedIds, toggleSaved } = useSavedItems();
+function useSearchSelections(tags?: string, location?: string) {
   const selectedTags = useMemo(
     () => (tags ? tags.split(',').filter(Boolean) : []),
     [tags],
@@ -32,6 +40,43 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
     () => (location ? location.split(',').filter(Boolean) : []),
     [location],
   );
+  return { selectedTags, selectedLocations };
+}
+
+function useUpdateFilter(
+  navigate: Navigate,
+  setVisibleCount: Dispatch<SetStateAction<number>>,
+): UpdateFilter {
+  return useCallback(
+    (patch: Partial<SearchSchema>) => {
+      setVisibleCount(ITEMS_PER_PAGE);
+      navigate({ to: '/', search: (prev) => ({ ...prev, ...patch }) });
+    },
+    [navigate, setVisibleCount],
+  );
+}
+
+interface FilteredDirectoryParams {
+  items: Array<DirectoryItem>;
+  keyword: string;
+  category: string;
+  sortBy: SortByFilter;
+  selectedTags: Array<string>;
+  selectedLocations: Array<string>;
+  saved: boolean;
+  savedIds: Array<string>;
+}
+
+function useFilteredDirectory({
+  items,
+  keyword,
+  category,
+  sortBy,
+  selectedTags,
+  selectedLocations,
+  saved,
+  savedIds,
+}: FilteredDirectoryParams) {
   const categoryItems = useMemo(
     () =>
       category === 'all'
@@ -39,22 +84,7 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
         : items.filter((item) => item.category === category),
     [items, category],
   );
-  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
-  const [isLoading, setIsLoading] = useState(false);
-  const loaderRef = useRef<HTMLDivElement>(null);
-  const handledHighlightRef = useRef<string | null>(null);
-  const navigate = Route.useNavigate();
-
-  const updateFilter = useCallback(
-    (patch: Partial<SearchSchema>) => {
-      setVisibleCount(ITEMS_PER_PAGE);
-      navigate({ to: '/', search: (prev) => ({ ...prev, ...patch }) });
-    },
-    [navigate],
-  );
-
   const fuseInstance = useMemo(() => new Fuse(items, FUSE_OPTIONS), [items]);
-
   const { filteredItems, highlightTerms } = useMemo(
     () =>
       filterDirectoryItems({
@@ -64,7 +94,7 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
         sortBy,
         selectedTags,
         selectedLocations,
-        savedOnly: saved ?? false,
+        savedOnly: saved,
         savedIds,
         fuseInstance,
       }),
@@ -80,10 +110,20 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
       fuseInstance,
     ],
   );
+  useEffect(() => {
+    if (keyword.trim() && filteredItems.length === 0) {
+      trackEvent('empty-state', { query: keyword.trim() });
+    }
+  }, [keyword, filteredItems.length]);
+  return { categoryItems, filteredItems, highlightTerms, fuseInstance };
+}
 
-  const filteredRef = useRef(filteredItems);
-  filteredRef.current = filteredItems;
-
+function useHighlightNavigation(
+  highlight: string | undefined,
+  filteredItems: Array<DirectoryItem>,
+  setVisibleCount: Dispatch<SetStateAction<number>>,
+  handledHighlightRef: RefObject<string | null>,
+) {
   useEffect(() => {
     if (!highlight || handledHighlightRef.current === highlight) {
       return;
@@ -102,25 +142,38 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
       const el = document.getElementById(`item-${highlight}`);
       if (el) {
         handledHighlightRef.current = highlight;
-        const headerEl = document.querySelector('[data-sticky-header]');
-        const headerHeight = headerEl?.getBoundingClientRect().height ?? 0;
-        const top = getHighlightScrollY(
-          el.getBoundingClientRect().top,
-          window.scrollY,
-          headerHeight,
-        );
-        window.scrollTo({ top, behavior: 'smooth' });
+        scrollToHighlight(el);
       } else {
         raf = requestAnimationFrame(tryScroll);
       }
     };
     raf = requestAnimationFrame(tryScroll);
     return () => cancelAnimationFrame(raf);
-  }, [highlight, filteredItems]);
+  }, [highlight, filteredItems, setVisibleCount, handledHighlightRef]);
+}
 
+function scrollToHighlight(el: HTMLElement) {
+  const headerEl = document.querySelector('[data-sticky-header]');
+  const headerHeight = headerEl?.getBoundingClientRect().height ?? 0;
+  const top = getHighlightScrollY(
+    el.getBoundingClientRect().top,
+    window.scrollY,
+    headerHeight,
+  );
+  window.scrollTo({ top, behavior: 'smooth' });
+}
+
+function useInfiniteLoader(
+  filteredItems: Array<DirectoryItem>,
+  visibleCount: number,
+  setVisibleCount: Dispatch<SetStateAction<number>>,
+) {
+  const [isLoading, setIsLoading] = useState(false);
+  const loaderRef = useRef<HTMLDivElement>(null);
+  const filteredRef = useRef(filteredItems);
+  filteredRef.current = filteredItems;
   const visibleItems = filteredItems.slice(0, visibleCount);
   const hasMore = visibleCount < filteredItems.length;
-
   const loadMore = useCallback(() => {
     if (isLoading || !hasMore) {
       return;
@@ -133,14 +186,12 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
       );
       setIsLoading(false);
     }, 300);
-  }, [isLoading, hasMore]);
-
+  }, [isLoading, hasMore, setVisibleCount]);
   useEffect(() => {
     const loader = loaderRef.current;
     if (!loader) {
       return;
     }
-
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore && !isLoading) {
@@ -149,17 +200,13 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
       },
       { threshold: 0.1, rootMargin: '100px' },
     );
-
     observer.observe(loader);
     return () => observer.disconnect();
   }, [hasMore, isLoading, loadMore]);
+  return { visibleItems, hasMore, isLoading, loadMore, loaderRef };
+}
 
-  useEffect(() => {
-    if (keyword.trim() && filteredItems.length === 0) {
-      trackEvent('empty-state', { query: keyword.trim() });
-    }
-  }, [keyword, filteredItems.length]);
-
+function useSearchFilterActions(updateFilter: UpdateFilter) {
   const handleChangeKeyword = useDebouncedCallback(
     (keyword: string) => {
       updateFilter({ keyword });
@@ -169,17 +216,23 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
     },
     { wait: 500 },
   );
-
   const handleChangeCategory = useCallback(
     (category: CategoryFilter) => updateFilter({ category }),
     [updateFilter],
   );
-
   const handleChangeSortBy = useCallback(
     (sortBy: SortByFilter) => updateFilter({ sortBy }),
     [updateFilter],
   );
+  return { handleChangeKeyword, handleChangeCategory, handleChangeSortBy };
+}
 
+function useCollectionFilterActions(
+  updateFilter: UpdateFilter,
+  saved: boolean | undefined,
+  navigate: Navigate,
+  handledHighlightRef: RefObject<string | null>,
+) {
   const handleChangeTags = useCallback(
     (newTags: Array<string>) => {
       updateFilter({
@@ -192,7 +245,6 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
     },
     [updateFilter],
   );
-
   const handleChangeLocations = useCallback(
     (newLocations: Array<string>) => {
       updateFilter({
@@ -205,12 +257,10 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
     },
     [updateFilter],
   );
-
   const handleToggleSaved = useCallback(
     () => updateFilter({ category: 'all', saved: !saved }),
     [updateFilter, saved],
   );
-
   const handleSurprisePick = useCallback(
     (item: DirectoryItem) => {
       handledHighlightRef.current = null;
@@ -220,9 +270,56 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
         resetScroll: false,
       });
     },
-    [navigate],
+    [navigate, handledHighlightRef],
   );
+  return {
+    handleChangeTags,
+    handleChangeLocations,
+    handleToggleSaved,
+    handleSurprisePick,
+  };
+}
 
+export function useDirectoryState(items: Array<DirectoryItem>) {
+  const { keyword, category, sortBy, tags, location, highlight, saved } =
+    Route.useSearch();
+  const { savedIds, toggleSaved } = useSavedItems();
+  const { selectedTags, selectedLocations } = useSearchSelections(
+    tags,
+    location,
+  );
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_PAGE);
+  const handledHighlightRef = useRef<string | null>(null);
+  const navigate = Route.useNavigate();
+  const updateFilter = useUpdateFilter(navigate, setVisibleCount);
+  const filtered = useFilteredDirectory({
+    items,
+    keyword,
+    category,
+    sortBy,
+    selectedTags,
+    selectedLocations,
+    saved: saved ?? false,
+    savedIds,
+  });
+  useHighlightNavigation(
+    highlight,
+    filtered.filteredItems,
+    setVisibleCount,
+    handledHighlightRef,
+  );
+  const infinite = useInfiniteLoader(
+    filtered.filteredItems,
+    visibleCount,
+    setVisibleCount,
+  );
+  const searchActions = useSearchFilterActions(updateFilter);
+  const collectionActions = useCollectionFilterActions(
+    updateFilter,
+    saved,
+    navigate,
+    handledHighlightRef,
+  );
   return {
     keyword,
     category,
@@ -235,22 +332,10 @@ export function useDirectoryState(items: Array<DirectoryItem>) {
     toggleSaved,
     selectedTags,
     selectedLocations,
-    categoryItems,
-    filteredItems,
-    highlightTerms,
     visibleCount,
-    visibleItems,
-    hasMore,
-    isLoading,
-    fuseInstance,
-    handleChangeKeyword,
-    handleChangeCategory,
-    handleChangeSortBy,
-    handleChangeTags,
-    handleChangeLocations,
-    handleToggleSaved,
-    handleSurprisePick,
-    loadMore,
-    loaderRef,
+    ...filtered,
+    ...infinite,
+    ...searchActions,
+    ...collectionActions,
   };
 }
