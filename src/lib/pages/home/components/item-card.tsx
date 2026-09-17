@@ -153,7 +153,7 @@ function CardBody({
         <ImageWithLoader
           ratio="4/3"
           containerClassName="mb-4 overflow-hidden rounded-md bg-muted"
-          className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          className="object-cover duration-150 group-hover:scale-[1.02]"
           src={item.image}
           alt={item.name}
         />
@@ -161,7 +161,7 @@ function CardBody({
 
       <div>
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-lg font-semibold leading-tight text-foreground group-hover:text-primary transition-colors">
+          <h3 className="text-lg font-semibold leading-tight text-foreground text-balance group-hover:text-primary transition-colors">
             {highlightText(item.name)}
           </h3>
           <ExternalLink className="h-4 w-4 shrink-0 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
@@ -297,7 +297,7 @@ export function ItemCard({
           target="_blank"
           rel="noopener noreferrer"
           className={cn(
-            'block rounded-lg bg-card p-3 border border-border transition-colors duration-200 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2',
+            'block rounded-lg bg-card p-3 border border-border transition-colors duration-150 hover:border-primary/50 hover:shadow-sm active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2',
             isHighlighted && 'ring-2 ring-primary/70 shadow-md',
           )}
           tabIndex={0}

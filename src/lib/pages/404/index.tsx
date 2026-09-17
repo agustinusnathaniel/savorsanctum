@@ -28,7 +28,7 @@ const Page404 = () => {
           start will help you discover something delicious.
         </p>
         <Button render={<Link to="/" />}>
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
           Back to the collection
         </Button>
       </div>

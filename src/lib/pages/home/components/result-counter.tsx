@@ -30,9 +30,16 @@ export function ResultCounter({
 
   return (
     <div className="flex items-center justify-between py-3 text-sm">
-      <p className="text-muted-foreground">
-        Showing <span className="font-medium text-foreground">{current}</span>{' '}
-        of <span className="font-medium text-foreground">{total}</span> items
+      <p className="text-muted-foreground tabular-nums">
+        Showing{' '}
+        <span className="font-medium text-foreground tabular-nums">
+          {current}
+        </span>{' '}
+        of{' '}
+        <span className="font-medium text-foreground tabular-nums">
+          {total}
+        </span>{' '}
+        items
       </p>
       <div className="flex items-center gap-1.5">
         <button

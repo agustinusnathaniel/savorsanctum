@@ -10,8 +10,12 @@ export function EmptyState({
   return (
     <div className="flex flex-col items-center justify-center py-16 px-4">
       <div className="mb-4 text-5xl">✨</div>
-      <h2 className="text-lg font-semibold text-foreground mb-2">{title}</h2>
-      <p className="text-muted-foreground text-center mb-4">{description}</p>
+      <h2 className="text-lg font-semibold text-foreground mb-2 text-balance">
+        {title}
+      </h2>
+      <p className="text-muted-foreground text-center mb-4 text-pretty">
+        {description}
+      </p>
     </div>
   );
 }

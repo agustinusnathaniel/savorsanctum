@@ -139,7 +139,7 @@ export const Route = createRootRoute({
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="antialiased">
         <Layout>
           <Outlet />
         </Layout>
