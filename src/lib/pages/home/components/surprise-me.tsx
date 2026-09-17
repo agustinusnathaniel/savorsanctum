@@ -1,5 +1,5 @@
 import { Shuffle } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import type { DirectoryItem } from '@/lib/models/collection-data';
 
@@ -9,6 +9,12 @@ interface SurpriseMeProps {
 }
 
 export function SurpriseMe({ items, onPick }: SurpriseMeProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const pickRandom = useCallback(() => {
     if (items.length === 0) {
       return;
@@ -17,7 +23,7 @@ export function SurpriseMe({ items, onPick }: SurpriseMeProps) {
     onPick(randomItem);
   }, [items, onPick]);
 
-  if (items.length === 0) {
+  if (!mounted || items.length === 0) {
     return null;
   }
 
@@ -26,7 +32,7 @@ export function SurpriseMe({ items, onPick }: SurpriseMeProps) {
       type="button"
       onClick={pickRandom}
       data-umami-event="surprise-me"
-      className="fixed z-20 bottom-8 left-6 rounded-full bg-primary text-primary-foreground p-3 shadow-lg hover:shadow-xl hover:scale-110 transition-colors duration-200 active:scale-95 motion-safe:animate-bounce-in motion-reduce:opacity-100"
+      className="fixed z-20 bottom-8 left-6 rounded-full bg-primary text-primary-foreground p-3 shadow-lg hover:shadow-xl hover:scale-110 transition-colors duration-150 active:scale-95 motion-safe:animate-bounce-in motion-reduce:opacity-100"
       aria-label="Surprise me — reveal a random item"
     >
       <Shuffle className="h-5 w-5" />

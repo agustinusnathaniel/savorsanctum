@@ -50,7 +50,7 @@ export const ImageWithLoader = ({
             onLoad={() => setLoaded(true)}
             onError={() => setError(true)}
             className={cn(
-              'w-full h-full object-cover transition-opacity duration-300',
+              'w-full h-full object-cover transition-opacity duration-150 outline outline-1 -outline-offset-1 outline-black/8 dark:outline-white/8',
               loaded ? 'opacity-100' : 'opacity-0',
               className,
             )}
