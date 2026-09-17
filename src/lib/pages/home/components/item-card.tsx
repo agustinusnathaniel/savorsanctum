@@ -153,7 +153,7 @@ function CardBody({
         <ImageWithLoader
           ratio="4/3"
           containerClassName="mb-4 overflow-hidden rounded-md bg-muted"
-          className="object-cover transition-transform duration-150 group-hover:scale-[1.02]"
+          className="object-cover duration-150 group-hover:scale-[1.02]"
           src={item.image}
           alt={item.name}
         />
