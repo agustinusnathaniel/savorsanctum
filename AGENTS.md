@@ -22,6 +22,7 @@ It inherits rules from the [Canonical Guidelines](https://github.com/agustinusna
 - **Do not** use `any` type. Always define proper interfaces or use `unknown` if necessary.
 - **Do not** create new CSS files. Use `globals.css` or Tailwind utilities.
 - **Do not** use `useEffect` for data fetching. Use route loaders (`Route.useLoaderData()`) and `createServerFn` from `@tanstack/react-start` instead.
+- **Do not** touch or prune `src/lib/components/ui/`. These are shadcn-generated components kept as a full inventory (including currently-unused exports) so humans and agents can iterate on future features without reinventing components. Unused exports there are intentional, not dead code.
 
 ### MUST DO:
 - **Must** run `pnpm biome:check` before confirming changes.
