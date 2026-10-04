@@ -38,6 +38,9 @@ const categoryColors: Partial<Record<Category, string>> = {
     'bg-[var(--color-category-products)] text-[var(--color-category-products-foreground)]',
 };
 
+const FLOATING_BUTTON_CLASS =
+  'hidden pointer-fine:flex absolute top-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95';
+
 function useHighlightText(highlightTerms?: Array<string>): HighlightText {
   // Memoize regex to avoid recreating it multiple times per card render
   const highlightRegex = useMemo(() => {
@@ -50,7 +53,6 @@ function useHighlightText(highlightTerms?: Array<string>): HighlightText {
     return new RegExp(`(${escapedTerms.join('|')})`, 'gi');
   }, [highlightTerms]);
 
-  // Helper function to highlight search terms in text
   return useCallback(
     (text: string) => {
       if (!highlightRegex) {
@@ -173,54 +175,89 @@ function CardBody({
   );
 }
 
+interface CardAction {
+  icon: ReactNode;
+  menuLabel: string;
+  umamiEvent: string;
+  onSelect: () => void;
+}
+
 interface CardActionProps {
   item: DirectoryItem;
   isSaved: boolean;
-  onToggleSave: (id: string) => void;
   shared: boolean;
+  onToggleSave: (id: string) => void;
   onCopyLink: () => void;
+}
+
+/** Single source for the save/share pair so both card surfaces stay in sync. */
+function useCardActions({
+  item,
+  isSaved,
+  shared,
+  onToggleSave,
+  onCopyLink,
+}: CardActionProps): Array<CardAction> {
+  return useMemo(
+    () => [
+      {
+        icon: isSaved ? <BookmarkCheck /> : <Bookmark />,
+        menuLabel: isSaved ? 'Remove from saved' : 'Save item',
+        umamiEvent: isSaved ? 'unsave-item' : 'save-item',
+        onSelect: () => onToggleSave(item.id),
+      },
+      {
+        icon: shared ? <Check /> : <Link />,
+        menuLabel: shared ? 'Link shared' : 'Share',
+        umamiEvent: 'item-share',
+        onSelect: onCopyLink,
+      },
+    ],
+    [isSaved, shared, item.id, onToggleSave, onCopyLink],
+  );
 }
 
 function CardIconButtons({
   item,
   isSaved,
-  onToggleSave,
-  shared,
-  onCopyLink,
-}: CardActionProps) {
+  actions,
+}: {
+  item: DirectoryItem;
+  isSaved: boolean;
+  actions: Array<CardAction>;
+}) {
+  const [saveAction, shareAction] = actions;
   return (
     <>
       <button
         type="button"
-        onClick={() => onToggleSave(item.id)}
-        data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
+        onClick={saveAction.onSelect}
+        data-umami-event={saveAction.umamiEvent}
         data-umami-event-itemname={item.name}
         aria-label={
           isSaved ? `Remove ${item.name} from saved` : `Save ${item.name}`
         }
         aria-pressed={isSaved}
-        className="hidden pointer-fine:flex absolute top-2 left-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
-      >
-        {isSaved ? (
-          <BookmarkCheck className="h-3.5 w-3.5" />
-        ) : (
-          <Bookmark className="h-3.5 w-3.5" />
+        className={cn(
+          FLOATING_BUTTON_CLASS,
+          'left-2 [&_svg]:h-3.5 [&_svg]:w-3.5',
         )}
+      >
+        {saveAction.icon}
       </button>
 
       <button
         type="button"
-        onClick={onCopyLink}
-        data-umami-event="item-share"
+        onClick={shareAction.onSelect}
+        data-umami-event={shareAction.umamiEvent}
         data-umami-event-itemname={item.name}
         aria-label={`Share ${item.name}`}
-        className="hidden pointer-fine:flex absolute top-2 right-2 z-10 items-center justify-center rounded-full bg-background/90 p-1.5 shadow-sm border border-border opacity-0 transition-opacity pointer-fine:group-hover:opacity-100 focus-visible:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/50 active:scale-95"
-      >
-        {shared ? (
-          <Check className="h-3.5 w-3.5" />
-        ) : (
-          <Link className="h-3.5 w-3.5" />
+        className={cn(
+          FLOATING_BUTTON_CLASS,
+          'right-2 [&_svg]:h-3.5 [&_svg]:w-3.5',
         )}
+      >
+        {shareAction.icon}
       </button>
     </>
   );
@@ -228,11 +265,11 @@ function CardIconButtons({
 
 function CardMenu({
   item,
-  isSaved,
-  onToggleSave,
-  shared,
-  onCopyLink,
-}: CardActionProps) {
+  actions,
+}: {
+  item: DirectoryItem;
+  actions: Array<CardAction>;
+}) {
   return (
     <Menu>
       <MenuTrigger
@@ -245,30 +282,17 @@ function CardMenu({
         <MoreVertical className="h-4 w-4" />
       </MenuTrigger>
       <MenuContent>
-        <MenuItem
-          onClick={() => onToggleSave(item.id)}
-          data-umami-event={isSaved ? 'unsave-item' : 'save-item'}
-          data-umami-event-itemname={item.name}
-        >
-          {isSaved ? (
-            <BookmarkCheck className="h-4 w-4" />
-          ) : (
-            <Bookmark className="h-4 w-4" />
-          )}
-          {isSaved ? 'Remove from saved' : 'Save item'}
-        </MenuItem>
-        <MenuItem
-          onClick={onCopyLink}
-          data-umami-event="item-share"
-          data-umami-event-itemname={item.name}
-        >
-          {shared ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <Link className="h-4 w-4" />
-          )}
-          {shared ? 'Link shared' : 'Share'}
-        </MenuItem>
+        {actions.map((action) => (
+          <MenuItem
+            key={action.menuLabel}
+            onClick={action.onSelect}
+            data-umami-event={action.umamiEvent}
+            data-umami-event-itemname={item.name}
+          >
+            {action.icon}
+            {action.menuLabel}
+          </MenuItem>
+        ))}
       </MenuContent>
     </Menu>
   );
@@ -284,6 +308,13 @@ export function ItemCard({
   const isHighlighted = item.id === highlightId;
   const highlightText = useHighlightText(highlightTerms);
   const { shared, handleCopyLink } = useItemShare(item);
+  const actions = useCardActions({
+    item,
+    isSaved,
+    shared,
+    onToggleSave,
+    onCopyLink: handleCopyLink,
+  });
   const cardContent = <CardBody item={item} highlightText={highlightText} />;
 
   return (
@@ -315,20 +346,8 @@ export function ItemCard({
         </div>
       )}
 
-      <CardIconButtons
-        item={item}
-        isSaved={isSaved}
-        onToggleSave={onToggleSave}
-        shared={shared}
-        onCopyLink={handleCopyLink}
-      />
-      <CardMenu
-        item={item}
-        isSaved={isSaved}
-        onToggleSave={onToggleSave}
-        shared={shared}
-        onCopyLink={handleCopyLink}
-      />
+      <CardIconButtons item={item} isSaved={isSaved} actions={actions} />
+      <CardMenu item={item} actions={actions} />
     </div>
   );
 }

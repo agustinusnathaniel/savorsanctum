@@ -4,10 +4,7 @@ import { act, renderHook } from '@testing-library/react';
 import { renderToString } from 'react-dom/server';
 import { afterEach, beforeEach, describe, expect, it } from 'vite-plus/test';
 
-import {
-  __resetSavedItemsStore,
-  useSavedItems,
-} from '@/lib/hooks/use-saved-items';
+import { useSavedItems } from '@/lib/hooks/use-saved-items';
 
 const STORAGE_KEY = 'savorsanctum.saved-items';
 
@@ -16,14 +13,19 @@ function SavedIdsProbe() {
   return <div data-testid="saved-probe">{savedIds.join(',')}</div>;
 }
 
+/** Simulates a cross-tab storage write; jsdom never fires real storage events. */
+function emitStorageEvent(key: string) {
+  window.dispatchEvent(
+    new StorageEvent('storage', { key, storageArea: window.localStorage }),
+  );
+}
+
 describe('useSavedItems', () => {
   beforeEach(() => {
-    __resetSavedItemsStore();
     window.localStorage.clear();
   });
 
   afterEach(() => {
-    __resetSavedItemsStore();
     window.localStorage.clear();
   });
 
@@ -44,6 +46,16 @@ describe('useSavedItems', () => {
       JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? '[]'),
     ).toEqual(['item-1']);
   });
+});
+
+describe('useSavedItems', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
+  afterEach(() => {
+    window.localStorage.clear();
+  });
 
   it('toggleSaved removes an already-saved id and persists the removal', () => {
     window.localStorage.setItem(
@@ -62,18 +74,6 @@ describe('useSavedItems', () => {
     expect(
       JSON.parse(window.localStorage.getItem(STORAGE_KEY) ?? '[]'),
     ).toEqual(['item-2']);
-  });
-});
-
-describe('useSavedItems', () => {
-  beforeEach(() => {
-    __resetSavedItemsStore();
-    window.localStorage.clear();
-  });
-
-  afterEach(() => {
-    __resetSavedItemsStore();
-    window.localStorage.clear();
   });
 
   it('restores saved ids from localStorage on first render', () => {
@@ -108,12 +108,10 @@ describe('useSavedItems', () => {
 
 describe('useSavedItems', () => {
   beforeEach(() => {
-    __resetSavedItemsStore();
     window.localStorage.clear();
   });
 
   afterEach(() => {
-    __resetSavedItemsStore();
     window.localStorage.clear();
   });
 
@@ -132,7 +130,7 @@ describe('useSavedItems', () => {
 
     act(() => {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(['tab-2-item']));
-      window.dispatchEvent(new StorageEvent('storage', { key: STORAGE_KEY }));
+      emitStorageEvent(STORAGE_KEY);
     });
 
     expect(result.current.savedIds).toEqual(['tab-2-item']);
@@ -148,9 +146,7 @@ describe('useSavedItems', () => {
 
     act(() => {
       window.localStorage.setItem('some-other-key', 'x');
-      window.dispatchEvent(
-        new StorageEvent('storage', { key: 'some-other-key' }),
-      );
+      emitStorageEvent('some-other-key');
     });
 
     expect(result.current.savedIds).toEqual(['item-1']);

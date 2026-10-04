@@ -41,262 +41,122 @@ const coolGadget: DirectoryItem = {
 
 const mockItems = [sushiBar, pastaPlace, coolGadget];
 
+type FilterParams = Parameters<typeof filterDirectoryItems>[0];
+
+function filterDirectory(overrides: Partial<FilterParams> = {}) {
+  return filterDirectoryItems({
+    items: mockItems,
+    keyword: '',
+    category: 'all',
+    sortBy: 'recent',
+    selectedTags: [],
+    selectedLocations: [],
+    ...overrides,
+  });
+}
+
+const namesOf = (items: Array<DirectoryItem>) => items.map((item) => item.name);
+
 describe('filterDirectoryItems', () => {
   it('returns all items with no filters', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
+    const result = filterDirectory();
     expect(result.filteredItems).toHaveLength(3);
     expect(result.highlightTerms).toEqual([]);
   });
 
-  it('filters by category: food', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'food',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(2);
-    expect(result.filteredItems.map((item) => item.name).sort()).toEqual([
-      'Pasta Place',
-      'Sushi Bar',
+  it('filters by category', () => {
+    expect(
+      namesOf(filterDirectory({ category: 'food' }).filteredItems).sort(),
+    ).toEqual(['Pasta Place', 'Sushi Bar']);
+    expect(filterDirectory({ category: 'products' }).filteredItems).toEqual([
+      coolGadget,
     ]);
   });
 
-  it('filters by category: products', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'products',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(1);
-    expect(result.filteredItems[0].name).toBe('Cool Gadget');
-  });
-});
-
-describe('filterDirectoryItems', () => {
-  it('filters by category: all', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(3);
+  it('filters by keyword, case-insensitively', () => {
+    const result = filterDirectory({ keyword: 'SUSHI' });
+    expect(result.filteredItems).toEqual([sushiBar]);
   });
 
-  it('filters by keyword', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: 'sushi',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(1);
-    expect(result.filteredItems[0].name).toBe('Sushi Bar');
-  });
-
-  it('filters by keyword (case insensitive)', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: 'SUSHI',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(1);
-    expect(result.filteredItems[0].name).toBe('Sushi Bar');
-  });
-});
-
-describe('filterDirectoryItems', () => {
-  it('filters by tag', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: ['japanese'],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(1);
-    expect(result.filteredItems[0].name).toBe('Sushi Bar');
-  });
-
-  it('filters by location', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: ['Rome'],
-    });
-    expect(result.filteredItems).toHaveLength(1);
-    expect(result.filteredItems[0].name).toBe('Pasta Place');
-  });
-
-  it('combines filters — category food + keyword sushi', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: 'sushi',
-      category: 'food',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(1);
-    expect(result.filteredItems[0].name).toBe('Sushi Bar');
-  });
-});
-
-describe('filterDirectoryItems', () => {
   it('returns empty results for a non-existent keyword', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: 'nonexistent',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(0);
-  });
-
-  it('sorts by name alphabetically', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'alphabetical',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems.map((item) => item.name)).toEqual([
-      'Cool Gadget',
-      'Pasta Place',
-      'Sushi Bar',
-    ]);
+    expect(filterDirectory({ keyword: 'nonexistent' }).filteredItems).toEqual(
+      [],
+    );
   });
 
   it('whitespace-only keyword returns all items', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '   ',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(3);
+    expect(filterDirectory({ keyword: '   ' }).filteredItems).toHaveLength(3);
+  });
+
+  it('splits the keyword into highlight terms', () => {
+    const result = filterDirectory({ keyword: '  sushi   bar  ' });
+    expect(result.highlightTerms).toEqual(['sushi', 'bar']);
+  });
+
+  it('filters by tag', () => {
+    expect(
+      filterDirectory({ selectedTags: ['japanese'] }).filteredItems,
+    ).toEqual([sushiBar]);
   });
 });
 
 describe('filterDirectoryItems', () => {
   it('filters by multiple tags', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: ['japanese', 'italian'],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(2);
-    expect(result.filteredItems.map((item) => item.name).sort()).toEqual([
-      'Pasta Place',
-      'Sushi Bar',
-    ]);
+    expect(
+      namesOf(
+        filterDirectory({ selectedTags: ['japanese', 'italian'] })
+          .filteredItems,
+      ).sort(),
+    ).toEqual(['Pasta Place', 'Sushi Bar']);
+  });
+
+  it('filters by location', () => {
+    expect(
+      filterDirectory({ selectedLocations: ['Rome'] }).filteredItems,
+    ).toEqual([pastaPlace]);
+  });
+
+  it('combines category and keyword filters', () => {
+    const result = filterDirectory({ keyword: 'sushi', category: 'food' });
+    expect(result.filteredItems).toEqual([sushiBar]);
+  });
+
+  it('sorts alphabetically', () => {
+    expect(
+      namesOf(filterDirectory({ sortBy: 'alphabetical' }).filteredItems),
+    ).toEqual(['Cool Gadget', 'Pasta Place', 'Sushi Bar']);
   });
 
   it('handles empty items array', () => {
-    const result = filterDirectoryItems({
-      items: [],
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-    });
-    expect(result.filteredItems).toHaveLength(0);
+    expect(filterDirectory({ items: [] }).filteredItems).toEqual([]);
   });
 
   it('filters to saved items only when savedOnly is true', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-      savedOnly: true,
-      savedIds: ['1', '3'],
-    });
-    expect(result.filteredItems).toHaveLength(2);
-    expect(result.filteredItems.map((item) => item.name).sort()).toEqual([
+    const result = filterDirectory({ savedOnly: true, savedIds: ['1', '3'] });
+    expect(namesOf(result.filteredItems).sort()).toEqual([
       'Cool Gadget',
       'Sushi Bar',
     ]);
   });
-});
 
-describe('filterDirectoryItems', () => {
   it('returns empty when savedOnly is true and savedIds is empty', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-      savedOnly: true,
-      savedIds: [],
-    });
-    expect(result.filteredItems).toHaveLength(0);
+    expect(
+      filterDirectory({ savedOnly: true, savedIds: [] }).filteredItems,
+    ).toEqual([]);
   });
 
   it('ignores savedIds when savedOnly is false', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
-      category: 'all',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
-      savedOnly: false,
-      savedIds: ['1'],
-    });
-    expect(result.filteredItems).toHaveLength(3);
+    expect(
+      filterDirectory({ savedOnly: false, savedIds: ['1'] }).filteredItems,
+    ).toHaveLength(3);
   });
 
   it('combines savedOnly with a category filter', () => {
-    const result = filterDirectoryItems({
-      items: mockItems,
-      keyword: '',
+    const result = filterDirectory({
       category: 'food',
-      sortBy: 'recent',
-      selectedTags: [],
-      selectedLocations: [],
       savedOnly: true,
       savedIds: ['1', '3'],
     });
-    expect(result.filteredItems).toHaveLength(1);
-    expect(result.filteredItems[0].name).toBe('Sushi Bar');
+    expect(result.filteredItems).toEqual([sushiBar]);
   });
 });
