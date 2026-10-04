@@ -20,7 +20,7 @@ export function mergeSourceResults(
   products: DirectoryQueryResult<DirectoryItem>,
 ): DirectoryQueryResult<DirectoryItem> {
   const items = [...culinaries.items, ...products.items].sort((a, b) =>
-    b.created_time > a.created_time ? 1 : -1,
+    b.created_time.localeCompare(a.created_time),
   );
 
   const error = culinaries.error ?? products.error;

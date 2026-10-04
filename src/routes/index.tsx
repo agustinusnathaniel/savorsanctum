@@ -23,7 +23,10 @@ import { SearchBar } from '@/lib/pages/home/components/search-bar';
 import { SkeletonCard } from '@/lib/pages/home/components/skeleton-card';
 import { SurpriseMe } from '@/lib/pages/home/components/surprise-me';
 import { TagLocationFilters } from '@/lib/pages/home/components/tag-location-filters';
-import { buildItemSocialMeta } from '@/lib/pages/home/highlight';
+import {
+  buildItemSocialMeta,
+  type SocialMeta,
+} from '@/lib/pages/home/highlight';
 import { getItems } from '@/lib/services/notion/get-items';
 
 const searchSchema = z.object({
@@ -52,8 +55,22 @@ const defaultSearchParams: SearchSchema = {
   category: 'all',
   sortBy: 'recent',
   saved: false,
-  // pageSize: 20,
 };
+
+function itemSocialMetaTags(meta: SocialMeta) {
+  return [
+    { name: 'og:title', content: meta.title },
+    { name: 'og:description', content: meta.description },
+    { name: 'twitter:title', content: meta.title },
+    { name: 'twitter:description', content: meta.description },
+    ...(meta.image
+      ? [
+          { name: 'og:image', content: meta.image },
+          { name: 'twitter:image', content: meta.image },
+        ]
+      : []),
+  ];
+}
 
 export const Route = createFileRoute('/')({
   component: RouteComponent,
@@ -90,20 +107,7 @@ export const Route = createFileRoute('/')({
         })
       : null;
     return {
-      meta: socialMeta
-        ? [
-            { name: 'og:title', content: socialMeta.title },
-            { name: 'og:description', content: socialMeta.description },
-            ...(socialMeta.image
-              ? [{ name: 'og:image', content: socialMeta.image }]
-              : []),
-            { name: 'twitter:title', content: socialMeta.title },
-            { name: 'twitter:description', content: socialMeta.description },
-            ...(socialMeta.image
-              ? [{ name: 'twitter:image', content: socialMeta.image }]
-              : []),
-          ]
-        : undefined,
+      meta: socialMeta ? itemSocialMetaTags(socialMeta) : undefined,
       scripts: [
         {
           type: 'application/ld+json',
